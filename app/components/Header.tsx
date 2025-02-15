@@ -7,7 +7,7 @@ export default function Header() {
     return (
         <View style={[styles.header, {backgroundColor: colors.primary}]}>
             <ThemedText variant="header1" color="primaryText">Temp-o-s</ThemedText>
-            <SquareButton type="close" onPress={() => {}}/>
+            <SquareButton type="menu" onPress={() => {}}/>
         </View>
     )
 }

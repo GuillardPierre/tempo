@@ -4,7 +4,7 @@ import { useThemeColors } from "../hooks/useThemeColors";
 
 const types = {
     'close': require('@/assets/images/close.svg'),
-    'menu': require('@/assets/images/menu.svg'),
+    'menu': require('@/assets/images/menu.jpg'),
 }
 
 type Props = {
@@ -13,24 +13,24 @@ type Props = {
 }
 
 export default function SquareButton ({type, onPress}: Props) {
+    const colors = useThemeColors()
+
     return (
         <>
         <Pressable onPress={onPress}>
-            <View style={styles.button}>
+            <View style={[styles.button, {backgroundColor: colors.secondary}]}>
                 <Image source={types[type ?? 'close']}></Image>
             </View>
         </Pressable>
     </>
     )
 }   
-const colors = useThemeColors()
 
 const styles = StyleSheet.create({
     button: {
         width: 52,
         height: 52,
         borderRadius: 8,
-        backgroundColor: colors.secondary,
         alignItems: 'center',
         justifyContent: 'center',
     }
