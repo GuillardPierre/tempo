@@ -2,12 +2,18 @@ import { StyleSheet, View } from "react-native";
 import ThemedText from "./ThemedText";
 import SquareButton from "./SquareButton";
 import { useThemeColors } from "../hooks/useThemeColors";
-export default function Header() {
+
+type Props = {
+    modalVisible: boolean;
+    setModalVisible: (visible: boolean) => void;
+}
+
+export default function Header({modalVisible, setModalVisible}: Props) {
     const colors = useThemeColors()
     return (
         <View style={[styles.header, {backgroundColor: colors.primary}]}>
             <ThemedText variant="header1" color="primaryText">Temp-o-s</ThemedText>
-            <SquareButton type="menu" onPress={() => {}}/>
+            <SquareButton type={modalVisible ? "close" : "menu"} onPress={() => setModalVisible(!modalVisible)}/>
         </View>
     )
 }

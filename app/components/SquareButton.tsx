@@ -1,10 +1,12 @@
 import React from "react";
 import { Image, Pressable, StyleSheet, View } from "react-native";
 import { useThemeColors } from "../hooks/useThemeColors";
+import CloseSvg from "./svg/close";
+import MenuSvg from "./svg/menu";
 
 const types = {
-    'close': require('@/assets/images/close.svg'),
-    'menu': require('@/assets/images/menu.jpg'),
+    'close': CloseSvg,
+    'menu': MenuSvg,
 }
 
 type Props = {
@@ -14,15 +16,15 @@ type Props = {
 
 export default function SquareButton ({type, onPress}: Props) {
     const colors = useThemeColors()
+    const Icon = types[type ?? 'close']
 
     return (
-        <>
         <Pressable onPress={onPress}>
             <View style={[styles.button, {backgroundColor: colors.secondary}]}>
-                <Image source={types[type ?? 'close']}></Image>
+                <Icon width={type === "close" ? 18 : 44} height={type === "close" ? 18 : 44} />
             </View>
         </Pressable>
-    </>
+
     )
 }   
 

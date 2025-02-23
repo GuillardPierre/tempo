@@ -6,9 +6,9 @@ export default function Footer() {
     const colors = useThemeColors()
     return (
         <View style={[styles.container, {backgroundColor: colors.primary}]}>
-                <RoundButton type="stats" variant="primary" size="small" onPress={() => {}}/>
-                <RoundButton type="calendar" variant="primary" size="small" onPress={() => {}}/>
-                <RoundButton type="add" variant="primary" size="small" onPress={() => {}}/>
+                <RoundButton type="stats" variant="secondary" btnSize={50} onPress={() => {}}/>
+                <RoundButton type="calendar" variant="secondary" btnSize={50} onPress={() => {}}/>
+                <RoundButton type="add" variant="secondary" btnSize={50} onPress={() => {}}/>
         </View>
     )
 }

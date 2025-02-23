@@ -1,0 +1,18 @@
+import * as React from "react";
+import Svg, { Path, SvgProps } from "react-native-svg";
+const PreviousSvg = (props: SvgProps) => (
+  <Svg
+    width={12}
+    height={13}
+    viewBox="0 0 12 13"
+    fill="none"
+    {...props}
+    {...props}
+  >
+    <Path
+      d="M11.8607 12.708L0.148688 7.74V5.46L11.8607 0.491999V2.82L1.06069 7.356V5.868L11.8607 10.404V12.708Z"
+      fill="white"
+    />
+  </Svg>
+);
+export default PreviousSvg;

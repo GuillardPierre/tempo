@@ -1,39 +1,42 @@
 import React from "react";
-import { Image, Pressable, StyleSheet, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useThemeColors } from "../hooks/useThemeColors";
+import PreviousIcon from "./svg/previous"
+import NextIcon from "./svg/next"
+import StatsIcon from "./svg/stats"
+import CalendarIcon from "./svg/calendar"
+import AddIcon from "./svg/addSvg"
 
 const types = {
-    "previous": require('@/assets/images/previous.svg'),
-    "next": require('@/assets/images/next.svg'),
-    "stats": require('@/assets/images/stats.svg'),
-    "calendar": require('@/assets/images/calendar.svg'),
-    "add": require('@/assets/images/add.svg'),
+    "previous": PreviousIcon,
+    "next": NextIcon,
+    "stats": StatsIcon,
+    "calendar": CalendarIcon,
+    "add": AddIcon,
 }
 
 type Props = {
     type: keyof typeof types
     variant: 'primary' | 'secondary'
-    size: 'small' | 'medium'
+    btnSize?: number
+    svgSize?: number
     onPress: () => void
 }
 
-export default function RoundButton({type, variant, size, onPress}: Props) {
+export default function RoundButton({type, variant, btnSize = 40, svgSize = 24, onPress}: Props) {
     const colors = useThemeColors()
+    const Icon = types[type]
     return (
-        <>
-            <Pressable onPress={onPress}>
-                <View style={[styles.button, {backgroundColor: colors[variant]}]}>
-                    <Image source={types[type]}></Image>
-                </View>
-            </Pressable>
-        </>
+        <Pressable onPress={onPress}>
+                <View style={[styles.button, {backgroundColor: colors[variant], width: btnSize, height: btnSize}]}>
+                <Icon width={svgSize} height={svgSize} />
+            </View>
+        </Pressable>
     )
 }
 
 const styles = StyleSheet.create({
     button: {
-        width: 40,
-        height: 40,
         borderRadius: 26,
         alignItems: 'center',
         justifyContent: 'center',

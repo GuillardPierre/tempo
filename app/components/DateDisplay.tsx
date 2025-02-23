@@ -25,9 +25,9 @@ export default function DateDisplay({date, setDate}: Props) {
     
     return (
         <View style={[styles.dateDisplay, {backgroundColor: colors.secondary}]}>
-            <RoundButton type="previous" variant="primary" size="small" onPress={handlePrevious}/>
+            <RoundButton type="previous" variant="primary" svgSize={15} onPress={handlePrevious}/>
             <ThemedText variant="header2" color="primaryText">{date.toLocaleDateString()}</ThemedText>
-            <RoundButton type="next" variant="primary" size="small" onPress={handleNext}/>
+            <RoundButton type="next" variant="primary" svgSize={15} onPress={handleNext}/>
         </View>
     )
 }

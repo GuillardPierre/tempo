@@ -2,8 +2,7 @@ import { StyleSheet, View, Image, Pressable } from "react-native";
 import ThemedText from "./ThemedText";
 import { useThemeColors } from "../hooks/useThemeColors";
 import React from "react";
-import TrashIcon from "@/assets/svg-icons/trash";
-import { SvgUri } from 'react-native-svg';
+import TrashIcon from "./svg/trash";
 
 type Props = {
     type: 'time' | 'button'
@@ -20,7 +19,7 @@ export default function Block({type, text, duration}: Props) {
                 <>
                     <ThemedText>{`Durée: ${duration}`}</ThemedText>
                     <Pressable onPress={() => {}}>
-                        <SvgUri uri={TrashIcon} />
+                        <TrashIcon/>                        
                     </Pressable>
                 </>
                 )}

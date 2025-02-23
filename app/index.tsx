@@ -5,18 +5,20 @@ import Header from "./components/Header";
 import DateDisplay from "./components/DateDisplay";
 import { useState } from "react";
 import MainWrapper from "./components/MainWrapper";
-import ThemedText from "./components/ThemedText";
 import Footer from "./components/Footer";
 import BlockTime from "./components/BlockTime";
+import ModalMenu from "./components/ModalMenu";
+
 export default function Index() {
   const colors = useThemeColors();
   const [date, setDate] = useState(new Date())
+  const [modalVisible, setModalVisible] = useState(false);
   return (
     <SafeAreaView style={[styles.container, {
       backgroundColor: colors.primary
-    }]}>
-      <StatusBar/>
-      <Header />
+    }]}  >
+      <StatusBar  backgroundColor={colors.primary} barStyle="light-content"/>
+      <Header modalVisible={modalVisible} setModalVisible={setModalVisible}/>
       <DateDisplay date={date} setDate={setDate}/>
       <MainWrapper>
           <BlockTime startTime="08:00" endTime="12:00" duration="4h" activity="Work"/>
@@ -32,6 +34,7 @@ export default function Index() {
           <BlockTime startTime="00:00" endTime="08:00" duration="8h" activity="Sleep"/>
       </MainWrapper>
       <Footer/>
+      <ModalMenu modalVisible={modalVisible} setModalVisible={setModalVisible}/>
     </SafeAreaView>
   );
 }
