@@ -1,6 +1,6 @@
 import { Vibration, View } from 'react-native';
 import React from 'react';
-import CustomAutocomplete from '../components/CustomAutoComplete';
+import CustomAutocomplete from './utils/CustomAutoComplete';
 import ButtonMenu from '../components/ButtonMenu';
 import TimePickerInput from './utils/TimePickerInput';
 import { useState } from 'react';
@@ -44,10 +44,10 @@ export default function TimerForm() {
                   onChange={() => {}}
                 />
               </View>
-              <View style={{ width: '30%' }}>
+              <View style={{ width: '10%' }}>
                 <RoundButton
                   svgSize={18}
-                  btnSize={30}
+                  btnSize={40}
                   variant='primary'
                   type='close'
                   onPress={() => {
@@ -73,7 +73,7 @@ export default function TimerForm() {
         <ButtonMenu
           type='round'
           text={endIsDefine ? "Enregistrer l'activité" : 'Lancer Chronomètre'}
-          action={() => {}}
+          action={() => {Vibration.vibrate(50);}}
         />
       </View>
     </View>

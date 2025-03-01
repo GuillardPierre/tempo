@@ -1,48 +1,71 @@
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { StyleSheet, Animated, ScrollView } from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
+import { useEffect, useRef, useState } from 'react';
 
 type Props = {
-  isOpen?: boolean;
   children: React.ReactNode;
+  isOpen?: boolean;
 };
 
-export default function MainWrapper({ isOpen = true, children }: Props) {
+export default function MainWrapper({ children, isOpen = true }: Props) {
   const colors = useThemeColors();
+  const animation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
+  const [shouldRender, setShouldRender] = useState(isOpen);
 
-  if (!isOpen) {
-    return null;
-  }
+  useEffect(() => {
+    if (isOpen) {
+      setShouldRender(true);
+      // Animation d'ouverture
+      Animated.timing(animation, {
+        toValue: 1,
+        duration: 300,
+        useNativeDriver: false
+      }).start();
+    } else {
+      // Animation de fermeture
+      Animated.timing(animation, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: false
+      }).start(() => {
+        setShouldRender(false); // Retire le composant après l'animation
+      });
+    }
+  }, [isOpen]);
+
+  if (!shouldRender) return null;
 
   return (
-    <View style={[styles.wrapper, { backgroundColor: colors.background }]}>
-      <View style={[styles.container, { backgroundColor: colors.background }]}>
-        <ScrollView style={styles.scrollView}>{children}</ScrollView>
-      </View>
-    </View>
+    <Animated.View 
+      style={[
+        styles.container, 
+        { 
+          backgroundColor: colors.background,
+          maxHeight: animation.interpolate({
+            inputRange: [0, 1],
+            outputRange: [0, 1800]
+          }),
+        }
+      ]}
+    >
+      <ScrollView>
+        {children}
+      </ScrollView>
+    </Animated.View>
   );
 }
 
 const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-    backgroundColor: '#FF0000',
-  },
   container: {
     flex: 1,
     marginInline: 10,
     marginBlock: 5,
-    paddingHorizontal: 5,
-    paddingVertical: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
     borderRadius: 16,
     borderStyle: 'solid',
     borderWidth: 3,
     borderColor: '#8955FD',
-  },
-  scrollView: {
-    paddingHorizontal: 5,
-    paddingVertical: 5,
-    display: 'flex',
-    flexDirection: 'column',
-    gap: 10,
-  },
+    overflow: 'scroll'
+  }
 });

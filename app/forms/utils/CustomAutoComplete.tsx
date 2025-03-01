@@ -6,8 +6,8 @@ import {
 } from 'react-native-autocomplete-dropdown';
 
 import { useCallback, useRef, useState, useEffect } from 'react';
-import { useThemeColors } from '../hooks/useThemeColors';
-import ThemedText from './utils/ThemedText';
+import { useThemeColors } from '../../hooks/useThemeColors';
+import ThemedText from '../../components/utils/ThemedText';
 
 const data = [
   { id: '1', title: 'Alpha' },
@@ -62,12 +62,10 @@ export default function CustomAutocomplete({ label }: Props) {
           dropdownController.current = controller;
         }}
         dataSet={suggestionsList}
-        direction='down'
+        direction='up'
         onOpenSuggestionsList={onOpenSuggestionsList}
         suggestionsListMaxHeight={200}
-        renderItem={(item) => (
-          <Text style={[styles.suggestionItem]}>{item.title}</Text>
-        )}
+        inputHeight={50}
         textInputProps={{
           placeholder: 'Classe, Préparation, Correction, ...',
           autoCorrect: false,
@@ -79,12 +77,23 @@ export default function CustomAutocomplete({ label }: Props) {
             width: '118%',
             backgroundColor: colors.primaryLight,
           },
+          placeholderTextColor: colors.primaryText,
         }}
         containerStyle={{
           borderWidth: 3,
           borderStyle: 'solid',
           borderColor: '#8955FD',
           borderRadius: 4,
+        }}
+        suggestionsListContainerStyle={{
+          backgroundColor: colors.primaryLight,
+        }}
+        renderItem={(item) => (
+          <Text style={[styles.suggestionItem, { color: colors.primaryText }]}>{item.title}</Text>
+        )}
+        emptyResultText="Création d'une nouvelle catégorie"
+        suggestionsListTextStyle={{
+          color: colors.primaryText
         }}
       />
     </View>

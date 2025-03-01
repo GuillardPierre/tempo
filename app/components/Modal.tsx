@@ -1,7 +1,7 @@
 import { Modal, StyleSheet, View, Pressable, Vibration } from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
 import Menu from './ModalComponents/Menu';
-import TimerModal from './CustomAutoComplete';
+import TimerModal from '../forms/utils/CustomAutoComplete';
 
 type Props = {
   children: React.ReactNode;

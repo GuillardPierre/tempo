@@ -63,6 +63,7 @@ export default function Block({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    minHeight: 80,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',

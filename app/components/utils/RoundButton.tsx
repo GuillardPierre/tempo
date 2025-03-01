@@ -7,6 +7,7 @@ import StatsIcon from '../svg/stats';
 import CalendarIcon from '../svg/calendar';
 import AddIcon from '../svg/addSvg';
 import CloseSvg from '../svg/close';
+import MinusIcon from '../svg/minus';
 
 const types = {
   previous: PreviousIcon,
@@ -14,6 +15,7 @@ const types = {
   stats: StatsIcon,
   calendar: CalendarIcon,
   add: AddIcon,
+  minus: MinusIcon,
   close: CloseSvg,
 };
 
