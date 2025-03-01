@@ -1,36 +1,43 @@
-import { Pressable, StyleSheet } from "react-native";
-import ThemedText from "./ThemedText";
+import { Pressable, StyleSheet } from 'react-native';
+import ThemedText from './utils/ThemedText';
 
 type Props = {
-    text: string;
-    action: () => void;
-}
+  text: string;
+  action: () => void;
+  type: 'square' | 'round';
+};
 
-export default function ButtonMenu({text, action} : Props) {
-    return (
-        <Pressable style={styles.button} onPress={action}>
-            <ThemedText style={styles.textButton}>{text}</ThemedText>
-        </Pressable>
-    )
+export default function ButtonMenu({ text, action, type }: Props) {
+  return (
+    <Pressable style={[styles.button, styles[type]]} onPress={action}>
+      <ThemedText style={styles.textButton}>{text}</ThemedText>
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({
-    button: {
-        flex: 1,
-        maxHeight: 70,
-        flexDirection: 'row',
-        justifyContent: 'center',
-        alignItems: 'center',
-        width: '90%',
-        borderRadius: 8,
-        borderStyle: 'solid',
-        borderWidth: 4,
-        borderColor: '#8955FD',
-        backgroundColor: "#C2B2FF",  
-    },
-    textButton : {
-        fontSize: 20,
-        fontWeight: 'bold',
-    }
-})
-
+  button: {
+    flex: 1,
+    maxHeight: 70,
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '90%',
+    borderStyle: 'solid',
+    borderWidth: 4,
+  },
+  square: {
+    borderRadius: 8,
+    borderColor: '#8955FD',
+    backgroundColor: '#C2B2FF',
+  },
+  round: {
+    borderRadius: 9999,
+    backgroundColor: '#7B32F5',
+    borderColor: '#7B32F5',
+  },
+  textButton: {
+    fontSize: 20,
+    fontWeight: 'bold',
+  },
+});
