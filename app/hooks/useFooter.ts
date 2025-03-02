@@ -1,0 +1,66 @@
+import { useRef, useState } from 'react';
+import { Animated, Vibration } from 'react-native';
+
+type Props = {
+	setTimerIsOpen: (isOpen: boolean) => void;
+	timerIsOpen: boolean;
+	calendarIsOpen: boolean;
+	setCalendarIsOpen: (isOpen: boolean) => void;
+};
+
+export const useFooter = ({
+	setTimerIsOpen,
+	timerIsOpen,
+	calendarIsOpen,
+	setCalendarIsOpen,
+}: Props) => {
+	const rotateAnim = useRef(new Animated.Value(0)).current;
+	const calendarRotateAnim = useRef(new Animated.Value(0)).current;
+	const [buttonType, setButtonType] = useState<'add' | 'minus'>('add');
+
+	const handleAddPress = () => {
+		Vibration.vibrate(50);
+		setTimerIsOpen(!timerIsOpen);
+
+		Animated.timing(rotateAnim, {
+			toValue: 1,
+			duration: 300,
+			useNativeDriver: true,
+		}).start(() => {
+			rotateAnim.setValue(0);
+			setButtonType(buttonType === 'add' ? 'minus' : 'add');
+		});
+	};
+
+	const handleCalendarPress = () => {
+		Vibration.vibrate(50);
+		setCalendarIsOpen(!calendarIsOpen);
+
+		Animated.timing(calendarRotateAnim, {
+			toValue: 1,
+			duration: 300,
+			useNativeDriver: true,
+		}).start(() => {
+			calendarRotateAnim.setValue(0);
+		});
+	};
+
+	const spin = rotateAnim.interpolate({
+		inputRange: [0, 1],
+		outputRange: ['0deg', '360deg'],
+	});
+
+	const calendarSpin = calendarRotateAnim.interpolate({
+		inputRange: [0, 1],
+		outputRange: ['0deg', '360deg'],
+	});
+
+	return {
+		buttonType,
+		setButtonType,
+		handleAddPress,
+		handleCalendarPress,
+		spin,
+		calendarSpin,
+	};
+};

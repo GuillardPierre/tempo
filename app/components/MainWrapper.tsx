@@ -5,9 +5,10 @@ import { useEffect, useRef, useState } from 'react';
 type Props = {
   children: React.ReactNode;
   isOpen?: boolean;
+  direction?: 'top' | 'bottom'; // Ajoutez cette ligne
 };
 
-export default function MainWrapper({ children, isOpen = true }: Props) {
+export default function MainWrapper({ children, isOpen = true, direction = 'bottom' }: Props) { // Modifiez cette ligne
   const colors = useThemeColors();
   const animation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
   const [shouldRender, setShouldRender] = useState(isOpen);
@@ -45,6 +46,12 @@ export default function MainWrapper({ children, isOpen = true }: Props) {
             inputRange: [0, 1],
             outputRange: [0, 1800]
           }),
+          transform: [{
+            translateY: animation.interpolate({
+              inputRange: [0, 1],
+              outputRange: direction === 'bottom' ? [1800, 0] : [-1800, 0] // Ajoutez cette ligne
+            })
+          }]
         }
       ]}
     >
@@ -66,6 +73,7 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderWidth: 3,
     borderColor: '#8955FD',
-    overflow: 'scroll'
+    overflow: 'scroll',
+    zIndex: 1
   }
 });
