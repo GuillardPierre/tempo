@@ -12,6 +12,8 @@ import Menu from './components/ModalComponents/Menu';
 import DeleteBlock from './components/ModalComponents/DeleteBlock';
 import Calendar from './components/Calendar';
 import { useIndex } from './hooks/useIndex';
+import { Redirect } from 'expo-router';
+import React from 'react';
 
 export default function Index() {
 	const colors = useThemeColors();
@@ -32,56 +34,63 @@ export default function Index() {
 	} = useIndex();
 
 	return (
-		<SafeAreaView
-			style={[
-				styles.container,
-				{
-					backgroundColor: colors.primary,
-				},
-			]}
-		>
-			<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
-			<Header
-				modalVisible={modalVisible}
-				setModalVisible={setModalVisible}
-				setModalType={setModalType}
-			/>
-			<DateDisplay date={date} setDate={setDate} />
-			<MainWrapper isOpen={calendarIsOpen} direction='top'>
-				<Calendar date={date} setDate={setDate} />
-			</MainWrapper>
-			<MainWrapper>
-				{data.map((block, index) => (
-					<Block
-						key={index}
-						type={block.type as 'time' | 'button'}
-						text={block.text}
-						startTime={block.startTime}
-						endTime={block.endTime}
-						duration={block.duration}
-						setModalType={setModalType}
-						setModalVisible={setModalVisible}
-						setBlockToDelete={setBlockToDelete}
-					/>
-				))}
-			</MainWrapper>
-			<MainWrapper isOpen={timerIsOpen} direction='bottom'>
-				<TimerForm />
-			</MainWrapper>
-			<Footer
-				setTimerIsOpen={setTimerIsOpen}
-				timerIsOpen={timerIsOpen}
-				calendarIsOpen={calendarIsOpen}
-				setCalendarIsOpen={setCalendarIsOpen}
-			/>
-			<ModalMenu modalVisible={modalVisible} setModalVisible={setModalVisible}>
-				{modalType === 'menu' ? (
-					<Menu />
-				) : (
-					<DeleteBlock setModalVisible={setModalVisible} />
-				)}
-			</ModalMenu>
-		</SafeAreaView>
+		<>
+			<Redirect href={'/screens/auth/Login'} />
+
+			<SafeAreaView
+				style={[
+					styles.container,
+					{
+						backgroundColor: colors.primary,
+					},
+				]}
+			>
+				<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
+				<Header
+					modalVisible={modalVisible}
+					setModalVisible={setModalVisible}
+					setModalType={setModalType}
+				/>
+				<DateDisplay date={date} setDate={setDate} />
+				<MainWrapper isOpen={calendarIsOpen} direction='top'>
+					<Calendar date={date} setDate={setDate} />
+				</MainWrapper>
+				<MainWrapper>
+					{data.map((block, index) => (
+						<Block
+							key={index}
+							type={block.type as 'time' | 'button'}
+							text={block.text}
+							startTime={block.startTime}
+							endTime={block.endTime}
+							duration={block.duration}
+							setModalType={setModalType}
+							setModalVisible={setModalVisible}
+							setBlockToDelete={setBlockToDelete}
+						/>
+					))}
+				</MainWrapper>
+				<MainWrapper isOpen={timerIsOpen} direction='bottom'>
+					<TimerForm />
+				</MainWrapper>
+				<Footer
+					setTimerIsOpen={setTimerIsOpen}
+					timerIsOpen={timerIsOpen}
+					calendarIsOpen={calendarIsOpen}
+					setCalendarIsOpen={setCalendarIsOpen}
+				/>
+				<ModalMenu
+					modalVisible={modalVisible}
+					setModalVisible={setModalVisible}
+				>
+					{modalType === 'menu' ? (
+						<Menu />
+					) : (
+						<DeleteBlock setModalVisible={setModalVisible} />
+					)}
+				</ModalMenu>
+			</SafeAreaView>
+		</>
 	);
 }
 
