@@ -4,17 +4,53 @@ import { Formik } from 'formik';
 import CustomTextInput from '@/app/forms/utils/CustomTextInput';
 import TextButton from '../utils/TextButton';
 import { useRouter } from 'expo-router';
+import { useMutation } from '@tanstack/react-query';
+import { ActivityIndicator } from 'react-native-paper';
+
+type LoginFormData = {
+	email: string;
+	password: string;
+};
 
 export default function LoginForm() {
 	const colors = useThemeColors();
-	const router = useRouter();
+
+	const { mutate: submitLogin, isPending } = useMutation<
+		any,
+		Error,
+		LoginFormData
+	>({
+		mutationFn: async (formData) => {
+			const response = await fetch('http://10.0.2.2:8080/user/login', {
+				method: 'POST',
+				headers: {
+					'Content-Type': 'application/json',
+				},
+				body: JSON.stringify(formData),
+			});
+
+			if (!response.ok) {
+				const errorMessage = await response.text();
+				throw new Error(errorMessage || "Échec de l'inscription");
+			}
+
+			const data = await response.json();
+			return data;
+		},
+		onSuccess: (data) => {
+			console.log('Connexion réussie', data);
+		},
+		onError: (error) => {
+			console.error('Erreur de connexion:', error);
+		},
+	});
 
 	return (
 		<Formik
 			initialValues={{ email: '', password: '' }}
 			onSubmit={(values) => {
-				console.log(values);
-				router.push('../screens/index.tsx');
+				console.log('LoginForm values:', values);
+				submitLogin(values);
 			}}
 		>
 			{({ handleChange, handleBlur, handleSubmit, values }) => (
@@ -37,6 +73,7 @@ export default function LoginForm() {
 						style={[styles.button, { backgroundColor: colors.secondary }]}
 						onPress={handleSubmit}
 						text='Se connecter'
+						isPending={isPending}
 					/>
 				</>
 			)}
