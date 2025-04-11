@@ -4,6 +4,9 @@ import { Formik } from 'formik';
 import CustomTextInput from '@/app/forms/utils/CustomTextInput';
 import TextButton from '../utils/TextButton';
 import { useMutation, useQuery } from '@tanstack/react-query';
+import { httpPost } from '../utils/querySetup';
+import ENDPOINTS from '../utils/ENDPOINT';
+import { useRouter } from 'expo-router';
 
 type SignupFormData = {
 	username: string;
@@ -12,7 +15,13 @@ type SignupFormData = {
 	confirmPassword: string;
 };
 
-export default function SignupForm() {
+type Props = {
+	setVisible: (visible: boolean) => void;
+	setMessage: (message: string) => void;
+};
+
+export default function SignupForm({ setVisible, setMessage }: Props) {
+	const router = useRouter();
 	const colors = useThemeColors();
 
 	const { mutate: submitSignup, isPending } = useMutation<
@@ -21,29 +30,31 @@ export default function SignupForm() {
 		SignupFormData
 	>({
 		mutationFn: async (formData) => {
-			const response = await fetch('http://10.0.2.2:8080/user/signup', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(formData),
-			});
+			const response = await httpPost(ENDPOINTS.auth.signup, formData);
 
 			if (!response.ok) {
-				// Récupérer le message d'erreur en texte brut
 				const errorMessage = await response.text();
 				throw new Error(errorMessage || "Échec de l'inscription");
 			}
 
-			// Seulement parser comme JSON si la réponse est réussie
 			const data = await response.json();
+
 			return data;
 		},
 		onSuccess: (data) => {
 			console.log('Inscription réussie', data);
+			setVisible(true);
+			setMessage('Inscription réussie ! Bienvenue sur Tempos.');
+			setTimeout(() => {
+				router.push('/screens/auth/Login');
+			}, 2000);
 		},
 		onError: (error) => {
 			console.error("Erreur d'inscription:", error);
+			setVisible(true);
+			setMessage(
+				error.message || "Échec de l'inscription. Veuillez réessayer."
+			);
 		},
 	});
 

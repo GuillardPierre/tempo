@@ -3,9 +3,13 @@ import TextButton from '@/app/components/utils/TextButton';
 import ThemedText from '@/app/components/utils/ThemedText';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import { Snackbar } from 'react-native-paper';
 
 export default function Signup() {
+	const [visible, setVisible] = useState(false);
+	const [message, setMessage] = useState('');
 	const colors = useThemeColors();
 	const router = useRouter();
 
@@ -27,7 +31,7 @@ export default function Signup() {
 				du compte possible à tout moment.
 			</ThemedText>
 
-			<SignupForm />
+			<SignupForm setVisible={setVisible} setMessage={setMessage} />
 			<TextButton
 				style={styles.button}
 				onPress={() => {
@@ -36,6 +40,9 @@ export default function Signup() {
 				}}
 				text='Déjà un compte ?'
 			/>
+			<Snackbar visible={visible} onDismiss={() => setVisible(false)}>
+				{message}
+			</Snackbar>
 		</SafeAreaView>
 	);
 }
