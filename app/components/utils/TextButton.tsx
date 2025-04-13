@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import ThemedText from './ThemedText';
 import { ActivityIndicator } from 'react-native-paper';
+import { tuple } from 'zod';
 
 type Props = {
 	onPress: () => void;
@@ -28,8 +29,15 @@ export default function TextButton({ onPress, text, style, isPending }: Props) {
 			}}
 		>
 			<View style={styles.container}>
-				{isPending && <ActivityIndicator animating={true} />}
-				<ThemedText style={style}>{text}</ThemedText>
+				<ThemedText style={[style, styles.base]}>
+					{true && (
+						<ActivityIndicator
+							style={{ transform: [{ translateY: 4 }], paddingRight: 5 }}
+							animating={true}
+						/>
+					)}
+					{text}
+				</ThemedText>
 			</View>
 		</Pressable>
 	);
@@ -41,5 +49,10 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		gap: 10,
+	},
+	base: {
+		display: 'flex',
+		justifyContent: 'center',
+		alignItems: 'center',
 	},
 });

@@ -1,19 +1,14 @@
 import { useThemeColors } from '@/app/hooks/useThemeColors';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { Formik } from 'formik';
 import CustomTextInput from '@/app/forms/utils/CustomTextInput';
 import TextButton from '../utils/TextButton';
-import { useMutation, useQuery } from '@tanstack/react-query';
+import { useMutation } from '@tanstack/react-query';
 import { httpPost } from '../utils/querySetup';
 import ENDPOINTS from '../utils/ENDPOINT';
 import { useRouter } from 'expo-router';
-
-type SignupFormData = {
-	username: string;
-	email: string;
-	password: string;
-	confirmPassword: string;
-};
+import { signupFormSchema, SignupFormData } from '@/app/schema/signup';
+import { toFormikValidationSchema } from 'zod-formik-adapter';
 
 type Props = {
 	setVisible: (visible: boolean) => void;
@@ -38,7 +33,6 @@ export default function SignupForm({ setVisible, setMessage }: Props) {
 			}
 
 			const data = await response.json();
-
 			return data;
 		},
 		onSuccess: (data) => {
@@ -66,42 +60,76 @@ export default function SignupForm({ setVisible, setMessage }: Props) {
 				password: '',
 				confirmPassword: '',
 			}}
+			validationSchema={toFormikValidationSchema(signupFormSchema)}
 			onSubmit={(values) => {
 				submitSignup(values);
 			}}
 		>
-			{({ handleChange, handleBlur, handleSubmit, values }) => (
+			{({
+				handleChange,
+				handleBlur,
+				handleSubmit,
+				values,
+				errors,
+				touched,
+			}) => (
 				<>
 					<CustomTextInput
 						name='username'
 						label="Nom d'utilisateur"
 						placeholder="Nom d'utilisateur"
 						onChangeText={handleChange('username')}
+						onBlur={() => handleBlur('username')}
 						value={values.username}
+						error={
+							touched.username && errors.username ? errors.username : undefined
+						}
 					/>
+
 					<CustomTextInput
 						name='email'
 						label='Adresse email'
 						placeholder='Adresse email'
 						onChangeText={handleChange('email')}
+						onBlur={() => handleBlur('email')}
 						value={values.email}
+						error={touched.email && errors.email ? errors.email : undefined}
 					/>
+
 					<CustomTextInput
 						name='password'
 						label='Mot de passe'
 						placeholder='Mot de passe'
 						onChangeText={handleChange('password')}
+						onBlur={() => handleBlur('password')}
 						value={values.password}
+						secureTextEntry={true}
+						error={
+							touched.password && errors.password ? errors.password : undefined
+						}
 					/>
+
 					<CustomTextInput
 						name='confirmPassword'
 						label='Confirmez votre mot de passe'
 						placeholder='Confirmez votre mot de passe'
 						onChangeText={handleChange('confirmPassword')}
+						onBlur={() => handleBlur('confirmPassword')}
 						value={values.confirmPassword}
+						secureTextEntry={true}
+						error={
+							touched.confirmPassword && errors.confirmPassword
+								? errors.confirmPassword
+								: undefined
+						}
 					/>
+
 					<View style={[styles.button, { backgroundColor: colors.secondary }]}>
-						<TextButton onPress={handleSubmit} text='Créer un compte' />
+						<TextButton
+							onPress={handleSubmit}
+							text='Créer un compte'
+							isPending={isPending}
+						/>
 					</View>
 				</>
 			)}

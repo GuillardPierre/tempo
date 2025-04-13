@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useEffect, useState } from 'react';
 
 export const useIndex = () => {
 	const data = [
@@ -73,6 +74,19 @@ export const useIndex = () => {
 	const [blockToDelete, setBlockToDelete] = useState<number | null>(null);
 	const [timerIsOpen, setTimerIsOpen] = useState(false);
 	const [calendarIsOpen, setCalendarIsOpen] = useState(false);
+	const [isConnected, setIsConnected] = useState<boolean | null>(null);
+
+	useEffect(() => {
+		async function checkConnection() {
+			const value = await AsyncStorage.getItem('token');
+			if (value) {
+				setIsConnected(true);
+			} else {
+				setIsConnected(false);
+			}
+		}
+		checkConnection();
+	}, []);
 
 	return {
 		data,
@@ -88,5 +102,7 @@ export const useIndex = () => {
 		setTimerIsOpen,
 		calendarIsOpen,
 		setCalendarIsOpen,
+		isConnected,
+		setIsConnected,
 	};
 };

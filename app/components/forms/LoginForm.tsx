@@ -1,18 +1,22 @@
 import { useThemeColors } from '@/app/hooks/useThemeColors';
-import { Button, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
 import CustomTextInput from '@/app/forms/utils/CustomTextInput';
 import TextButton from '../utils/TextButton';
-import { useRouter } from 'expo-router';
+import { router } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
-import { ActivityIndicator } from 'react-native-paper';
+import { httpPost } from '../utils/querySetup';
+import ENDPOINTS from '../utils/ENDPOINT';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { toFormikValidationSchema } from 'zod-formik-adapter';
+import { loginSchema, LoginFormData } from '@/app/schema/login';
 
-type LoginFormData = {
-	email: string;
-	password: string;
+type Props = {
+	setVisible: (visible: boolean) => void;
+	setMessage: (message: string) => void;
 };
 
-export default function LoginForm() {
+export default function LoginForm({ setVisible, setMessage }: Props) {
 	const colors = useThemeColors();
 
 	const { mutate: submitLogin, isPending } = useMutation<
@@ -21,17 +25,11 @@ export default function LoginForm() {
 		LoginFormData
 	>({
 		mutationFn: async (formData) => {
-			const response = await fetch('http://10.0.2.2:8080/user/login', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-				},
-				body: JSON.stringify(formData),
-			});
+			const response = await httpPost(ENDPOINTS.auth.login, formData);
 
 			if (!response.ok) {
 				const errorMessage = await response.text();
-				throw new Error(errorMessage || "Échec de l'inscription");
+				throw new Error(errorMessage || 'Échec de connexion');
 			}
 
 			const data = await response.json();
@@ -39,35 +37,58 @@ export default function LoginForm() {
 		},
 		onSuccess: (data) => {
 			console.log('Connexion réussie', data);
+			AsyncStorage.setItem('token', data.token || '123');
+			AsyncStorage.setItem('refreshToken', data.refreshToken || '');
+			setVisible(true);
+			setMessage('Connexion réussie ! Bienvenue sur Tempos.');
+			setTimeout(() => {
+				router.replace('/');
+			}, 2000);
 		},
 		onError: (error) => {
 			console.error('Erreur de connexion:', error);
+			setVisible(true);
+			setMessage(error.message || 'Échec de connexion. Veuillez réessayer.');
 		},
 	});
 
 	return (
 		<Formik
 			initialValues={{ email: '', password: '' }}
+			validationSchema={toFormikValidationSchema(loginSchema)}
 			onSubmit={(values) => {
-				console.log('LoginForm values:', values);
 				submitLogin(values);
 			}}
 		>
-			{({ handleChange, handleBlur, handleSubmit, values }) => (
+			{({
+				handleChange,
+				handleBlur,
+				handleSubmit,
+				values,
+				errors,
+				touched,
+			}) => (
 				<>
 					<CustomTextInput
 						name='email'
 						label='Adresse email'
 						placeholder='Adresse email'
 						onChangeText={handleChange('email')}
+						onBlur={() => handleBlur('email')}
 						value={values.email}
+						error={touched.email && errors.email ? errors.email : undefined}
 					/>
 					<CustomTextInput
 						name='password'
 						label='Mot de passe'
 						placeholder='Mot de passe'
 						onChangeText={handleChange('password')}
+						onBlur={() => handleBlur('password')}
 						value={values.password}
+						secureTextEntry={true}
+						error={
+							touched.password && errors.password ? errors.password : undefined
+						}
 					/>
 					<TextButton
 						style={[styles.button, { backgroundColor: colors.secondary }]}

@@ -3,9 +3,13 @@ import TextButton from '@/app/components/utils/TextButton';
 import ThemedText from '@/app/components/utils/ThemedText';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import { useRouter } from 'expo-router';
+import { useState } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import { Snackbar } from 'react-native-paper';
 
 export default function Login() {
+	const [visible, setVisible] = useState(false);
+	const [message, setMessage] = useState('');
 	const colors = useThemeColors();
 	const router = useRouter();
 
@@ -28,7 +32,7 @@ export default function Login() {
 				l'année
 			</ThemedText>
 
-			<LoginForm />
+			<LoginForm setMessage={setMessage} setVisible={setVisible} />
 
 			<TextButton
 				style={styles.button}
@@ -37,6 +41,9 @@ export default function Login() {
 				}}
 				text='Pas encore de compte ?'
 			/>
+			<Snackbar visible={visible} onDismiss={() => setVisible(false)}>
+				{message}
+			</Snackbar>
 		</SafeAreaView>
 	);
 }
