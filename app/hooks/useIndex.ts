@@ -1,73 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
+import { get } from 'react-native/Libraries/TurboModule/TurboModuleRegistry';
+import { httpGet } from '../components/utils/querySetup';
+import ENDPOINTS from '../components/utils/ENDPOINT';
 
 export const useIndex = () => {
-	const data = [
-		{
-			type: 'time',
-			text: 'Sleep',
-			startTime: '08:00',
-			endTime: '09:00',
-			duration: '1h',
-		},
-		{
-			type: 'time',
-			text: 'Work',
-			startTime: '09:00',
-			endTime: '10:00',
-			duration: '1h',
-		},
-		{
-			type: 'time',
-			text: 'Work',
-			startTime: '10:00',
-			endTime: '11:00',
-			duration: '1h',
-		},
-		{
-			type: 'time',
-			text: 'Work',
-			startTime: '11:00',
-			endTime: '12:00',
-			duration: '1h',
-		},
-		{
-			type: 'time',
-			text: 'Work',
-			startTime: '12:00',
-			endTime: '13:00',
-			duration: '1h',
-		},
-		{
-			type: 'time',
-			text: 'Work',
-			startTime: '13:00',
-			endTime: '14:00',
-			duration: '1h',
-		},
-		{
-			type: 'time',
-			text: 'Work',
-			startTime: '14:00',
-			endTime: '15:00',
-			duration: '1h',
-		},
-		{
-			type: 'time',
-			text: 'Work',
-			startTime: '15:00',
-			endTime: '16:00',
-			duration: '1h',
-		},
-		{
-			type: 'time',
-			text: 'Work',
-			startTime: '16:00',
-			endTime: '17:00',
-			duration: '1h',
-		},
-	];
-
 	const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 	const [modalVisible, setModalVisible] = useState(false);
 	const [modalType, setModalType] = useState<'menu' | 'delete'>('menu');
@@ -75,12 +12,24 @@ export const useIndex = () => {
 	const [timerIsOpen, setTimerIsOpen] = useState(false);
 	const [calendarIsOpen, setCalendarIsOpen] = useState(false);
 	const [isConnected, setIsConnected] = useState<boolean | null>(null);
+	const [worktimes, setWorktimes] = useState<
+		{
+			category: {
+				id: string;
+				name: string;
+			};
+			startTime: string;
+			endTime: string;
+			duration: number;
+		}[]
+	>([]);
 
 	useEffect(() => {
 		async function checkConnection() {
 			const value = await AsyncStorage.getItem('token');
 			if (value) {
 				setIsConnected(true);
+				getWorktimes();
 			} else {
 				setIsConnected(false);
 			}
@@ -88,8 +37,22 @@ export const useIndex = () => {
 		checkConnection();
 	}, []);
 
+	const getWorktimes = async () => {
+		try {
+			const rep = await httpGet(`${ENDPOINTS.worktime.root}user`);
+			console.log('rep:', rep);
+			if (rep.ok) {
+				const data = await rep.json();
+				console.log('data:', data);
+				setWorktimes(data);
+			}
+		} catch (error) {
+			console.log('erreur:', error);
+		}
+	};
+
 	return {
-		data,
+		worktimes,
 		date,
 		setDate,
 		modalVisible,

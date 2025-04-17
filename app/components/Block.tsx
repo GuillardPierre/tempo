@@ -8,9 +8,9 @@ import CustomChip from './utils/CustomChip';
 type Props = {
 	type: 'time' | 'button';
 	text: string;
-	duration?: string;
-	startTime?: string;
-	endTime?: string;
+	duration: number;
+	startTime: string;
+	endTime: string;
 	setModalType: (type: 'menu' | 'delete') => void;
 	setModalVisible: (visible: boolean) => void;
 	setBlockToDelete: (block: number) => void;
@@ -27,13 +27,29 @@ export default function Block({
 	setBlockToDelete,
 }: Props) {
 	const colors = useThemeColors();
+	const convertTime = (time: string) => {
+		const date = new Date(time);
+		const hours = date.getHours().toString().padStart(2, '0');
+		const minutes = date.getMinutes().toString().padStart(2, '0');
+		return `${hours}:${minutes}`;
+	};
+
+	const convertDuration = (duration: number) => {
+		const hours = Math.floor(duration / 60);
+		if (hours > 0) {
+			return `${hours}:${duration % 60 < 10 ? '0' : ''}${duration % 60}`;
+		} else {
+			return `0:${duration % 60 < 10 ? '0' : ''}${duration}`;
+		}
+	};
+
 	return (
 		<View style={[styles.container, { backgroundColor: colors.primaryLight }]}>
 			{type === 'time' && (
 				<View style={styles.timeContainer}>
-					<ThemedText>{startTime}</ThemedText>
+					<ThemedText>{convertTime(startTime)}</ThemedText>
 					<View style={styles.separator} />
-					<ThemedText>{endTime}</ThemedText>
+					<ThemedText>{convertTime(endTime)}</ThemedText>
 				</View>
 			)}
 			<ThemedText style={styles.mainText} variant='header2' color='primaryText'>
@@ -41,7 +57,7 @@ export default function Block({
 			</ThemedText>
 			{type === 'time' && (
 				<>
-					<CustomChip>{duration}</CustomChip>
+					<CustomChip>{convertDuration(duration)}</CustomChip>
 					<Pressable
 						onPress={() => {
 							Vibration.vibrate(50);

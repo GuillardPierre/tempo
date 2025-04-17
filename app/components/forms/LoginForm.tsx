@@ -37,7 +37,7 @@ export default function LoginForm({ setVisible, setMessage }: Props) {
 		},
 		onSuccess: (data) => {
 			console.log('Connexion réussie', data);
-			AsyncStorage.setItem('token', data.token || '123');
+			AsyncStorage.setItem('token', data.token);
 			AsyncStorage.setItem('refreshToken', data.refreshToken || '');
 			setVisible(true);
 			setMessage('Connexion réussie ! Bienvenue sur Tempos.');

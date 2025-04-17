@@ -2,7 +2,7 @@ import { StatusBar, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { Redirect } from 'expo-router';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useIndex } from '@/app/hooks/useIndex';
 import Header from '@/app/components/Header';
 import DateDisplay from '@/app/components/DateDisplay';
@@ -15,11 +15,14 @@ import ModalMenu from '@/app/components/Modal';
 import Menu from '@/app/components/ModalComponents/Menu';
 import DeleteBlock from '@/app/components/ModalComponents/DeleteBlock';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
+import { decodedToken } from '@/app/components/utils/querySetup';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { jwtDecode } from 'jwt-decode';
 
 export default function Homepage() {
 	const colors = useThemeColors();
 	const {
-		data,
+		worktimes,
 		date,
 		setDate,
 		modalVisible,
@@ -33,7 +36,17 @@ export default function Homepage() {
 		calendarIsOpen,
 		setCalendarIsOpen,
 		isConnected,
+		setIsConnected,
 	} = useIndex();
+
+	useEffect(() => {
+		AsyncStorage.getItem('token').then((token) => {
+			console.log('token réel:', token);
+			if (token) {
+				console.log('decoded token', jwtDecode(token));
+			}
+		});
+	}, []);
 
 	if (isConnected === null) {
 		<Redirect href={'/screens/auth/Login'} />;
@@ -60,21 +73,25 @@ export default function Homepage() {
 					<Calendar date={date} setDate={setDate} />
 				</MainWrapper>
 				<MainWrapper>
-					{data.map((block, index) => (
+					{worktimes.map((worktime, index) => (
 						<Block
 							key={index}
-							type={block.type as 'time' | 'button'}
-							text={block.text}
-							startTime={block.startTime}
-							endTime={block.endTime}
-							duration={block.duration}
+							type={'time'}
+							text={worktime.category.name}
+							startTime={worktime.startTime}
+							endTime={worktime.endTime}
+							duration={worktime.duration}
 							setModalType={setModalType}
 							setModalVisible={setModalVisible}
 							setBlockToDelete={setBlockToDelete}
 						/>
 					))}
 				</MainWrapper>
-				<MainWrapper isOpen={timerIsOpen} direction='bottom'>
+				<MainWrapper
+					isOpen={timerIsOpen}
+					direction='bottom'
+					flexGrow={timerIsOpen}
+				>
 					<TimerForm />
 				</MainWrapper>
 				<Footer
