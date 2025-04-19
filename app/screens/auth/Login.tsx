@@ -1,77 +1,78 @@
 import LoginForm from '@/app/components/forms/LoginForm';
+import CustomSnackBar from '@/app/components/utils/CustomSnackBar';
 import TextButton from '@/app/components/utils/TextButton';
 import ThemedText from '@/app/components/utils/ThemedText';
+import useSnackBar from '@/app/hooks/useSnackBar';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import { useRouter } from 'expo-router';
-import { useState } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
-import { Snackbar } from 'react-native-paper';
 
 export default function Login() {
-	const [visible, setVisible] = useState(false);
-	const [message, setMessage] = useState('');
-	const colors = useThemeColors();
-	const router = useRouter();
+  const colors = useThemeColors();
+  const router = useRouter();
+  const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
-	return (
-		<SafeAreaView
-			style={[
-				styles.container,
-				{
-					backgroundColor: colors.primary,
-				},
-			]}
-		>
-			<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
-			<ThemedText variant='header1' color='primaryText'>
-				Bienvenue sur Tempos
-			</ThemedText>
+  return (
+    <SafeAreaView
+      style={[
+        styles.container,
+        {
+          backgroundColor: colors.primary,
+        },
+      ]}
+    >
+      <StatusBar backgroundColor={colors.primary} barStyle='light-content' />
+      <ThemedText variant='header1' color='primaryText'>
+        Bienvenue sur Tempos
+      </ThemedText>
 
-			<ThemedText style={styles.header} variant='body' color='primaryText'>
-				Gérez votre temps efficacement avec un suivi statistique tout au long de
-				l'année
-			</ThemedText>
+      <ThemedText style={styles.header} variant='body' color='primaryText'>
+        Gérez votre temps efficacement avec un suivi statistique tout au long de
+        l'année
+      </ThemedText>
+      <LoginForm setSnackBar={setSnackBar} />
 
-			<LoginForm setMessage={setMessage} setVisible={setVisible} />
-
-			<TextButton
-				style={styles.button}
-				onPress={() => {
-					router.push('/screens/auth/Signup');
-				}}
-				text='Pas encore de compte ?'
-			/>
-			<Snackbar visible={visible} onDismiss={() => setVisible(false)}>
-				{message}
-			</Snackbar>
-		</SafeAreaView>
-	);
+      <TextButton
+        style={styles.button}
+        onPress={() => {
+          router.push('/screens/auth/Signup');
+        }}
+        text='Pas encore de compte ?'
+      />
+      <CustomSnackBar
+        color={color}
+        message={message}
+        open={open}
+        setOpen={setOpen}
+      />
+    </SafeAreaView>
+  );
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		padding: 20,
-	},
-	header: {
-		fontSize: 18,
-		textAlign: 'center',
-		marginBlock: 20,
-	},
-	link: {
-		fontWeight: 'bold',
-		fontSize: 16,
-		padding: 10,
-		borderRadius: 5,
-		textDecorationLine: 'underline',
-		marginTop: 20,
-	},
-	button: {
-		backgroundColor: '#007BFF',
-		padding: 10,
-		borderRadius: 5,
-		marginTop: 20,
-	},
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20,
+  },
+  header: {
+    fontSize: 18,
+    textAlign: 'center',
+    marginBlock: 20,
+  },
+  link: {
+    fontWeight: 'bold',
+    fontSize: 16,
+    padding: 10,
+    borderRadius: 5,
+    textDecorationLine: 'underline',
+    marginTop: 20,
+  },
+  button: {
+    backgroundColor: '#007BFF',
+    padding: 10,
+    borderRadius: 5,
+    marginTop: 20,
+  },
 });
