@@ -11,6 +11,10 @@ const ENDPOINTS = {
 		root: 'worktime/',
 		create: 'worktime/create',
 	},
+	category: {
+		root: 'category/',
+		create: 'category/create',
+	},
 };
 
 export default ENDPOINTS;

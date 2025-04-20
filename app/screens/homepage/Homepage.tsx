@@ -1,7 +1,7 @@
 import { StatusBar, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect } from 'expo-router';
-import React, { useEffect } from 'react';
+import React from 'react';
 import { useIndex } from '@/app/hooks/useIndex';
 import Header from '@/app/components/Header';
 import DateDisplay from '@/app/components/DateDisplay';
@@ -14,8 +14,6 @@ import ModalMenu from '@/app/components/Modal';
 import Menu from '@/app/components/ModalComponents/Menu';
 import DeleteBlock from '@/app/components/ModalComponents/DeleteBlock';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { jwtDecode } from 'jwt-decode';
 import CustomSnackBar from '@/app/components/utils/CustomSnackBar';
 import useSnackBar from '@/app/hooks/useSnackBar';
 
@@ -23,6 +21,7 @@ export default function Homepage() {
   const colors = useThemeColors();
   const {
     worktimes,
+    categories,
     date,
     setDate,
     modalVisible,
@@ -38,18 +37,10 @@ export default function Homepage() {
     isConnected,
     setIsConnected,
     setWorktimes,
+    setCategories,
   } = useIndex();
 
   const { color, open, message, setOpen, setSnackBar } = useSnackBar();
-
-  useEffect(() => {
-    AsyncStorage.getItem('token').then((token) => {
-      console.log('token réel:', token);
-      if (token) {
-        console.log('decoded token', jwtDecode(token));
-      }
-    });
-  }, []);
 
   if (isConnected === null) {
     <Redirect href={'/screens/auth/Login'} />;
@@ -99,6 +90,8 @@ export default function Homepage() {
             setSnackBar={setSnackBar}
             setTimerIsOpen={setTimerIsOpen}
             setWorktimes={setWorktimes}
+            categories={categories}
+            setCategories={setCategories}
           />
         </MainWrapper>
         <Footer

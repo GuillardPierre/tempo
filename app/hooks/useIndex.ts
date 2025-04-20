@@ -22,32 +22,18 @@ export const useIndex = () => {
       duration: number;
     }[]
   >([]);
+  const [categories, setCategories] = useState<
+    {
+      id: number;
+      name: string;
+    }[]
+  >([]);
 
-  const getCurrentDateTime = (): string => {
-    return new Date().toISOString().slice(0, 16);
-  };
-
-  const [currentDateTime, setCurrentDateTime] = useState(getCurrentDateTime());
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setCurrentDateTime(getCurrentDateTime());
-    }, 60000); // Update every minute
-
-    return () => clearInterval(timer);
-  }, []);
+  console.log('CATEGORIES', categories);
 
   useEffect(() => {
-    async function checkConnection() {
-      const value = await AsyncStorage.getItem('token');
-      if (value) {
-        setIsConnected(true);
-        getWorktimes();
-      } else {
-        setIsConnected(false);
-      }
-    }
     checkConnection();
+    getCategrories();
   }, []);
 
   // Nouvel useEffect pour déclencher getWorktimes à chaque changement de date
@@ -57,14 +43,35 @@ export const useIndex = () => {
     }
   }, [date]);
 
+  async function checkConnection() {
+    const value = await AsyncStorage.getItem('token');
+    if (value) {
+      setIsConnected(true);
+      getWorktimes();
+    } else {
+      setIsConnected(false);
+    }
+  }
+
   const getWorktimes = async () => {
     try {
       const rep = await httpGet(`${ENDPOINTS.worktime.root}user/${date}`);
       console.log('rep:', rep);
       if (rep.ok) {
         const data = await rep.json();
-        console.log('data:', data);
         setWorktimes(data);
+      }
+    } catch (error) {
+      console.log('erreur:', error);
+    }
+  };
+
+  const getCategrories = async () => {
+    try {
+      const rep = await httpGet(`${ENDPOINTS.category.root}`);
+      if (rep.ok) {
+        const data = await rep.json();
+        setCategories(data);
       }
     } catch (error) {
       console.log('erreur:', error);
@@ -73,6 +80,7 @@ export const useIndex = () => {
 
   return {
     worktimes,
+    categories,
     date,
     setDate,
     modalVisible,
@@ -88,5 +96,6 @@ export const useIndex = () => {
     isConnected,
     setIsConnected,
     setWorktimes,
+    setCategories,
   };
 };

@@ -1,5 +1,5 @@
 import { Vibration, View, Text, StyleSheet } from 'react-native';
-import React from 'react';
+import React, { useEffect } from 'react';
 import CustomAutocomplete from './utils/CustomAutoComplete';
 import ButtonMenu from '../components/ButtonMenu';
 import TimePickerInput from './utils/TimePickerInput';
@@ -24,6 +24,12 @@ interface CategoryData {
   title: string;
 }
 
+// Interface pour les catégories provenant du backend
+interface BackendCategory {
+  id: number;
+  name: string;
+}
+
 // Interface pour les récurrences iCalendar
 interface RecurrenceRule {
   freq: string;
@@ -33,17 +39,44 @@ interface RecurrenceRule {
 type Props = {
   setSnackBar: (type: 'error' | 'info', message: string) => void;
   setTimerIsOpen: (isOpen: boolean) => void;
-  setWorktimes: (worktimes: any) => void;
+  setWorktimes?: (worktimes: any[]) => void;
+  categories?: BackendCategory[];
+  setCategories?: (categories: BackendCategory[]) => void;
 };
 
 export default function TimerForm({
   setSnackBar,
   setTimerIsOpen,
   setWorktimes,
+  categories = [],
+  setCategories,
 }: Props) {
   const colors = useThemeColors();
   const [endIsDefine, setEndIsDefine] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
+  // Transformer les catégories du backend pour qu'elles soient compatibles avec CustomAutocomplete
+  const [autocompleteData, setAutocompleteData] = useState<CategoryData[]>([]);
+
+  // Convertir les catégories backend en format compatible avec l'autocomplete
+  useEffect(() => {
+    if (categories && categories.length > 0) {
+      const formattedCategories: CategoryData[] = categories.map((cat) => ({
+        id: String(cat.id), // Convertir l'id numérique en string
+        title: cat.name,
+      }));
+      setAutocompleteData(formattedCategories);
+    }
+  }, [categories]);
+
+  // Fonction pour gérer la création réussie d'une nouvelle catégorie
+  const handleCategoryCreated = (category: BackendCategory) => {
+    // Mettre à jour la liste des catégories si setCategories est disponible
+    if (setCategories) {
+      setCategories([...categories, category]);
+    }
+    // Afficher un message de succès
+    setSnackBar('info', `Catégorie "${category.name}" créée avec succès`);
+  };
 
   // Jours de la semaine pour les récurrences (format iCalendar)
   const weekdays = [
@@ -111,19 +144,18 @@ export default function TimerForm({
       setSnackBar('info', 'Temps bien enregistré');
       setSelectedDays([]);
       setTimerIsOpen(false);
-      setWorktimes((prevWorktimes: any) => [
-        ...prevWorktimes,
-        {
-          id: data.id,
-          startTime: data.startTime,
-          endTime: data.endTime,
-          duration: data.duration,
-          category: {
-            id: data.category.id,
-            name: data.category.name,
-          },
-        },
-      ]);
+      // Si setWorktimes est défini, mettre à jour les worktimes après succès
+      if (setWorktimes && data.worktimes) {
+        setWorktimes(data.worktimes);
+      }
+      // Si une nouvelle catégorie a été créée et que setCategories est défini
+      if (
+        setCategories &&
+        data.category &&
+        !categories.find((cat) => cat.id === data.category.id)
+      ) {
+        setCategories([...categories, data.category]);
+      }
     },
     onError: (error: Error) => {
       console.error('Error submitting timer:', error);
@@ -186,6 +218,8 @@ export default function TimerForm({
             }}
           >
             <CustomAutocomplete
+              label='Choisissez une activité :'
+              initialData={autocompleteData}
               onSelectItem={(item: ExtendedAutocompleteItem | null) => {
                 if (item) {
                   // Si c'est une nouvelle catégorie avec realTitle, utiliser cette valeur
@@ -208,7 +242,7 @@ export default function TimerForm({
                   title: text,
                 });
               }}
-              label='Choisissez une activité :'
+              onCategoryCreated={handleCategoryCreated}
             />
             <View
               style={{
