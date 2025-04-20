@@ -37,6 +37,7 @@ export default function Homepage() {
     setCalendarIsOpen,
     isConnected,
     setIsConnected,
+    setWorktimes,
   } = useIndex();
 
   const { color, open, message, setOpen, setSnackBar } = useSnackBar();
@@ -97,6 +98,7 @@ export default function Homepage() {
           <TimerForm
             setSnackBar={setSnackBar}
             setTimerIsOpen={setTimerIsOpen}
+            setWorktimes={setWorktimes}
           />
         </MainWrapper>
         <Footer

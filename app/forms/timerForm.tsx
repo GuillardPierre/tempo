@@ -33,9 +33,14 @@ interface RecurrenceRule {
 type Props = {
   setSnackBar: (type: 'error' | 'info', message: string) => void;
   setTimerIsOpen: (isOpen: boolean) => void;
+  setWorktimes: (worktimes: any) => void;
 };
 
-export default function TimerForm({ setSnackBar, setTimerIsOpen }: Props) {
+export default function TimerForm({
+  setSnackBar,
+  setTimerIsOpen,
+  setWorktimes,
+}: Props) {
   const colors = useThemeColors();
   const [endIsDefine, setEndIsDefine] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
@@ -50,6 +55,17 @@ export default function TimerForm({ setSnackBar, setTimerIsOpen }: Props) {
     { label: 'Sam', value: 'SA' },
     { label: 'Dim', value: 'SU' },
   ];
+
+  // Fonction pour formater la date au format YYYY-MM-DDThh:mm
+  const formatISODate = (date: Date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${year}-${month}-${day}T${hours}:${minutes}`;
+  };
 
   // Gérer la sélection de jour
   const toggleDaySelection = (dayValue: string) => {
@@ -95,6 +111,19 @@ export default function TimerForm({ setSnackBar, setTimerIsOpen }: Props) {
       setSnackBar('info', 'Temps bien enregistré');
       setSelectedDays([]);
       setTimerIsOpen(false);
+      setWorktimes((prevWorktimes: any) => [
+        ...prevWorktimes,
+        {
+          id: data.id,
+          startTime: data.startTime,
+          endTime: data.endTime,
+          duration: data.duration,
+          category: {
+            id: data.category.id,
+            name: data.category.name,
+          },
+        },
+      ]);
     },
     onError: (error: Error) => {
       console.error('Error submitting timer:', error);
@@ -118,9 +147,16 @@ export default function TimerForm({ setSnackBar, setTimerIsOpen }: Props) {
           recurrence: undefined as RecurrenceRule | undefined,
         }}
         onSubmit={(values) => {
+          console.log('VALEURS FORM', values);
+          // Formater les dates au format ISO personnalisé
+          const formattedStartTime = formatISODate(values.startTime);
+          const formattedEndTime = formatISODate(values.endTime);
+
           // Assurer que les nouvelles catégories ont bien un ID null
           const submissionValues = {
             ...values,
+            startTime: formattedStartTime,
+            endTime: formattedEndTime,
             category: {
               ...values.category,
               id: isNewCategory(values.category.id) ? null : values.category.id,

@@ -22,10 +22,10 @@ export default function TimePickerInput({ label, value, onChange }: Props) {
   };
 
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('fr-FR', {
-      hour: '2-digit',
-      minute: '2-digit',
-    });
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+
+    return `${hours}:${minutes}`;
   };
 
   return (
@@ -63,6 +63,7 @@ export default function TimePickerInput({ label, value, onChange }: Props) {
           mode='time'
           is24Hour={true}
           onChange={onTimeChange}
+          display={Platform.OS === 'ios' ? 'spinner' : 'default'}
         />
       )}
     </View>
