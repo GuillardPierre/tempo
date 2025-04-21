@@ -29,8 +29,6 @@ export const useIndex = () => {
     }[]
   >([]);
 
-  console.log('CATEGORIES', categories);
-
   useEffect(() => {
     checkConnection();
     getCategrories();
@@ -56,7 +54,6 @@ export const useIndex = () => {
   const getWorktimes = async () => {
     try {
       const rep = await httpGet(`${ENDPOINTS.worktime.root}user/${date}`);
-      console.log('rep:', rep);
       if (rep.ok) {
         const data = await rep.json();
         setWorktimes(data);
@@ -68,7 +65,7 @@ export const useIndex = () => {
 
   const getCategrories = async () => {
     try {
-      const rep = await httpGet(`${ENDPOINTS.category.root}`);
+      const rep = await httpGet(`${ENDPOINTS.category.root}all`);
       if (rep.ok) {
         const data = await rep.json();
         setCategories(data);

@@ -12,25 +12,23 @@ import ENDPOINTS from '../components/utils/ENDPOINT';
 import { AutocompleteDropdownItem } from 'react-native-autocomplete-dropdown';
 import { useThemeColors } from '../hooks/useThemeColors';
 import { Pressable } from 'react-native';
+import { z } from 'zod';
+import { createWorkTimeSchema } from '../schema/createWorkTime';
 
-// Interface étendue pour inclure la propriété realTitle
 interface ExtendedAutocompleteItem extends AutocompleteDropdownItem {
   realTitle?: string;
 }
 
-// Interface pour la structure de données de catégorie
 interface CategoryData {
   id: string | null;
   title: string;
 }
 
-// Interface pour les catégories provenant du backend
 interface BackendCategory {
   id: number;
   name: string;
 }
 
-// Interface pour les récurrences iCalendar
 interface RecurrenceRule {
   freq: string;
   byDay?: string[];
@@ -39,9 +37,13 @@ interface RecurrenceRule {
 type Props = {
   setSnackBar: (type: 'error' | 'info', message: string) => void;
   setTimerIsOpen: (isOpen: boolean) => void;
-  setWorktimes?: (worktimes: any[]) => void;
+  setWorktimes?: (worktimes: any[] | ((prevWorktimes: any[]) => any[])) => void;
   categories?: BackendCategory[];
-  setCategories?: (categories: BackendCategory[]) => void;
+  setCategories?: (
+    categories:
+      | BackendCategory[]
+      | ((prevCategories: BackendCategory[]) => BackendCategory[])
+  ) => void;
 };
 
 export default function TimerForm({
@@ -54,10 +56,8 @@ export default function TimerForm({
   const colors = useThemeColors();
   const [endIsDefine, setEndIsDefine] = useState(false);
   const [selectedDays, setSelectedDays] = useState<string[]>([]);
-  // Transformer les catégories du backend pour qu'elles soient compatibles avec CustomAutocomplete
   const [autocompleteData, setAutocompleteData] = useState<CategoryData[]>([]);
 
-  // Convertir les catégories backend en format compatible avec l'autocomplete
   useEffect(() => {
     if (categories && categories.length > 0) {
       const formattedCategories: CategoryData[] = categories.map((cat) => ({
@@ -68,17 +68,13 @@ export default function TimerForm({
     }
   }, [categories]);
 
-  // Fonction pour gérer la création réussie d'une nouvelle catégorie
   const handleCategoryCreated = (category: BackendCategory) => {
-    // Mettre à jour la liste des catégories si setCategories est disponible
     if (setCategories) {
       setCategories([...categories, category]);
     }
-    // Afficher un message de succès
     setSnackBar('info', `Catégorie "${category.name}" créée avec succès`);
   };
 
-  // Jours de la semaine pour les récurrences (format iCalendar)
   const weekdays = [
     { label: 'Lun', value: 'MO' },
     { label: 'Mar', value: 'TU' },
@@ -89,18 +85,8 @@ export default function TimerForm({
     { label: 'Dim', value: 'SU' },
   ];
 
-  // Fonction pour formater la date au format YYYY-MM-DDThh:mm
-  const formatISODate = (date: Date) => {
-    const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
+  const formatISODate = (date: Date) => date.toISOString().slice(0, 16);
 
-    return `${year}-${month}-${day}T${hours}:${minutes}`;
-  };
-
-  // Gérer la sélection de jour
   const toggleDaySelection = (dayValue: string) => {
     setSelectedDays((prevSelectedDays) => {
       if (prevSelectedDays.includes(dayValue)) {
@@ -113,7 +99,6 @@ export default function TimerForm({
     });
   };
 
-  // Construire la règle de récurrence au format iCalendar
   const buildRecurrenceRule = (): RecurrenceRule | undefined => {
     if (selectedDays.length === 0) {
       return undefined;
@@ -145,8 +130,8 @@ export default function TimerForm({
       setSelectedDays([]);
       setTimerIsOpen(false);
       // Si setWorktimes est défini, mettre à jour les worktimes après succès
-      if (setWorktimes && data.worktimes) {
-        setWorktimes(data.worktimes);
+      if (setWorktimes && data) {
+        setWorktimes((prevData: any[]) => [...prevData, data]);
       }
       // Si une nouvelle catégorie a été créée et que setCategories est défini
       if (
@@ -198,7 +183,7 @@ export default function TimerForm({
           submitWorktime(submissionValues);
           console.log('Valeurs soumises:', submissionValues);
         }}
-        validationSchema={null}
+        validationSchema={createWorkTimeSchema(endIsDefine)}
       >
         {({
           handleChange,
@@ -244,6 +229,16 @@ export default function TimerForm({
               }}
               onCategoryCreated={handleCategoryCreated}
             />
+            {touched.category &&
+              errors.category &&
+              typeof errors.category === 'object' &&
+              errors.category.title && (
+                <Text
+                  style={[styles.errorText, { color: colors.primary || 'red' }]}
+                >
+                  {errors.category.title}
+                </Text>
+              )}
             <View
               style={{
                 flexDirection: 'row',
@@ -279,6 +274,16 @@ export default function TimerForm({
                           setFieldValue('endTime', date);
                         }}
                       />
+                      {touched.endTime && errors.endTime && (
+                        <Text
+                          style={[
+                            styles.errorText,
+                            { color: colors.primary || 'red' },
+                          ]}
+                        >
+                          {errors.endTime as string}
+                        </Text>
+                      )}
                     </View>
                     <View style={{ width: '10%' }}>
                       <RoundButton
@@ -405,5 +410,11 @@ const styles = StyleSheet.create({
     display: 'flex',
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  errorText: {
+    fontSize: 12,
+    marginTop: 2,
+    marginBottom: 5,
+    paddingLeft: 5,
   },
 });

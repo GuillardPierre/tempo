@@ -10,8 +10,6 @@ import ENDPOINTS from '../utils/ENDPOINT';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { loginSchema, LoginFormData } from '@/app/schema/login';
-import { set } from 'zod';
-
 type Props = {
   setSnackBar: (type: 'error' | 'info', message: string) => void;
 };
@@ -25,6 +23,7 @@ export default function LoginForm({ setSnackBar }: Props) {
     LoginFormData
   >({
     mutationFn: async (formData) => {
+      AsyncStorage.clear();
       const response = await httpPost(ENDPOINTS.auth.login, formData);
 
       if (!response.ok) {
