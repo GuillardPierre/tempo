@@ -49,5 +49,9 @@ const styles = StyleSheet.create({
 		gap: 20,
 		paddingBlock: 10,
 		zIndex: 5,
+		marginInline: 10,
+		borderRadius: 16,
+		borderWidth: 2,
+		borderColor: '#8955FD',
 	},
 });

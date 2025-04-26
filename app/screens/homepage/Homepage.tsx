@@ -18,111 +18,111 @@ import CustomSnackBar from '@/app/components/utils/CustomSnackBar';
 import useSnackBar from '@/app/hooks/useSnackBar';
 
 export default function Homepage() {
-  const colors = useThemeColors();
-  const {
-    worktimes,
-    categories,
-    date,
-    setDate,
-    modalVisible,
-    setModalVisible,
-    modalType,
-    setModalType,
-    blockToDelete,
-    setBlockToDelete,
-    timerIsOpen,
-    setTimerIsOpen,
-    calendarIsOpen,
-    setCalendarIsOpen,
-    isConnected,
-    setIsConnected,
-    setWorktimes,
-    setCategories,
-  } = useIndex();
+	const colors = useThemeColors();
+	const {
+		worktimes,
+		categories,
+		date,
+		setDate,
+		modalVisible,
+		setModalVisible,
+		modalType,
+		setModalType,
+		blockToDelete,
+		setBlockToDelete,
+		timerIsOpen,
+		setTimerIsOpen,
+		calendarIsOpen,
+		setCalendarIsOpen,
+		isConnected,
+		setIsConnected,
+		setWorktimes,
+		setCategories,
+	} = useIndex();
 
-  const { color, open, message, setOpen, setSnackBar } = useSnackBar();
+	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
-  if (isConnected === null) {
-    <Redirect href={'/screens/auth/Login'} />;
-  }
+	if (isConnected === null) {
+		<Redirect href={'/screens/auth/Login'} />;
+	}
 
-  return (
-    <>
-      <SafeAreaView
-        style={[
-          styles.container,
-          {
-            backgroundColor: colors.primary,
-          },
-        ]}
-      >
-        <StatusBar backgroundColor={colors.primary} barStyle='light-content' />
-        <Header
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          setModalType={setModalType}
-        />
-        <DateDisplay date={date} setDate={setDate} />
-        <MainWrapper isOpen={calendarIsOpen} direction='top'>
-          <Calendar date={date} setDate={setDate} />
-        </MainWrapper>
-        <MainWrapper>
-          {worktimes.map((worktime, index) => (
-            <Block
-              key={index}
-              type={'time'}
-              text={worktime.category.name}
-              startTime={worktime.startTime}
-              endTime={worktime.endTime}
-              duration={worktime.duration}
-              setModalType={setModalType}
-              setModalVisible={setModalVisible}
-              setBlockToDelete={setBlockToDelete}
-            />
-          ))}
-        </MainWrapper>
-        <MainWrapper
-          isOpen={timerIsOpen}
-          direction='bottom'
-          flexGrow={timerIsOpen}
-        >
-          <TimerForm
-            setSnackBar={setSnackBar}
-            setTimerIsOpen={setTimerIsOpen}
-            setWorktimes={setWorktimes}
-            categories={categories}
-            setCategories={setCategories}
-          />
-        </MainWrapper>
-        <Footer
-          setTimerIsOpen={setTimerIsOpen}
-          timerIsOpen={timerIsOpen}
-          calendarIsOpen={calendarIsOpen}
-          setCalendarIsOpen={setCalendarIsOpen}
-        />
-        <ModalMenu
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-        >
-          {modalType === 'menu' ? (
-            <Menu setModalVisible={setModalVisible} />
-          ) : (
-            <DeleteBlock setModalVisible={setModalVisible} />
-          )}
-        </ModalMenu>
-        <CustomSnackBar
-          color={color}
-          message={message}
-          open={open}
-          setOpen={setOpen}
-        />
-      </SafeAreaView>
-    </>
-  );
+	return (
+		<>
+			<SafeAreaView
+				style={[
+					styles.container,
+					{
+						backgroundColor: colors.primary,
+					},
+				]}
+			>
+				<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
+				<Header
+					modalVisible={modalVisible}
+					setModalVisible={setModalVisible}
+					setModalType={setModalType}
+				/>
+				<DateDisplay date={date} setDate={setDate} />
+				<MainWrapper isOpen={calendarIsOpen} direction='top'>
+					<Calendar date={date} setDate={setDate} />
+				</MainWrapper>
+				<MainWrapper>
+					{worktimes.map((worktime, index) => (
+						<Block
+							key={index}
+							type={'time'}
+							text={worktime.categoryName}
+							startTime={worktime.startTime}
+							endTime={worktime.endTime}
+							duration={worktime.duration}
+							worktimeType={worktime.type}
+							setModalType={setModalType}
+							setModalVisible={setModalVisible}
+							setBlockToDelete={setBlockToDelete}
+						/>
+					))}
+				</MainWrapper>
+				<MainWrapper
+					isOpen={timerIsOpen}
+					direction='bottom'
+					flexGrow={timerIsOpen}
+				>
+					<TimerForm
+						setSnackBar={setSnackBar}
+						setTimerIsOpen={setTimerIsOpen}
+						setWorktimes={setWorktimes}
+						categories={categories}
+						setCategories={setCategories}
+					/>
+				</MainWrapper>
+				<Footer
+					setTimerIsOpen={setTimerIsOpen}
+					timerIsOpen={timerIsOpen}
+					calendarIsOpen={calendarIsOpen}
+					setCalendarIsOpen={setCalendarIsOpen}
+				/>
+				<ModalMenu
+					modalVisible={modalVisible}
+					setModalVisible={setModalVisible}
+				>
+					{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
+					{modalType === 'delete' && (
+						<DeleteBlock setModalVisible={setModalVisible} />
+					)}
+				</ModalMenu>
+				<CustomSnackBar
+					color={color}
+					message={message}
+					open={open}
+					setOpen={setOpen}
+				/>
+			</SafeAreaView>
+		</>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+	container: {
+		flex: 1,
+	},
 });

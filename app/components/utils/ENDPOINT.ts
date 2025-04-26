@@ -1,5 +1,3 @@
-import { create } from 'react-test-renderer';
-
 const ENDPOINTS = {
 	auth: {
 		login: 'user/login',
@@ -11,9 +9,16 @@ const ENDPOINTS = {
 		root: 'worktime/',
 		create: 'worktime/create',
 	},
+	woktimeSeries: {
+		root: 'worktimeseries/',
+		create: 'worktimeseries/create',
+	},
 	category: {
 		root: 'category/',
 		create: 'category/create',
+	},
+	schedule: {
+		root: 'schedule/',
 	},
 };
 

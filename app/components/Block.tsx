@@ -4,6 +4,7 @@ import React from 'react';
 import TrashIcon from './svg/trash';
 import ThemedText from './utils/ThemedText';
 import CustomChip from './utils/CustomChip';
+import BurgerMenuSvg from './svg/burgerMenu';
 
 type Props = {
 	type: 'time' | 'button';
@@ -11,6 +12,7 @@ type Props = {
 	duration: number;
 	startTime: string;
 	endTime: string;
+	worktimeType: 'SINGLE' | 'RECCURING';
 	setModalType: (type: 'menu' | 'delete') => void;
 	setModalVisible: (visible: boolean) => void;
 	setBlockToDelete: (block: number) => void;
@@ -22,6 +24,7 @@ export default function Block({
 	duration,
 	startTime,
 	endTime,
+	worktimeType,
 	setModalType,
 	setModalVisible,
 	setBlockToDelete,
@@ -44,7 +47,15 @@ export default function Block({
 	};
 
 	return (
-		<View style={[styles.container, { backgroundColor: colors.primaryLight }]}>
+		<View
+			style={[
+				styles.container,
+				{
+					backgroundColor:
+						worktimeType === 'SINGLE' ? colors.primaryLight : '#f7a94a',
+				},
+			]}
+		>
 			{type === 'time' && (
 				<View style={styles.timeContainer}>
 					<ThemedText>{convertTime(startTime)}</ThemedText>
@@ -66,7 +77,7 @@ export default function Block({
 							setBlockToDelete(0);
 						}}
 					>
-						<TrashIcon />
+						<BurgerMenuSvg />
 					</Pressable>
 				</>
 			)}
