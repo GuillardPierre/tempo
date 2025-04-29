@@ -1,68 +1,78 @@
-import { Modal, StyleSheet, View, Pressable, Vibration } from 'react-native';
+import { StyleSheet, View, ScrollView } from 'react-native';
+import { Portal, Modal } from 'react-native-paper';
+import { useThemeColors } from '../hooks/useThemeColors';
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+
+// Création d'un nouveau QueryClient spécifique pour les modales
+const modalQueryClient = new QueryClient();
 
 type Props = {
 	children: React.ReactNode;
 	modalVisible: boolean;
 	setModalVisible: (visible: boolean) => void;
+	disableScroll?: boolean; // Ajout d'une option pour désactiver le défilement
 };
 
 export default function ModalMenu({
 	children,
 	modalVisible,
 	setModalVisible,
+	disableScroll = false, // Par défaut, le scroll est activé
 }: Props) {
+	const colors = useThemeColors();
+
 	return (
-		<Modal
-			transparent
-			visible={modalVisible}
-			onRequestClose={() => setModalVisible(false)}
-			animationType='fade'
-			statusBarTranslucent
-			presentationStyle='overFullScreen'
-		>
-			<View style={StyleSheet.absoluteFill}>
-				<Pressable
-					style={[styles.overlay, StyleSheet.absoluteFill]}
-					onPress={() => {
-						Vibration.vibrate(50);
-						setModalVisible(false);
-					}}
-				>
-					<View style={[styles.modalContainer]}>
+		<Portal>
+			<Modal
+				visible={modalVisible}
+				onDismiss={() => setModalVisible(false)}
+				contentContainerStyle={styles.modalContainer}
+			>
+				<QueryClientProvider client={modalQueryClient}>
+					{disableScroll ? (
 						<View style={styles.modalContent}>{children}</View>
-					</View>
-				</Pressable>
-			</View>
-		</Modal>
+					) : (
+						<ScrollView
+							style={styles.scrollContainer}
+							contentContainerStyle={styles.scrollContent}
+							keyboardShouldPersistTaps='handled'
+							removeClippedSubviews={true}
+						>
+							<View style={styles.modalContent}>{children}</View>
+						</ScrollView>
+					)}
+				</QueryClientProvider>
+			</Modal>
+		</Portal>
 	);
 }
 
 const styles = StyleSheet.create({
-	overlay: {
-		flex: 1,
-		backgroundColor: 'rgba(0,0,0,0.5)',
-		justifyContent: 'center',
-		alignItems: 'center',
-	},
 	modalContainer: {
-		borderWidth: 7,
+		backgroundColor: '#FFF',
+		borderWidth: 5,
 		borderRadius: 8,
 		borderColor: '#FF8F33',
-		backgroundColor: '#FFF',
-		width: '90%',
-		height: '40%',
+		width: '95%',
+		maxHeight: '80%',
 		elevation: 5,
+		marginHorizontal: 'auto',
+		alignSelf: 'center',
+		overflow: 'visible',
+	},
+	scrollContainer: {
+		width: '100%',
+		flexGrow: 0,
+		overflow: 'visible',
+	},
+	scrollContent: {
+		flexGrow: 1,
+		padding: 10,
+		overflow: 'visible',
 	},
 	modalContent: {
-		flex: 1,
-		justifyContent: 'center',
-		alignItems: 'center',
-		gap: 10,
-	},
-	timerContainer: {
 		width: '100%',
-		height: '100%',
-		position: 'relative',
-		elevation: 6,
+		padding: 10,
+		overflow: 'visible',
 	},
 });

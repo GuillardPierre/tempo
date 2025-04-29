@@ -2,30 +2,20 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { httpGet } from '../components/utils/querySetup';
 import ENDPOINTS from '../components/utils/ENDPOINT';
+import { Category, Worktime } from '../types/worktime';
 
 export const useIndex = () => {
 	const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 	const [modalVisible, setModalVisible] = useState(false);
-	const [modalType, setModalType] = useState<'menu' | 'delete'>('menu');
-	const [blockToDelete, setBlockToDelete] = useState<number | null>(null);
+	const [modalType, setModalType] = useState<'menu' | 'update'>('menu');
 	const [timerIsOpen, setTimerIsOpen] = useState(false);
 	const [calendarIsOpen, setCalendarIsOpen] = useState(false);
 	const [isConnected, setIsConnected] = useState<boolean | null>(null);
-	const [worktimes, setWorktimes] = useState<
-		{
-			categoryName: string;
-			startTime: string;
-			endTime: string;
-			duration: number;
-			type: 'SINGLE' | 'RECCURING';
-		}[]
-	>([]);
-	const [categories, setCategories] = useState<
-		{
-			id: number;
-			name: string;
-		}[]
-	>([]);
+	const [selectedWorktime, setSelectedWorktime] = useState<Worktime | null>(
+		null
+	);
+	const [worktimes, setWorktimes] = useState<Worktime[]>([]);
+	const [categories, setCategories] = useState<Category[]>([]);
 
 	useEffect(() => {
 		checkConnection();
@@ -84,8 +74,6 @@ export const useIndex = () => {
 		setModalVisible,
 		modalType,
 		setModalType,
-		blockToDelete,
-		setBlockToDelete,
 		timerIsOpen,
 		setTimerIsOpen,
 		calendarIsOpen,
@@ -94,5 +82,7 @@ export const useIndex = () => {
 		setIsConnected,
 		setWorktimes,
 		setCategories,
+		selectedWorktime,
+		setSelectedWorktime,
 	};
 };

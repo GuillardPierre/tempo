@@ -6,7 +6,7 @@ import SquareButton from './utils/SquareButton';
 type Props = {
 	modalVisible: boolean;
 	setModalVisible: (visible: boolean) => void;
-	setModalType: (type: 'menu' | 'delete') => void;
+	setModalType: (type: 'menu' | 'update') => void;
 };
 
 export default function Header({

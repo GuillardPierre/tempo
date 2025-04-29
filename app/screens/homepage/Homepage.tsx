@@ -12,10 +12,10 @@ import TimerForm from '@/app/forms/timerForm';
 import Footer from '@/app/components/Footer';
 import ModalMenu from '@/app/components/Modal';
 import Menu from '@/app/components/ModalComponents/Menu';
-import DeleteBlock from '@/app/components/ModalComponents/DeleteBlock';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import CustomSnackBar from '@/app/components/utils/CustomSnackBar';
 import useSnackBar from '@/app/hooks/useSnackBar';
+import UpdateDeleteModal from '@/app/components/ModalComponents/UpdateDeleteModal';
 
 export default function Homepage() {
 	const colors = useThemeColors();
@@ -28,8 +28,6 @@ export default function Homepage() {
 		setModalVisible,
 		modalType,
 		setModalType,
-		blockToDelete,
-		setBlockToDelete,
 		timerIsOpen,
 		setTimerIsOpen,
 		calendarIsOpen,
@@ -38,6 +36,9 @@ export default function Homepage() {
 		setIsConnected,
 		setWorktimes,
 		setCategories,
+		selectedWorktime,
+		setSelectedWorktime,
+		// refreshWorkTimes,
 	} = useIndex();
 
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
@@ -63,13 +64,18 @@ export default function Homepage() {
 					setModalType={setModalType}
 				/>
 				<DateDisplay date={date} setDate={setDate} />
-				<MainWrapper isOpen={calendarIsOpen} direction='top'>
+				<MainWrapper
+					isOpen={calendarIsOpen}
+					direction='top'
+					disableScroll={true}
+				>
 					<Calendar date={date} setDate={setDate} />
 				</MainWrapper>
 				<MainWrapper>
 					{worktimes.map((worktime, index) => (
 						<Block
-							key={index}
+							key={worktime.id}
+							worktime={worktime}
 							type={'time'}
 							text={worktime.categoryName}
 							startTime={worktime.startTime}
@@ -78,7 +84,7 @@ export default function Homepage() {
 							worktimeType={worktime.type}
 							setModalType={setModalType}
 							setModalVisible={setModalVisible}
-							setBlockToDelete={setBlockToDelete}
+							setSelectedWorktime={setSelectedWorktime}
 						/>
 					))}
 				</MainWrapper>
@@ -86,6 +92,7 @@ export default function Homepage() {
 					isOpen={timerIsOpen}
 					direction='bottom'
 					flexGrow={timerIsOpen}
+					disableScroll={true}
 				>
 					<TimerForm
 						setSnackBar={setSnackBar}
@@ -104,10 +111,18 @@ export default function Homepage() {
 				<ModalMenu
 					modalVisible={modalVisible}
 					setModalVisible={setModalVisible}
+					disableScroll={modalType === 'update'}
 				>
 					{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
-					{modalType === 'delete' && (
-						<DeleteBlock setModalVisible={setModalVisible} />
+					{modalType === 'update' && (
+						<UpdateDeleteModal
+							selectedWorktime={selectedWorktime}
+							setModalVisible={setModalVisible}
+							categories={categories}
+							setCategories={setCategories}
+							setWorktimes={setWorktimes}
+							// refreshWorkTimes={refreshWorkTimes}
+						/>
 					)}
 				</ModalMenu>
 				<CustomSnackBar

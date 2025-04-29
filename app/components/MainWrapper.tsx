@@ -6,14 +6,16 @@ type Props = {
 	children: React.ReactNode;
 	isOpen?: boolean;
 	direction?: 'top' | 'bottom';
-	flexGrow?: boolean; // Propriété pour permettre au conteneur de prendre toute la hauteur disponible
+	flexGrow?: boolean;
+	disableScroll?: boolean;
 };
 
 export default function MainWrapper({
 	children,
 	isOpen = true,
 	direction = 'bottom',
-	flexGrow = false, // Par défaut, pas de croissance flexible
+	flexGrow = false,
+	disableScroll = false,
 }: Props) {
 	const colors = useThemeColors();
 	const animation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
@@ -35,36 +37,71 @@ export default function MainWrapper({
 				duration: 300,
 				useNativeDriver: false,
 			}).start(() => {
-				setShouldRender(false); // Retire le composant après l'animation
+				setShouldRender(false);
 			});
 		}
 	}, [isOpen]);
 
 	if (!shouldRender) return null;
 
+	// Si disableScroll est true, retourner simplement les enfants dans une Animated.View
+	if (disableScroll) {
+		return (
+			<Animated.View
+				style={[
+					styles.container,
+					flexGrow ? styles.flexContainer : {},
+					{
+						backgroundColor: colors.background,
+						maxHeight: animation.interpolate({
+							inputRange: [0, 1],
+							outputRange: ['0%', '100%'],
+						}),
+						transform: [
+							{
+								translateY: animation.interpolate({
+									inputRange: [0, 1],
+									outputRange: direction === 'bottom' ? [300, 0] : [-300, 0],
+								}),
+							},
+						],
+					},
+				]}
+			>
+				{children}
+			</Animated.View>
+		);
+	}
+
+	// Sinon, utiliser un ScrollView
 	return (
 		<Animated.View
 			style={[
 				styles.container,
-				flexGrow ? styles.flexContainer : {}, // Applique flexGrow: 1 si nécessaire
+				flexGrow ? styles.flexContainer : {},
 				{
 					backgroundColor: colors.background,
 					maxHeight: animation.interpolate({
 						inputRange: [0, 1],
-						outputRange: ['0%', '100%'], // Utilise une valeur relative au lieu d'une valeur fixe
+						outputRange: ['0%', '100%'],
 					}),
 					transform: [
 						{
 							translateY: animation.interpolate({
 								inputRange: [0, 1],
-								outputRange: direction === 'bottom' ? [300, 0] : [-300, 0], // Valeurs plus modérées pour l'animation
+								outputRange: direction === 'bottom' ? [300, 0] : [-300, 0],
 							}),
 						},
 					],
 				},
 			]}
 		>
-			<ScrollView contentContainerStyle={flexGrow ? styles.scrollContent : {}}>
+			<ScrollView
+				contentContainerStyle={flexGrow ? styles.scrollContent : {}}
+				removeClippedSubviews={true} // Aide à améliorer les performances
+				keyboardShouldPersistTaps='handled' // Meilleure gestion du clavier
+				showsVerticalScrollIndicator={true}
+			>
 				{children}
 			</ScrollView>
 		</Animated.View>
@@ -82,7 +119,7 @@ const styles = StyleSheet.create({
 		borderStyle: 'solid',
 		borderWidth: 3,
 		borderColor: '#8955FD',
-		overflow: 'hidden',
+		overflow: 'visible',
 		zIndex: 1,
 	},
 	flexContainer: {

@@ -1,24 +1,26 @@
 import { StyleSheet, View, Pressable, Vibration } from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
 import React from 'react';
-import TrashIcon from './svg/trash';
 import ThemedText from './utils/ThemedText';
 import CustomChip from './utils/CustomChip';
 import BurgerMenuSvg from './svg/burgerMenu';
+import { Worktime } from '../types/worktime';
 
 type Props = {
+	worktime: Worktime;
 	type: 'time' | 'button';
 	text: string;
 	duration: number;
 	startTime: string;
 	endTime: string;
 	worktimeType: 'SINGLE' | 'RECCURING';
-	setModalType: (type: 'menu' | 'delete') => void;
+	setModalType: (type: 'menu' | 'update') => void;
 	setModalVisible: (visible: boolean) => void;
-	setBlockToDelete: (block: number) => void;
+	setSelectedWorktime: (worktime: any) => void;
 };
 
 export default function Block({
+	worktime,
 	type,
 	text,
 	duration,
@@ -27,7 +29,7 @@ export default function Block({
 	worktimeType,
 	setModalType,
 	setModalVisible,
-	setBlockToDelete,
+	setSelectedWorktime,
 }: Props) {
 	const colors = useThemeColors();
 	const convertTime = (time: string) => {
@@ -72,9 +74,9 @@ export default function Block({
 					<Pressable
 						onPress={() => {
 							Vibration.vibrate(50);
-							setModalType('delete');
+							setModalType('update');
 							setModalVisible(true);
-							setBlockToDelete(0);
+							setSelectedWorktime(worktime);
 						}}
 					>
 						<BurgerMenuSvg />

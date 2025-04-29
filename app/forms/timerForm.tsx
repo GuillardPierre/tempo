@@ -1,50 +1,42 @@
 import { Vibration, View, Text, StyleSheet } from 'react-native';
 import React, { useEffect } from 'react';
-import CustomAutocomplete from './utils/CustomAutoComplete';
 import ButtonMenu from '../components/ButtonMenu';
 import TimePickerInput from './utils/TimePickerInput';
 import { useState } from 'react';
 import RoundButton from '../components/utils/RoundButton';
 import { Formik } from 'formik';
 import { useMutation } from '@tanstack/react-query';
-import { httpPost } from '../components/utils/querySetup';
+import { httpPost, httpPut } from '../components/utils/querySetup';
 import ENDPOINTS from '../components/utils/ENDPOINT';
-import { AutocompleteDropdownItem } from 'react-native-autocomplete-dropdown';
 import { useThemeColors } from '../hooks/useThemeColors';
 import { Pressable } from 'react-native';
-import { z } from 'zod';
 import { createWorkTimeSchema } from '../schema/createWorkTime';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
-
-interface ExtendedAutocompleteItem extends AutocompleteDropdownItem {
-	realTitle?: string;
-}
+import {
+	Category,
+	CreateRecurrenceRule,
+	SelectedWorktime,
+} from '../types/worktime';
+import DropDownPicker from 'react-native-dropdown-picker';
+import CreateCategoryButton from './utils/CreateCategoryButton';
 
 interface CategoryData {
 	id: string | null;
 	title: string;
 }
 
-interface BackendCategory {
-	id: number;
-	name: string;
-}
-
-interface RecurrenceRule {
-	freq: string;
-	byDay?: string[];
-}
-
 type Props = {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
 	setTimerIsOpen: (isOpen: boolean) => void;
 	setWorktimes?: (worktimes: any[] | ((prevWorktimes: any[]) => any[])) => void;
-	categories?: BackendCategory[];
+	categories?: Category[];
 	setCategories?: (
-		categories:
-			| BackendCategory[]
-			| ((prevCategories: BackendCategory[]) => BackendCategory[])
+		categories: Category[] | ((prevCategories: Category[]) => Category[])
 	) => void;
+	selectedWorktime?: SelectedWorktime | null;
+	isEditing?: boolean;
+	onUpdateSuccess?: () => void;
+	insideModal?: boolean; // Nouvelle propriété pour indiquer si le TimerForm est utilisé dans une modale
 };
 
 export default function TimerForm({
@@ -53,27 +45,86 @@ export default function TimerForm({
 	setWorktimes,
 	categories = [],
 	setCategories,
+	selectedWorktime = null,
+	isEditing = false,
+	onUpdateSuccess,
+	insideModal = false, // Valeur par défaut à false
 }: Props) {
 	const colors = useThemeColors();
-	const [endIsDefine, setEndIsDefine] = useState(false);
+	const [endIsDefine, setEndIsDefine] = useState(
+		selectedWorktime ? true : false
+	);
 	const [selectedDays, setSelectedDays] = useState<string[]>([]);
 	const [autocompleteData, setAutocompleteData] = useState<CategoryData[]>([]);
 
+	// États pour DropDownPicker
+	const [open, setOpen] = useState(false);
+	const [categoryValue, setCategoryValue] = useState<string | null>(
+		selectedWorktime ? String(selectedWorktime.categoryId) : null
+	);
+	const [dropdownItems, setDropdownItems] = useState<any[]>([]);
+	const [inputValue, setInputValue] = useState(
+		selectedWorktime ? selectedWorktime.categoryName || '' : ''
+	);
+	const [showCreateButton, setShowCreateButton] = useState(false);
+
+	// Extraire les jours de récurrence si disponibles
+	useEffect(() => {
+		if (selectedWorktime?.recurrence) {
+			const recurrenceString = selectedWorktime.recurrence;
+			const byDayMatch = recurrenceString.match(/BYDAY=([^;]+)/);
+			if (byDayMatch && byDayMatch[1]) {
+				setSelectedDays(byDayMatch[1].split(','));
+			}
+		}
+	}, [selectedWorktime]);
+
+	// Convertir les catégories en format pour DropDownPicker
 	useEffect(() => {
 		if (categories && categories.length > 0) {
 			const formattedCategories: CategoryData[] = categories.map((cat) => ({
-				id: String(cat.id), // Convertir l'id numérique en string
+				id: String(cat.id),
 				title: cat.name,
 			}));
 			setAutocompleteData(formattedCategories);
-		}
-	}, [categories]);
 
-	const handleCategoryCreated = (category: BackendCategory) => {
+			// Préparer les éléments pour le DropDownPicker
+			const dropdownItems = categories.map((cat) => ({
+				label: cat.name,
+				value: String(cat.id),
+			}));
+			setDropdownItems(dropdownItems);
+
+			// Si on est en mode édition, définir la valeur initiale
+			if (selectedWorktime) {
+				setCategoryValue(String(selectedWorktime.categoryId));
+			}
+		}
+	}, [categories, selectedWorktime]);
+
+	const handleCategoryCreated = (category: Category) => {
 		if (setCategories) {
 			setCategories([...categories, category]);
+			setDropdownItems((prev) => [
+				...prev,
+				{ label: category.name, value: String(category.id) },
+			]);
+
+			// Sélectionner la nouvelle catégorie
+			setCategoryValue(String(category.id));
+			setInputValue(category.name);
+			setShowCreateButton(false);
 		}
 		setSnackBar('info', `Catégorie "${category.name}" créée avec succès`);
+	};
+
+	// Gérer le changement de texte dans le dropdown
+	const handleCategoryTextChange = (text: string) => {
+		setInputValue(text);
+		const categoryExists = categories.some(
+			(cat) => cat.name.toLowerCase() === text.toLowerCase()
+		);
+		setShowCreateButton(!categoryExists && text.length > 0);
 	};
 
 	const weekdays = [
@@ -108,18 +159,55 @@ export default function TimerForm({
 		return `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`;
 	};
 
+	const getInitialValues = () => {
+		if (isEditing && selectedWorktime) {
+			return {
+				category: {
+					id: String(selectedWorktime.categoryId),
+					title: selectedWorktime.categoryName || '',
+				},
+				startTime: new Date(selectedWorktime.startTime || ''),
+				endTime: new Date(selectedWorktime.endTime || ''),
+				recurrence: selectedWorktime.recurrence
+					? ({ freq: 'WEEKLY' } as CreateRecurrenceRule)
+					: undefined,
+				startDate: selectedWorktime.startDate
+					? new Date(selectedWorktime.startDate)
+					: undefined,
+			};
+		}
+		return {
+			category: { id: null, title: '' },
+			startTime: new Date(),
+			endTime: new Date(),
+			recurrence: undefined as CreateRecurrenceRule | undefined,
+			startDate: undefined as undefined | Date,
+		};
+	};
+
 	const { mutate: submitWorktime, isPending } = useMutation<any, Error, any>({
 		mutationFn: async (formData) => {
 			console.log('données worktime envoyées :', formData);
 			let response;
-			if (formData.recurrence !== undefined) {
-				formData.startDate = formatISODate(new Date());
-				response = await httpPost(
-					`${ENDPOINTS.woktimeSeries.create}`,
-					formData
-				);
+
+			if (isEditing && selectedWorktime) {
+				// Modification d'un worktime existant
+				const endpoint = selectedWorktime.isRecurring
+					? `${ENDPOINTS.woktimeSeries.root}/${selectedWorktime.id}`
+					: `${ENDPOINTS.worktime.root}/${selectedWorktime.id}`;
+
+				response = await httpPut(endpoint, formData);
 			} else {
-				response = await httpPost(`${ENDPOINTS.worktime.create}`, formData);
+				// Création d'un nouveau worktime
+				if (formData.recurrence !== undefined) {
+					formData.startDate = formatISODate(new Date());
+					response = await httpPost(
+						`${ENDPOINTS.woktimeSeries.create}`,
+						formData
+					);
+				} else {
+					response = await httpPost(`${ENDPOINTS.worktime.create}`, formData);
+				}
 			}
 
 			if (!response.ok) {
@@ -133,13 +221,20 @@ export default function TimerForm({
 			return data;
 		},
 		onSuccess: (data: any) => {
-			setSnackBar('info', 'Temps bien enregistré');
+			if (isEditing) {
+				setSnackBar('info', 'Activité modifiée avec succès');
+				if (onUpdateSuccess) onUpdateSuccess();
+			} else {
+				setSnackBar('info', 'Temps bien enregistré');
+				// Si setWorktimes est défini, mettre à jour les worktimes après succès
+				if (setWorktimes && data) {
+					setWorktimes((prevData: any[]) => [...prevData, data]);
+				}
+			}
+
 			setSelectedDays([]);
 			setTimerIsOpen(false);
-			// Si setWorktimes est défini, mettre à jour les worktimes après succès
-			if (setWorktimes && data) {
-				setWorktimes((prevData: any[]) => [...prevData, data]);
-			}
+
 			// Si une nouvelle catégorie a été créée et que setCategories est défini
 			if (
 				setCategories &&
@@ -155,7 +250,6 @@ export default function TimerForm({
 		},
 	});
 
-	// Fonction pour détecter si un ID correspond à une nouvelle catégorie
 	const isNewCategory = (id: string | null): boolean => {
 		if (!id) return false;
 		return id === 'new-category' || id.startsWith('new-');
@@ -164,13 +258,7 @@ export default function TimerForm({
 	return (
 		<View>
 			<Formik
-				initialValues={{
-					category: { id: null, title: '' },
-					startTime: new Date(),
-					endTime: new Date(),
-					recurrence: undefined as RecurrenceRule | undefined,
-					startDate: undefined as undefined | Date, // New date seulement si récurrence
-				}}
+				initialValues={getInitialValues()}
 				onSubmit={(values) => {
 					const formattedStartTime = formatISODate(values.startTime);
 					const formattedEndTime = formatISODate(values.endTime);
@@ -192,6 +280,7 @@ export default function TimerForm({
 				validationSchema={() =>
 					toFormikValidationSchema(createWorkTimeSchema(endIsDefine))
 				}
+				enableReinitialize={true}
 			>
 				{({
 					handleChange,
@@ -204,39 +293,67 @@ export default function TimerForm({
 				}) => (
 					<View
 						style={{
-							height: '100%',
+							height: 'auto',
+							width: '100%',
 							display: 'flex',
 							justifyContent: 'center',
 							alignItems: 'flex-start',
+							zIndex: 9999,
 						}}
 					>
-						<CustomAutocomplete
-							label='Choisissez une activité :'
-							initialData={autocompleteData}
-							onSelectItem={(item: ExtendedAutocompleteItem | null) => {
-								if (item) {
-									// Si c'est une nouvelle catégorie avec realTitle, utiliser cette valeur
-									const title =
-										isNewCategory(item.id) && item.realTitle
-											? item.realTitle
-											: item.title;
-
-									// Mettre à jour l'objet category au lieu d'une simple chaîne
-									setFieldValue('category', {
-										id: isNewCategory(item.id) ? null : item.id,
-										title: title,
-									});
-								}
+						<Text style={[styles.label, { color: colors.secondaryText }]}>
+							Choisissez une activité :
+						</Text>
+						<DropDownPicker
+							open={open}
+							value={categoryValue}
+							items={dropdownItems}
+							setOpen={setOpen}
+							dropDownDirection='TOP'
+							zIndex={10000}
+							zIndexInverse={10000}
+							modalProps={{
+								animationType: 'fade',
 							}}
-							onChange={(text) => {
-								// Mettre à jour uniquement le titre si l'utilisateur tape sans sélectionner
+							modalContentContainerStyle={{
+								backgroundColor: colors.primaryLight,
+							}}
+							modalTitle='Choisir une catégorie'
+							setValue={(value) => {
+								setCategoryValue(value);
+								// Trouver le label correspondant à la valeur sélectionnée
+								const selectedItem = dropdownItems.find(
+									(item) => item.value === value
+								);
+								// Mettre à jour les valeurs du formulaire
 								setFieldValue('category', {
-									...values.category,
-									title: text,
+									id: value,
+									title: selectedItem ? selectedItem.label : inputValue,
 								});
 							}}
-							onCategoryCreated={handleCategoryCreated}
+							setItems={setDropdownItems}
+							searchable={true}
+							placeholder='Classe, Préparation, Correction, ...'
+							searchPlaceholder='Rechercher ou créez une catégorie'
+							onChangeSearchText={handleCategoryTextChange}
+							style={{
+								borderWidth: 3,
+								borderColor: colors.primary,
+								borderRadius: 4,
+								marginBottom: 10,
+							}}
+							searchContainerStyle={{
+								borderBottomColor: colors.secondary,
+							}}
 						/>
+
+						{showCreateButton && (
+							<CreateCategoryButton
+								categoryName={inputValue}
+								onSuccess={handleCategoryCreated}
+							/>
+						)}
+
 						{touched.category &&
 							errors.category &&
 							typeof errors.category === 'object' &&
@@ -247,6 +364,7 @@ export default function TimerForm({
 									{errors.category.title}
 								</Text>
 							)}
+
 						<View
 							style={{
 								flexDirection: 'row',
@@ -359,11 +477,15 @@ export default function TimerForm({
 							<ButtonMenu
 								type='round'
 								text={
-									endIsDefine ? "Enregistrer l'activité" : 'Lancer Chronomètre'
+									isEditing
+										? 'Mettre à jour'
+										: endIsDefine
+										? "Enregistrer l'activité"
+										: 'Lancer Chronomètre'
 								}
 								action={() => {
 									Vibration.vibrate(50);
-									endIsDefine ? handleSubmit() : null;
+									handleSubmit();
 								}}
 							/>
 						</View>
@@ -424,5 +546,11 @@ const styles = StyleSheet.create({
 		marginTop: 2,
 		marginBottom: 5,
 		paddingLeft: 5,
+	},
+	label: {
+		fontSize: 16,
+		fontWeight: 'bold',
+		paddingLeft: 5,
+		marginBottom: 5,
 	},
 });

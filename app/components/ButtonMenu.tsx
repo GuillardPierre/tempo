@@ -17,14 +17,16 @@ export default function ButtonMenu({ text, action, type }: Props) {
 
 const styles = StyleSheet.create({
 	button: {
-		flex: 1,
-		maxHeight: 70,
+		minHeight: 50,
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
 		width: '90%',
 		borderStyle: 'solid',
 		borderWidth: 4,
+		marginVertical: 5,
+		paddingVertical: 8,
+		paddingHorizontal: 15,
 	},
 	square: {
 		borderRadius: 8,

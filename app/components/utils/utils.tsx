@@ -22,3 +22,35 @@ export async function deleteToken() {
 		return true;
 	});
 }
+
+export const formatDate = (dateString: string | undefined): string => {
+	if (!dateString) return '';
+
+	const date = new Date(dateString);
+
+	// Get hours and minutes with leading zeros
+	const hours = date.getHours().toString().padStart(2, '0');
+	const minutes = date.getMinutes().toString().padStart(2, '0');
+
+	// Get day, month, and year with leading zeros where needed
+	const day = date.getDate().toString().padStart(2, '0');
+	const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
+	const year = date.getFullYear();
+
+	return `${hours}:${minutes} ${day}-${month}-${year}`;
+};
+
+export const formatDateWihtoutTime = (
+	dateString: string | undefined
+): string => {
+	if (!dateString) return '';
+
+	const date = new Date(dateString);
+
+	// Get day, month, and year with leading zeros where needed
+	const day = date.getDate().toString().padStart(2, '0');
+	const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
+	const year = date.getFullYear();
+
+	return `${day}-${month}-${year}`;
+};
