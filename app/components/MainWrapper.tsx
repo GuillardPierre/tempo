@@ -81,10 +81,7 @@ export default function MainWrapper({
 				flexGrow ? styles.flexContainer : {},
 				{
 					backgroundColor: colors.background,
-					maxHeight: animation.interpolate({
-						inputRange: [0, 1],
-						outputRange: ['0%', '100%'],
-					}),
+					maxHeight: undefined, // Retirer la limitation de hauteur
 					transform: [
 						{
 							translateY: animation.interpolate({
@@ -97,7 +94,6 @@ export default function MainWrapper({
 			]}
 		>
 			<ScrollView
-				contentContainerStyle={flexGrow ? styles.scrollContent : {}}
 				removeClippedSubviews={true} // Aide à améliorer les performances
 				keyboardShouldPersistTaps='handled' // Meilleure gestion du clavier
 				showsVerticalScrollIndicator={true}
@@ -119,8 +115,8 @@ const styles = StyleSheet.create({
 		borderStyle: 'solid',
 		borderWidth: 3,
 		borderColor: '#8955FD',
-		overflow: 'visible',
 		zIndex: 1,
+		overflow: 'hidden',
 	},
 	flexContainer: {
 		flexGrow: 1,

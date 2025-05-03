@@ -1,15 +1,17 @@
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import ThemedText from './utils/ThemedText';
+import { Style } from 'react-native-paper/lib/typescript/components/List/utils';
 
 type Props = {
 	text: string;
 	action: () => void;
 	type: 'square' | 'round';
+	style?: StyleProp<ViewStyle>;
 };
 
-export default function ButtonMenu({ text, action, type }: Props) {
+export default function ButtonMenu({ text, action, type, style }: Props) {
 	return (
-		<Pressable style={[styles.button, styles[type]]} onPress={action}>
+		<Pressable style={[styles.button, styles[type], style]} onPress={action}>
 			<ThemedText style={styles.textButton}>{text}</ThemedText>
 		</Pressable>
 	);
@@ -21,7 +23,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		justifyContent: 'center',
 		alignItems: 'center',
-		width: '90%',
+		width: '100%',
 		borderStyle: 'solid',
 		borderWidth: 4,
 		marginVertical: 5,

@@ -13,7 +13,7 @@ type Props = {
 	duration: number;
 	startTime: string;
 	endTime: string;
-	worktimeType: 'SINGLE' | 'RECCURING';
+	worktimeType: 'SINGLE' | 'RECURRING';
 	setModalType: (type: 'menu' | 'update') => void;
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: any) => void;
@@ -48,13 +48,16 @@ export default function Block({
 		}
 	};
 
+	const categoryName = worktime.categoryName || worktime.category?.name || '';
+	const categoryColor =
+		worktimeType === 'SINGLE' ? colors.primaryLight : '#f7a94a';
+
 	return (
 		<View
 			style={[
 				styles.container,
 				{
-					backgroundColor:
-						worktimeType === 'SINGLE' ? colors.primaryLight : '#f7a94a',
+					backgroundColor: categoryColor,
 				},
 			]}
 		>
@@ -66,7 +69,7 @@ export default function Block({
 				</View>
 			)}
 			<ThemedText style={styles.mainText} variant='header2' color='primaryText'>
-				{text}
+				{categoryName}
 			</ThemedText>
 			{type === 'time' && (
 				<>

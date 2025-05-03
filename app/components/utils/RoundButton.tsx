@@ -10,55 +10,55 @@ import CloseSvg from '../svg/close';
 import MinusIcon from '../svg/minus';
 
 const types = {
-  previous: PreviousIcon,
-  next: NextIcon,
-  stats: StatsIcon,
-  calendar: CalendarIcon,
-  add: AddIcon,
-  minus: MinusIcon,
-  close: CloseSvg,
+	previous: PreviousIcon,
+	next: NextIcon,
+	stats: StatsIcon,
+	calendar: CalendarIcon,
+	add: AddIcon,
+	minus: MinusIcon,
+	close: CloseSvg,
 };
 
 type Props = {
-  type: keyof typeof types;
-  variant: 'primary' | 'secondary';
-  btnSize?: number;
-  svgSize?: number;
-  onPress: () => void;
+	type: keyof typeof types;
+	variant: 'primary' | 'secondary';
+	btnSize?: number;
+	svgSize?: number;
+	onPress: () => void;
 };
 
 export default function RoundButton({
-  type,
-  variant,
-  btnSize = 40,
-  svgSize = 24,
-  onPress,
+	type,
+	variant,
+	btnSize = 40,
+	svgSize = 24,
+	onPress,
 }: Props) {
-  const colors = useThemeColors();
-  const Icon = types[type];
-  return (
-    <Pressable
-      onPress={() => {
-        Vibration.vibrate(50);
-        onPress();
-      }}
-    >
-      <View
-        style={[
-          styles.button,
-          { backgroundColor: colors[variant], width: btnSize, height: btnSize },
-        ]}
-      >
-        <Icon width={svgSize} height={svgSize} />
-      </View>
-    </Pressable>
-  );
+	const colors = useThemeColors();
+	const Icon = types[type];
+	return (
+		<Pressable
+			onPress={() => {
+				Vibration.vibrate(50);
+				onPress();
+			}}
+		>
+			<View
+				style={[
+					styles.button,
+					{ backgroundColor: colors[variant], width: btnSize, height: btnSize },
+				]}
+			>
+				<Icon width={svgSize} height={svgSize} />
+			</View>
+		</Pressable>
+	);
 }
 
 const styles = StyleSheet.create({
-  button: {
-    borderRadius: 26,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+	button: {
+		borderRadius: 26,
+		alignItems: 'center',
+		justifyContent: 'center',
+	},
 });

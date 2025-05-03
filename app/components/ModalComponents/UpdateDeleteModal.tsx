@@ -36,18 +36,12 @@ export default function UpdateDeleteModal({
 
 	const formatDate = (dateString: string | undefined): string => {
 		if (!dateString) return '';
-
 		const date = new Date(dateString);
-
-		// Get hours and minutes with leading zeros
 		const hours = date.getHours().toString().padStart(2, '0');
 		const minutes = date.getMinutes().toString().padStart(2, '0');
-
-		// Get day, month, and year with leading zeros where needed
 		const day = date.getDate().toString().padStart(2, '0');
-		const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
+		const month = (date.getMonth() + 1).toString().padStart(2, '0');
 		const year = date.getFullYear();
-
 		return `${hours}:${minutes} ${day}-${month}-${year}`;
 	};
 
@@ -71,7 +65,11 @@ export default function UpdateDeleteModal({
 			{mode === 'view' && (
 				<View style={styles.viewContainer}>
 					<View style={styles.header}>
-						<ThemedText variant='body' color='secondaryText'>
+						<ThemedText
+							variant='body'
+							color='secondaryText'
+							style={{ textAlign: 'center' }}
+						>
 							{`${selectedWorktime?.categoryName} - ${formatDate(
 								selectedWorktime?.startTime
 							)}`}
@@ -125,7 +123,7 @@ export default function UpdateDeleteModal({
 
 					<View style={styles.buttonBack}>
 						<ButtonMenu
-							type='square'
+							type='round'
 							text='Annuler'
 							action={() => setMode('view')}
 						/>

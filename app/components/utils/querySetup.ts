@@ -24,7 +24,6 @@ export async function checkAndRefreshToken() {
 		const decoded = jwtDecode(token);
 		const now = Math.floor(Date.now() / 1000);
 		if (decoded.exp && decoded.exp - now < 60) {
-			console.log('Token expiré, tentative de rafraîchissement...');
 			const refreshToken = await AsyncStorage.getItem('refreshToken');
 			if (!refreshToken) return;
 			const response = await fetch(
@@ -42,7 +41,6 @@ export async function checkAndRefreshToken() {
 				if (data.refreshToken)
 					await AsyncStorage.setItem('refreshToken', data.refreshToken);
 				TOKEN = data.token;
-				console.log('Token refresh réussi');
 			}
 		}
 	} catch (e) {

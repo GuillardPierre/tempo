@@ -64,11 +64,7 @@ export default function Homepage() {
 					setModalType={setModalType}
 				/>
 				<DateDisplay date={date} setDate={setDate} />
-				<MainWrapper
-					isOpen={calendarIsOpen}
-					direction='top'
-					disableScroll={true}
-				>
+				<MainWrapper isOpen={calendarIsOpen} direction='top'>
 					<Calendar date={date} setDate={setDate} />
 				</MainWrapper>
 				<MainWrapper>
@@ -92,7 +88,6 @@ export default function Homepage() {
 					isOpen={timerIsOpen}
 					direction='bottom'
 					flexGrow={timerIsOpen}
-					disableScroll={true}
 				>
 					<TimerForm
 						setSnackBar={setSnackBar}

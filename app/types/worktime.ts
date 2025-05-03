@@ -22,7 +22,7 @@ export interface CreateRecurrenceRule {
 /**
  * Type des types de worktime (ponctuel ou récurrent)
  */
-export type WorktimeType = 'SINGLE' | 'RECCURING';
+export type WorktimeType = 'SINGLE' | 'RECURRING';
 
 /**
  * Interface pour les worktimes reçus de l'API
@@ -35,7 +35,10 @@ export interface Worktime {
 	duration: number;
 	type: WorktimeType;
 	categoryId: number | null;
-	category: string | null;
+	category: {
+		id: string | null;
+		name: string;
+	};
 	recurrence?: string;
 	active: boolean;
 	seriesId: number | null;
@@ -48,7 +51,7 @@ export interface Worktime {
 export interface CreateWorktimePayload {
 	category: {
 		id: string | null;
-		title: string;
+		name: string;
 	};
 	startTime: Date | string;
 	endTime: Date | string;

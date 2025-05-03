@@ -19,6 +19,8 @@ const ENDPOINTS = {
 	},
 	schedule: {
 		root: 'schedule/',
+		day: 'schedule/day/',
+		month: 'schedule/month/',
 	},
 };
 

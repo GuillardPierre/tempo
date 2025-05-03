@@ -41,11 +41,9 @@ export const useIndex = () => {
 
 	const getWorktimes = async () => {
 		try {
-			const rep = await httpGet(`${ENDPOINTS.schedule.root}${date}`);
+			const rep = await httpGet(`${ENDPOINTS.schedule.day}${date}`);
 			if (rep.ok) {
 				const data = await rep.json();
-				console.log('data:', data);
-
 				setWorktimes(data);
 			}
 		} catch (error) {

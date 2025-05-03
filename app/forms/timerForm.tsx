@@ -1,8 +1,7 @@
 import { Vibration, View, Text, StyleSheet } from 'react-native';
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import ButtonMenu from '../components/ButtonMenu';
 import TimePickerInput from './utils/TimePickerInput';
-import { useState } from 'react';
 import RoundButton from '../components/utils/RoundButton';
 import { Formik } from 'formik';
 import { useMutation } from '@tanstack/react-query';
@@ -36,7 +35,7 @@ type Props = {
 	selectedWorktime?: SelectedWorktime | null;
 	isEditing?: boolean;
 	onUpdateSuccess?: () => void;
-	insideModal?: boolean; // Nouvelle propriété pour indiquer si le TimerForm est utilisé dans une modale
+	insideModal?: boolean;
 };
 
 export default function TimerForm({
@@ -48,84 +47,13 @@ export default function TimerForm({
 	selectedWorktime = null,
 	isEditing = false,
 	onUpdateSuccess,
-	insideModal = false, // Valeur par défaut à false
+	insideModal = false,
 }: Props) {
 	const colors = useThemeColors();
-	const [endIsDefine, setEndIsDefine] = useState(
-		selectedWorktime ? true : false
-	);
+	const [endIsDefine, setEndIsDefine] = useState(!!selectedWorktime);
 	const [selectedDays, setSelectedDays] = useState<string[]>([]);
-	const [autocompleteData, setAutocompleteData] = useState<CategoryData[]>([]);
-
-	// États pour DropDownPicker
 	const [open, setOpen] = useState(false);
-	const [categoryValue, setCategoryValue] = useState<string | null>(
-		selectedWorktime ? String(selectedWorktime.categoryId) : null
-	);
-	const [dropdownItems, setDropdownItems] = useState<any[]>([]);
-	const [inputValue, setInputValue] = useState(
-		selectedWorktime ? selectedWorktime.categoryName || '' : ''
-	);
-	const [showCreateButton, setShowCreateButton] = useState(false);
-
-	// Extraire les jours de récurrence si disponibles
-	useEffect(() => {
-		if (selectedWorktime?.recurrence) {
-			const recurrenceString = selectedWorktime.recurrence;
-			const byDayMatch = recurrenceString.match(/BYDAY=([^;]+)/);
-			if (byDayMatch && byDayMatch[1]) {
-				setSelectedDays(byDayMatch[1].split(','));
-			}
-		}
-	}, [selectedWorktime]);
-
-	// Convertir les catégories en format pour DropDownPicker
-	useEffect(() => {
-		if (categories && categories.length > 0) {
-			const formattedCategories: CategoryData[] = categories.map((cat) => ({
-				id: String(cat.id),
-				title: cat.name,
-			}));
-			setAutocompleteData(formattedCategories);
-
-			// Préparer les éléments pour le DropDownPicker
-			const dropdownItems = categories.map((cat) => ({
-				label: cat.name,
-				value: String(cat.id),
-			}));
-			setDropdownItems(dropdownItems);
-
-			// Si on est en mode édition, définir la valeur initiale
-			if (selectedWorktime) {
-				setCategoryValue(String(selectedWorktime.categoryId));
-			}
-		}
-	}, [categories, selectedWorktime]);
-
-	const handleCategoryCreated = (category: Category) => {
-		if (setCategories) {
-			setCategories([...categories, category]);
-			setDropdownItems((prev) => [
-				...prev,
-				{ label: category.name, value: String(category.id) },
-			]);
-
-			// Sélectionner la nouvelle catégorie
-			setCategoryValue(String(category.id));
-			setInputValue(category.name);
-			setShowCreateButton(false);
-		}
-		setSnackBar('info', `Catégorie "${category.name}" créée avec succès`);
-	};
-
-	// Gérer le changement de texte dans le dropdown
-	const handleCategoryTextChange = (text: string) => {
-		setInputValue(text);
-		const categoryExists = categories.some(
-			(cat) => cat.name.toLowerCase() === text.toLowerCase()
-		);
-		setShowCreateButton(!categoryExists && text.length > 0);
-	};
+	const [searchText, setSearchText] = useState('');
 
 	const weekdays = [
 		{ label: 'Lun', value: 'MO' },
@@ -137,311 +65,221 @@ export default function TimerForm({
 		{ label: 'Dim', value: 'SU' },
 	];
 
-	const formatISODate = (date: Date) => date.toISOString().slice(0, 16);
-
-	const toggleDaySelection = (dayValue: string) => {
-		setSelectedDays((prevSelectedDays) => {
-			if (prevSelectedDays.includes(dayValue)) {
-				// Si le jour est déjà sélectionné, le retirer
-				return prevSelectedDays.filter((day) => day !== dayValue);
-			} else {
-				// Sinon, l'ajouter
-				return [...prevSelectedDays, dayValue];
-			}
-		});
-	};
-
-	const buildRecurrenceRule = (): string | undefined => {
-		if (selectedDays.length === 0) {
-			return undefined;
+	useEffect(() => {
+		if (selectedWorktime?.recurrence) {
+			const byDayMatch = selectedWorktime.recurrence.match(/BYDAY=([^;]+)/);
+			if (byDayMatch) setSelectedDays(byDayMatch[1].split(','));
 		}
+	}, [selectedWorktime]);
 
-		return `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`;
-	};
+	const { mutate: submitWorktime } = useMutation({
+		mutationFn: async (formData: any) => {
+			const endpoint =
+				isEditing && selectedWorktime?.id
+					? selectedWorktime.type === 'RECURRING'
+						? `${ENDPOINTS.woktimeSeries.root}${selectedWorktime.id}`
+						: `${ENDPOINTS.worktime.root}${selectedWorktime.id}`
+					: formData.recurrence
+					? ENDPOINTS.woktimeSeries.create
+					: ENDPOINTS.worktime.create;
 
-	const getInitialValues = () => {
-		if (isEditing && selectedWorktime) {
-			return {
-				category: {
-					id: String(selectedWorktime.categoryId),
-					title: selectedWorktime.categoryName || '',
-				},
-				startTime: new Date(selectedWorktime.startTime || ''),
-				endTime: new Date(selectedWorktime.endTime || ''),
-				recurrence: selectedWorktime.recurrence
-					? ({ freq: 'WEEKLY' } as CreateRecurrenceRule)
-					: undefined,
-				startDate: selectedWorktime.startDate
-					? new Date(selectedWorktime.startDate)
-					: undefined,
-			};
-		}
-		return {
-			category: { id: null, title: '' },
-			startTime: new Date(),
-			endTime: new Date(),
-			recurrence: undefined as CreateRecurrenceRule | undefined,
-			startDate: undefined as undefined | Date,
-		};
-	};
+			const method = isEditing ? httpPut : httpPost;
+			const response = await method(endpoint, formData);
+			if (!response.ok) throw new Error(await response.text());
 
-	const { mutate: submitWorktime, isPending } = useMutation<any, Error, any>({
-		mutationFn: async (formData) => {
-			console.log('données worktime envoyées :', formData);
-			let response;
+			return await response.json();
+		},
+		onSuccess: (data) => {
+			console.log('Success:', data);
 
-			if (isEditing && selectedWorktime) {
-				// Modification d'un worktime existant
-				const endpoint = selectedWorktime.isRecurring
-					? `${ENDPOINTS.woktimeSeries.root}/${selectedWorktime.id}`
-					: `${ENDPOINTS.worktime.root}/${selectedWorktime.id}`;
-
-				response = await httpPut(endpoint, formData);
-			} else {
-				// Création d'un nouveau worktime
-				if (formData.recurrence !== undefined) {
-					formData.startDate = formatISODate(new Date());
-					response = await httpPost(
-						`${ENDPOINTS.woktimeSeries.create}`,
-						formData
+			setSnackBar('info', isEditing ? 'Activité modifiée' : 'Temps enregistré');
+			setTimerIsOpen(false);
+			if (setWorktimes) {
+				if (isEditing && data.id) {
+					setWorktimes((prev) =>
+						prev.map((wt) => (wt.id === data.id ? data : wt))
 					);
 				} else {
-					response = await httpPost(`${ENDPOINTS.worktime.create}`, formData);
+					setWorktimes((prev) => [...prev, data]);
 				}
 			}
-
-			if (!response.ok) {
-				const errorMessage = await response.text();
-				throw new Error(
-					errorMessage || "Échec de l'enregistrement du chronomètre"
-				);
-			}
-
-			const data = await response.json();
-			return data;
-		},
-		onSuccess: (data: any) => {
-			if (isEditing) {
-				setSnackBar('info', 'Activité modifiée avec succès');
-				if (onUpdateSuccess) onUpdateSuccess();
-			} else {
-				setSnackBar('info', 'Temps bien enregistré');
-				// Si setWorktimes est défini, mettre à jour les worktimes après succès
-				if (setWorktimes && data) {
-					setWorktimes((prevData: any[]) => [...prevData, data]);
-				}
-			}
-
-			setSelectedDays([]);
-			setTimerIsOpen(false);
-
-			// Si une nouvelle catégorie a été créée et que setCategories est défini
-			if (
-				setCategories &&
-				data.category &&
-				!categories.find((cat) => cat.id === data.category.id)
-			) {
-				setCategories([...categories, data.category]);
-			}
+			if (setCategories && data.category)
+				setCategories((prev) => [...prev, data.category]);
 		},
 		onError: (error: Error) => {
-			console.error('Error submitting timer:', error);
-			setSnackBar('error', 'Une erreur à eu lieu');
+			setSnackBar('error', error.message || 'Erreur');
 		},
 	});
 
-	const isNewCategory = (id: string | null): boolean => {
-		if (!id) return false;
-		return id === 'new-category' || id.startsWith('new-');
+	const handleCategoryCreated = (category: Category) => {
+		setCategories?.((prev) => [...prev, category]);
+		setSnackBar('info', `Catégorie "${category.name}" créée`);
+	};
+
+	const getInitialValues = () => {
+		const initialValues = {
+			category: selectedWorktime
+				? {
+						id: String(selectedWorktime.categoryId),
+						title: selectedWorktime.categoryName || '',
+				  }
+				: { id: null, title: '' },
+			startTime: new Date(selectedWorktime?.startTime || Date.now()),
+			endTime: new Date(selectedWorktime?.endTime || Date.now()),
+			recurrence: undefined as CreateRecurrenceRule | undefined,
+			startDate: selectedWorktime?.startDate
+				? new Date(selectedWorktime.startDate)
+				: undefined,
+		};
+		return initialValues;
 	};
 
 	return (
-		<View>
+		<View style={{ zIndex: 9999 }}>
 			<Formik
 				initialValues={getInitialValues()}
+				validationSchema={toFormikValidationSchema(
+					createWorkTimeSchema(endIsDefine)
+				)}
 				onSubmit={(values) => {
-					const formattedStartTime = formatISODate(values.startTime);
-					const formattedEndTime = formatISODate(values.endTime);
-
-					// Assurer que les nouvelles catégories ont bien un ID null
-					const submissionValues = {
+					submitWorktime({
 						...values,
-						startTime: formattedStartTime,
-						endTime: formattedEndTime,
-						category: {
-							...values.category,
-							id: isNewCategory(values.category.id) ? null : values.category.id,
-						},
-						recurrence: buildRecurrenceRule(),
-					};
-					submitWorktime(submissionValues);
-					console.log('Valeurs soumises:', submissionValues);
+						startTime: values.startTime.toISOString(),
+						endTime: values.endTime.toISOString(),
+						recurrence: selectedDays.length
+							? `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`
+							: undefined,
+					});
 				}}
-				validationSchema={() =>
-					toFormikValidationSchema(createWorkTimeSchema(endIsDefine))
-				}
-				enableReinitialize={true}
 			>
-				{({
-					handleChange,
-					setFieldValue,
-					handleBlur,
-					handleSubmit,
-					values,
-					errors,
-					touched,
-				}) => (
-					<View
-						style={{
-							height: 'auto',
-							width: '100%',
-							display: 'flex',
-							justifyContent: 'center',
-							alignItems: 'flex-start',
-							zIndex: 9999,
-						}}
-					>
+				{({ setFieldValue, values, handleSubmit, errors, touched }) => (
+					<View style={[styles.container]}>
 						<Text style={[styles.label, { color: colors.secondaryText }]}>
 							Choisissez une activité :
 						</Text>
 						<DropDownPicker
 							open={open}
-							value={categoryValue}
-							items={dropdownItems}
+							value={values.category.id}
+							items={categories.map((c) => ({
+								label: c.name,
+								value: String(c.id),
+							}))}
 							setOpen={setOpen}
-							dropDownDirection='TOP'
-							zIndex={10000}
-							zIndexInverse={10000}
-							modalProps={{
-								animationType: 'fade',
+							setValue={(callback) => {
+								const currentValue = callback(values.category.id);
+								return currentValue;
 							}}
-							modalContentContainerStyle={{
-								backgroundColor: colors.primaryLight,
+							onSelectItem={(item) => {
+								if (item && item.value) {
+									const value = item.value.toString();
+									const category = categories.find(
+										(c) => String(c.id) === value
+									);
+									if (category) {
+										setFieldValue('category', {
+											id: value,
+											title: category.name,
+										});
+									}
+								}
 							}}
-							modalTitle='Choisir une catégorie'
-							setValue={(value) => {
-								setCategoryValue(value);
-								// Trouver le label correspondant à la valeur sélectionnée
-								const selectedItem = dropdownItems.find(
-									(item) => item.value === value
-								);
-								// Mettre à jour les valeurs du formulaire
-								setFieldValue('category', {
-									id: value,
-									title: selectedItem ? selectedItem.label : inputValue,
-								});
-							}}
-							setItems={setDropdownItems}
 							searchable={true}
-							placeholder='Classe, Préparation, Correction, ...'
-							searchPlaceholder='Rechercher ou créez une catégorie'
-							onChangeSearchText={handleCategoryTextChange}
+							searchPlaceholder='Rechercher...'
+							onChangeSearchText={(text) => {
+								setSearchText(text);
+							}}
+							placeholder='Sélectionnez une catégorie'
 							style={{
 								borderWidth: 3,
 								borderColor: colors.primary,
 								borderRadius: 4,
 								marginBottom: 10,
 							}}
-							searchContainerStyle={{
-								borderBottomColor: colors.secondary,
+							dropDownContainerStyle={{
+								backgroundColor: colors.background,
+								borderColor: colors.primary,
 							}}
-						/>
-
-						{showCreateButton && (
-							<CreateCategoryButton
-								categoryName={inputValue}
-								onSuccess={handleCategoryCreated}
-							/>
-						)}
-
-						{touched.category &&
-							errors.category &&
-							typeof errors.category === 'object' &&
-							errors.category.title && (
-								<Text
-									style={[styles.errorText, { color: colors.primary || 'red' }]}
-								>
-									{errors.category.title}
-								</Text>
-							)}
-
-						<View
-							style={{
-								flexDirection: 'row',
-								alignItems: 'center',
-								justifyContent: 'flex-start',
-								gap: 10,
+							listMode='MODAL'
+							modalAnimationType='slide'
+							zIndex={10000}
+							modalContentContainerStyle={{
+								backgroundColor: colors.background,
+								borderColor: colors.secondary,
+								borderWidth: 3,
+								borderRadius: 4,
+								padding: 10,
+								height: '50%',
+								width: '100%',
+								margin: 'auto',
 							}}
-						>
-							<View style={{ width: '40%' }}>
-								<TimePickerInput
-									label='heure de début:'
-									value={values.startTime}
-									onChange={(date) => {
-										setFieldValue('startTime', date);
+							ListEmptyComponent={(props) => (
+								<CreateCategoryButton
+									categoryName={searchText}
+									onSuccess={(category) => {
+										handleCategoryCreated(category);
 									}}
 								/>
-							</View>
-							<View style={{ width: '40%' }}>
-								{endIsDefine ? (
-									<View
-										style={{
-											display: 'flex',
-											flexDirection: 'row',
-											alignItems: 'center',
-											gap: 20,
-										}}
-									>
-										<View style={{ width: '100%' }}>
-											<TimePickerInput
-												label='heure de fin:'
-												value={values.endTime}
-												onChange={(date) => {
-													setFieldValue('endTime', date);
-												}}
-											/>
-											{touched.endTime && errors.endTime && (
-												<Text
-													style={[
-														styles.errorText,
-														{ color: colors.primary || 'red' },
-													]}
-												>
-													{errors.endTime as string}
-												</Text>
-											)}
-										</View>
-										<View style={{ width: '10%' }}>
-											<RoundButton
-												svgSize={18}
-												btnSize={40}
-												variant='primary'
-												type='close'
-												onPress={() => {
-													Vibration.vibrate(50);
-													setEndIsDefine(!endIsDefine);
-												}}
-											></RoundButton>
-										</View>
-									</View>
-								) : (
-									<View style={{ width: '100%' }}>
-										<ButtonMenu
-											type='round'
-											text='+ heure de fin'
-											action={() => {
-												Vibration.vibrate(50);
-												setEndIsDefine(!endIsDefine);
-											}}
-										/>
-									</View>
-								)}
-							</View>
+							)}
+						/>
+
+						{touched.category?.title && errors.category?.title && (
+							<Text style={[styles.errorText, { color: colors.primary }]}>
+								{errors.category.title}
+							</Text>
+						)}
+
+						{/* Sélecteurs de temps */}
+						<View style={[styles.timePickersContainer]}>
+							<TimePickerInput
+								label='Heure de début:'
+								value={values.startTime}
+								onChange={(date) => setFieldValue('startTime', date)}
+							/>
+
+							{endIsDefine ? (
+								<View
+									style={{
+										flexDirection: 'row',
+										width: '100%',
+										height: '100%',
+										alignItems: 'center',
+										justifyContent: 'flex-start',
+										gap: 5,
+									}}
+								>
+									<TimePickerInput
+										label='Heure de fin:'
+										value={values.endTime}
+										onChange={(date) => setFieldValue('endTime', date)}
+									/>
+									<RoundButton
+										variant='primary'
+										type='close'
+										svgSize={18}
+										onPress={() => setEndIsDefine(false)}
+									/>
+								</View>
+							) : (
+								<View
+									style={{
+										flexDirection: 'row',
+										width: '50%',
+										height: '100%',
+										alignItems: 'center',
+									}}
+								>
+									<ButtonMenu
+										type='round'
+										text='+ FIN'
+										action={() => setEndIsDefine(true)}
+									/>
+								</View>
+							)}
 						</View>
 
 						{endIsDefine && (
 							<View style={styles.recurrenceContainer}>
-								<Text style={styles.recurrenceLabel}>Récurrence:</Text>
+								<Text style={styles.recurrenceLabel}>Jours répétition :</Text>
 								<View style={styles.dayButtonsContainer}>
 									{weekdays.map((day) => (
 										<Pressable
@@ -452,16 +290,19 @@ export default function TimerForm({
 													backgroundColor: colors.secondary,
 												},
 											]}
-											onPress={() => {
-												Vibration.vibrate(50);
-												toggleDaySelection(day.value);
-											}}
+											onPress={() =>
+												setSelectedDays((prev) =>
+													prev.includes(day.value)
+														? prev.filter((d) => d !== day.value)
+														: [...prev, day.value]
+												)
+											}
 										>
 											<Text
 												style={[
 													styles.dayButtonText,
 													selectedDays.includes(day.value) && {
-														color: '#FFFFFF',
+														color: 'white',
 													},
 												]}
 											>
@@ -473,22 +314,22 @@ export default function TimerForm({
 							</View>
 						)}
 
-						<View style={endIsDefine ? styles.smallButton : styles.bigButton}>
-							<ButtonMenu
-								type='round'
-								text={
-									isEditing
-										? 'Mettre à jour'
-										: endIsDefine
-										? "Enregistrer l'activité"
-										: 'Lancer Chronomètre'
-								}
-								action={() => {
-									Vibration.vibrate(50);
-									handleSubmit();
-								}}
-							/>
-						</View>
+						{/* Bouton de soumission */}
+						<ButtonMenu
+							style={{ marginTop: 10 }}
+							type='round'
+							text={
+								isEditing
+									? 'Mettre à jour'
+									: endIsDefine
+									? "Enregistrer l'activité"
+									: 'Lancer Chronomètre'
+							}
+							action={() => {
+								Vibration.vibrate(50);
+								handleSubmit();
+							}}
+						/>
 					</View>
 				)}
 			</Formik>
@@ -497,19 +338,33 @@ export default function TimerForm({
 }
 
 const styles = StyleSheet.create({
+	container: {
+		display: 'flex',
+		flexDirection: 'column',
+		justifyContent: 'center',
+		alignItems: 'center',
+	},
+	timePickersContainer: {
+		flexDirection: 'row',
+		alignItems: 'flex-start',
+		justifyContent: 'space-between',
+		gap: 5,
+		// marginVertical: 1,
+		width: '100%',
+	},
 	recurrenceContainer: {
-		marginBottom: 5,
+		marginVertical: 1,
+		width: '100%',
 	},
 	recurrenceLabel: {
 		fontSize: 16,
 		fontWeight: 'bold',
-		marginBottom: 0,
+		marginBottom: 10,
 	},
 	dayButtonsContainer: {
 		flexDirection: 'row',
 		justifyContent: 'space-between',
-		alignItems: 'center',
-		flexWrap: 'wrap',
+		gap: 5,
 	},
 	dayButton: {
 		width: 40,
@@ -518,39 +373,29 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		backgroundColor: '#F0F0F0',
-		margin: 4,
 	},
 	dayButtonText: {
 		fontSize: 12,
 		fontWeight: 'bold',
 	},
 	bigButton: {
-		height: 50,
-		marginInline: 'auto',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
 		width: '100%',
+		height: 50,
+		marginTop: 20,
 	},
 	smallButton: {
-		marginTop: 3,
-		height: 40,
 		width: '70%',
-		marginInline: 'auto',
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
+		height: 40,
+		marginTop: 10,
 	},
 	errorText: {
 		fontSize: 12,
-		marginTop: 2,
-		marginBottom: 5,
+		marginBottom: 10,
 		paddingLeft: 5,
 	},
 	label: {
 		fontSize: 16,
 		fontWeight: 'bold',
-		paddingLeft: 5,
-		marginBottom: 5,
+		marginBottom: 10,
 	},
 });
