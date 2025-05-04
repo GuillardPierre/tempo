@@ -38,7 +38,6 @@ export default function Homepage() {
 		setCategories,
 		selectedWorktime,
 		setSelectedWorktime,
-		// refreshWorkTimes,
 	} = useIndex();
 
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
@@ -116,7 +115,7 @@ export default function Homepage() {
 							categories={categories}
 							setCategories={setCategories}
 							setWorktimes={setWorktimes}
-							// refreshWorkTimes={refreshWorkTimes}
+							setSnackBar={setSnackBar}
 						/>
 					)}
 				</ModalMenu>

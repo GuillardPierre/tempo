@@ -1,14 +1,21 @@
 import { View, Pressable, StyleSheet, Vibration } from 'react-native';
 import ThemedText from '../utils/ThemedText';
-import { SelectedWorktime } from '@/app/types/worktime';
+import { SelectedWorktime, Worktime } from '@/app/types/worktime';
 import { useState } from 'react';
 import ENDPOINTS from '../utils/ENDPOINT';
+import { formatDateWihtoutTime } from '../utils/utils';
+import { Button } from 'react-native-paper';
+import { httpDelete } from '../utils/querySetup';
 
 type Props = {
 	setModalVisible: (visible: boolean) => void;
+	setWorktimes: (
+		worktimes: Worktime[] | ((prev: Worktime[]) => Worktime[])
+	) => void;
 	selectedWorktime: SelectedWorktime | null;
 	onDeleteSuccess?: () => void;
 	onCancel?: () => void;
+	setSnackBar?: (type: 'error' | 'info', messageText: string) => void;
 };
 
 export default function DeleteBlock({
@@ -16,35 +23,41 @@ export default function DeleteBlock({
 	selectedWorktime,
 	onDeleteSuccess,
 	onCancel,
+	setWorktimes,
+	setSnackBar,
 }: Props) {
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const handleDelete = async () => {
 		if (!selectedWorktime?.id) {
 			console.error('No worktime selected for deletion');
+			if (setSnackBar) setSnackBar('error', 'Aucune entrée sélectionnée');
 			return;
 		}
 
 		setIsDeleting(true);
+		const endpoint =
+			selectedWorktime.type === 'SINGLE'
+				? ENDPOINTS.worktime.root
+				: ENDPOINTS.woktimeSeries.root;
 
 		try {
-			const response = await fetch(
-				`${ENDPOINTS}/api/worktimes/${selectedWorktime.id}`,
-				{
-					method: 'DELETE',
-					headers: {
-						'Content-Type': 'application/json',
-					},
-					credentials: 'include',
-				}
-			);
+			const response = await httpDelete(`${endpoint}${selectedWorktime.id}`);
 
 			if (!response.ok) {
+				if (setSnackBar)
+					setSnackBar(
+						'error',
+						`Erreur lors de la suppression (${response.status})`
+					);
 				throw new Error(`Error: ${response.status}`);
 			}
 
 			Vibration.vibrate(50);
-
+			setWorktimes((prevWorktimes) =>
+				prevWorktimes.filter((worktime) => worktime.id !== selectedWorktime.id)
+			);
+			if (setSnackBar) setSnackBar('info', 'Suppression réussie');
 			if (onDeleteSuccess) {
 				onDeleteSuccess();
 			} else {
@@ -52,6 +65,7 @@ export default function DeleteBlock({
 			}
 		} catch (error) {
 			console.error('Failed to delete worktime:', error);
+			if (setSnackBar) setSnackBar('error', 'La suppression a échoué');
 		} finally {
 			setIsDeleting(false);
 		}
@@ -69,7 +83,7 @@ export default function DeleteBlock({
 	return (
 		<View style={styles.container}>
 			<ThemedText variant='header2' color='secondaryText'>
-				Êtes-vous sûr de vouloir supprimer ce bloc ?
+				Êtes-vous sûr de vouloir supprimer cette entrée ?
 			</ThemedText>
 
 			{selectedWorktime && (
@@ -78,37 +92,24 @@ export default function DeleteBlock({
 						{`Catégorie: ${selectedWorktime.categoryName || 'Non spécifiée'}`}
 					</ThemedText>
 					<ThemedText variant='body' color='secondaryText'>
-						{`Durée: ${selectedWorktime.duration || '00:00'}`}
+						{`Du ${
+							formatDateWihtoutTime(selectedWorktime.startTime) || '00:00'
+						}`}
 					</ThemedText>
 				</View>
 			)}
 
 			<View style={styles.buttonsContainer}>
-				<Pressable
-					onPress={handleDelete}
-					disabled={isDeleting}
-					style={[styles.button, styles.deleteButton]}
-				>
-					<ThemedText
-						variant='header1'
-						color='secondaryText'
-						style={styles.buttonText}
-					>
-						{isDeleting ? 'Suppression...' : 'Oui'}
-					</ThemedText>
-				</Pressable>
-				<Pressable
+				<Button onPress={handleDelete} disabled={isDeleting} mode='contained'>
+					Oui
+				</Button>
+				<Button
 					onPress={handleCancel}
-					style={[styles.button, styles.cancelButton]}
+					disabled={isDeleting}
+					mode='contained-tonal'
 				>
-					<ThemedText
-						variant='header1'
-						color='secondaryText'
-						style={styles.buttonText}
-					>
-						Non
-					</ThemedText>
-				</Pressable>
+					Non
+				</Button>
 			</View>
 		</View>
 	);
@@ -127,27 +128,6 @@ const styles = StyleSheet.create({
 	buttonsContainer: {
 		marginTop: 20,
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-	},
-	button: {
-		minWidth: 100,
-		alignItems: 'center',
-	},
-	deleteButton: {
-		backgroundColor: '#ffdddd',
-	},
-	cancelButton: {
-		backgroundColor: '#C2B2FF',
-	},
-	buttonText: {
-		fontSize: 20,
-		fontWeight: 'bold',
-		borderWidth: 3,
-		overflow: 'hidden',
-		paddingHorizontal: 10,
-		paddingVertical: 5,
-		borderRadius: 8,
-		textAlign: 'center',
-		width: '100%',
+		justifyContent: 'space-around',
 	},
 });

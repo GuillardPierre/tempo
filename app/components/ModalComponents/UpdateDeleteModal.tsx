@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import ThemedText from '../utils/ThemedText';
-import { SelectedWorktime } from '@/app/types/worktime';
+import { SelectedWorktime, Worktime } from '@/app/types/worktime';
 import TimerForm from '@/app/forms/timerForm';
 import ButtonMenu from '../ButtonMenu';
 import DeleteBlock from './DeleteBlock';
@@ -12,10 +12,12 @@ import useSnackBar from '@/app/hooks/useSnackBar';
 type Props = {
 	setModalVisible: (visible: boolean) => void;
 	selectedWorktime: SelectedWorktime | null;
-	categories?: any[];
-	setCategories?: (categories: any[] | ((prev: any[]) => any[])) => void;
-	setWorktimes?: (worktimes: any[] | ((prev: any[]) => any[])) => void;
-	refreshWorkTimes?: () => void;
+	categories: any[];
+	setCategories: (categories: any[] | ((prev: any[]) => any[])) => void;
+	setWorktimes: (
+		worktimes: Worktime[] | ((prev: Worktime[]) => Worktime[])
+	) => void;
+	setSnackBar: (type: 'error' | 'info', messageText: string) => void;
 };
 
 export default function UpdateDeleteModal({
@@ -24,7 +26,7 @@ export default function UpdateDeleteModal({
 	categories = [],
 	setCategories,
 	setWorktimes,
-	refreshWorkTimes,
+	setSnackBar,
 }: Props) {
 	const colors = useThemeColors();
 	const [mode, setMode] = useState<'view' | 'edit' | 'delete'>('view');
@@ -32,7 +34,6 @@ export default function UpdateDeleteModal({
 		type: 'error' | 'info';
 		message: string;
 	} | null>(null);
-	const { setSnackBar } = useSnackBar();
 
 	const formatDate = (dateString: string | undefined): string => {
 		if (!dateString) return '';
@@ -46,17 +47,19 @@ export default function UpdateDeleteModal({
 	};
 
 	const handleUpdateSuccess = () => {
+		setSnackBarMessage({
+			type: 'info',
+			message: 'Modification réussie',
+		});
 		setMode('view');
-		if (refreshWorkTimes) {
-			refreshWorkTimes();
-		}
 		setModalVisible(false);
 	};
 
 	const handleDeleteSuccess = () => {
-		if (refreshWorkTimes) {
-			refreshWorkTimes();
-		}
+		setSnackBarMessage({
+			type: 'info',
+			message: 'Suppression réussie',
+		});
 		setModalVisible(false);
 	};
 
@@ -133,17 +136,13 @@ export default function UpdateDeleteModal({
 
 			{mode === 'delete' && (
 				<View style={styles.deleteContainer}>
-					<View style={styles.header}>
-						<ThemedText variant='body' color='secondaryText'>
-							Confirmation de suppression
-						</ThemedText>
-					</View>
-
 					<DeleteBlock
 						selectedWorktime={selectedWorktime}
 						onDeleteSuccess={handleDeleteSuccess}
 						onCancel={() => setMode('view')}
 						setModalVisible={setModalVisible}
+						setWorktimes={setWorktimes}
+						setSnackBar={setSnackBar}
 					/>
 				</View>
 			)}

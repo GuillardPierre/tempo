@@ -96,7 +96,8 @@ export async function httpPut(url: String, body: Object, option = {}) {
 	});
 }
 
-export function httpDelete(url: String, option = {}) {
+export async function httpDelete(url: String, option = {}) {
+	await checkAndRefreshToken();
 	return fetch(makeUrl(url), {
 		method: 'DELETE',
 		...option,

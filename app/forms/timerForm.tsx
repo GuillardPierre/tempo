@@ -129,9 +129,15 @@ export default function TimerForm({
 			recurrence: undefined as CreateRecurrenceRule | undefined,
 			startDate: selectedWorktime?.startDate
 				? new Date(selectedWorktime.startDate)
-				: undefined,
+				: new Date(),
 		};
 		return initialValues;
+	};
+
+	const daysAreDisplayed = () => {
+		if (selectedWorktime && selectedWorktime.type === 'SINGLE') return false;
+		if (selectedWorktime && selectedWorktime.type === 'RECURRING') return true;
+		if (endIsDefine && !selectedWorktime) return true;
 	};
 
 	return (
@@ -252,12 +258,14 @@ export default function TimerForm({
 										value={values.endTime}
 										onChange={(date) => setFieldValue('endTime', date)}
 									/>
-									<RoundButton
-										variant='primary'
-										type='close'
-										svgSize={18}
-										onPress={() => setEndIsDefine(false)}
-									/>
+									<View style={{ marginTop: 10 }}>
+										<RoundButton
+											variant='primary'
+											type='close'
+											svgSize={18}
+											onPress={() => setEndIsDefine(false)}
+										/>
+									</View>
 								</View>
 							) : (
 								<View
@@ -266,6 +274,7 @@ export default function TimerForm({
 										width: '50%',
 										height: '100%',
 										alignItems: 'center',
+										marginTop: 5,
 									}}
 								>
 									<ButtonMenu
@@ -277,9 +286,9 @@ export default function TimerForm({
 							)}
 						</View>
 
-						{endIsDefine && (
+						{daysAreDisplayed() && (
 							<View style={styles.recurrenceContainer}>
-								<Text style={styles.recurrenceLabel}>Jours répétition :</Text>
+								<Text style={styles.recurrenceLabel}>Répétition :</Text>
 								<View style={styles.dayButtonsContainer}>
 									{weekdays.map((day) => (
 										<Pressable
