@@ -8,6 +8,7 @@ type Props = {
 	direction?: 'top' | 'bottom';
 	flexGrow?: boolean;
 	disableScroll?: boolean;
+	height?: number;
 };
 
 export default function MainWrapper({
@@ -16,6 +17,7 @@ export default function MainWrapper({
 	direction = 'bottom',
 	flexGrow = false,
 	disableScroll = false,
+	height = 1000,
 }: Props) {
 	const colors = useThemeColors();
 	const animation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
@@ -81,7 +83,7 @@ export default function MainWrapper({
 				flexGrow ? styles.flexContainer : {},
 				{
 					backgroundColor: colors.background,
-					maxHeight: undefined, // Retirer la limitation de hauteur
+					maxHeight: height,
 					transform: [
 						{
 							translateY: animation.interpolate({

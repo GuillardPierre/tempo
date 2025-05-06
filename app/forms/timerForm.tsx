@@ -125,7 +125,9 @@ export default function TimerForm({
 				  }
 				: { id: null, title: '' },
 			startTime: new Date(selectedWorktime?.startTime || Date.now()),
-			endTime: new Date(selectedWorktime?.endTime || Date.now()),
+			endTime: selectedWorktime?.endTime
+				? new Date(selectedWorktime.endTime)
+				: null,
 			recurrence: undefined as CreateRecurrenceRule | undefined,
 			startDate: selectedWorktime?.startDate
 				? new Date(selectedWorktime.startDate)
@@ -151,7 +153,10 @@ export default function TimerForm({
 					submitWorktime({
 						...values,
 						startTime: values.startTime.toISOString(),
-						endTime: values.endTime.toISOString(),
+						endTime:
+							endIsDefine && values.endTime
+								? values.endTime.toISOString()
+								: undefined,
 						recurrence: selectedDays.length
 							? `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`
 							: undefined,
@@ -236,29 +241,38 @@ export default function TimerForm({
 
 						{/* Sélecteurs de temps */}
 						<View style={[styles.timePickersContainer]}>
-							<TimePickerInput
-								label='Heure de début:'
-								value={values.startTime}
-								onChange={(date) => setFieldValue('startTime', date)}
-							/>
+							<View>
+								<TimePickerInput
+									label='Début:'
+									value={values.startTime}
+									onChange={(date) => setFieldValue('startTime', date)}
+								/>
+							</View>
 
+							{/* Fin */}
 							{endIsDefine ? (
 								<View
 									style={{
 										flexDirection: 'row',
-										width: '100%',
-										height: '100%',
 										alignItems: 'center',
-										justifyContent: 'flex-start',
-										gap: 5,
+										height: '100%',
 									}}
 								>
 									<TimePickerInput
-										label='Heure de fin:'
-										value={values.endTime}
+										label='Fin:'
+										value={values.endTime ? values.endTime : new Date()}
 										onChange={(date) => setFieldValue('endTime', date)}
 									/>
-									<View style={{ marginTop: 10 }}>
+									<View
+										style={{
+											flexDirection: 'row',
+											marginTop: 10,
+											marginLeft: 5,
+											height: '100%',
+
+											alignItems: 'center',
+										}}
+									>
 										<RoundButton
 											variant='primary'
 											type='close'
@@ -278,6 +292,7 @@ export default function TimerForm({
 									}}
 								>
 									<ButtonMenu
+										style={{ width: '50%', marginTop: 12 }}
 										type='round'
 										text='+ FIN'
 										action={() => setEndIsDefine(true)}
@@ -323,9 +338,8 @@ export default function TimerForm({
 							</View>
 						)}
 
-						{/* Bouton de soumission */}
 						<ButtonMenu
-							style={{ marginTop: 10 }}
+							style={{ width: '75%', marginTop: 10 }}
 							type='round'
 							text={
 								isEditing
@@ -356,10 +370,9 @@ const styles = StyleSheet.create({
 	timePickersContainer: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
-		justifyContent: 'space-between',
-		gap: 5,
-		// marginVertical: 1,
+		justifyContent: 'flex-start',
 		width: '100%',
+		gap: 10,
 	},
 	recurrenceContainer: {
 		marginVertical: 1,
@@ -387,16 +400,6 @@ const styles = StyleSheet.create({
 		fontSize: 12,
 		fontWeight: 'bold',
 	},
-	bigButton: {
-		width: '100%',
-		height: 50,
-		marginTop: 20,
-	},
-	smallButton: {
-		width: '70%',
-		height: 40,
-		marginTop: 10,
-	},
 	errorText: {
 		fontSize: 12,
 		marginBottom: 10,
@@ -406,5 +409,10 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: 'bold',
 		marginBottom: 10,
+	},
+	submitButton: {
+		width: '15%',
+		marginInline: 'auto',
+		marginTop: 10,
 	},
 });

@@ -3,14 +3,21 @@ import { View, Pressable, Platform, StyleSheet } from 'react-native';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { useThemeColors } from '../../hooks/useThemeColors';
 import ThemedText from '../../components/utils/ThemedText';
+import { StyleProp, ViewStyle } from 'react-native';
 
 type Props = {
 	label?: string;
 	value: Date;
 	onChange: (date: Date) => void;
+	style?: StyleProp<ViewStyle>;
 };
 
-export default function TimePickerInput({ label, value, onChange }: Props) {
+export default function TimePickerInput({
+	label,
+	value,
+	onChange,
+	style,
+}: Props) {
 	const [show, setShow] = useState(false);
 	const colors = useThemeColors();
 
@@ -29,7 +36,7 @@ export default function TimePickerInput({ label, value, onChange }: Props) {
 	};
 
 	return (
-		<View style={styles.container}>
+		<View style={[styles.container, style]}>
 			{label && (
 				<ThemedText style={[styles.label, { color: colors.secondaryText }]}>
 					{label}
@@ -63,7 +70,7 @@ export default function TimePickerInput({ label, value, onChange }: Props) {
 					mode='time'
 					is24Hour={true}
 					onChange={onTimeChange}
-					display={Platform.OS === 'ios' ? 'spinner' : 'default'}
+					display={'spinner'}
 				/>
 			)}
 		</View>
@@ -72,9 +79,11 @@ export default function TimePickerInput({ label, value, onChange }: Props) {
 
 const styles = StyleSheet.create({
 	container: {
-		width: '40%',
+		// width: '100%', // Supprimé pour éviter que chaque input prenne toute la largeur
+		// flex: 1, // Permet à chaque TimePickerInput de partager l'espace disponible
 		marginBottom: 5,
 		textAlign: 'center',
+		width: 100,
 	},
 	label: {
 		fontSize: 16,
@@ -82,13 +91,13 @@ const styles = StyleSheet.create({
 		paddingLeft: 5,
 	},
 	input: {
-		width: '100%',
 		borderWidth: 3,
 		borderStyle: 'solid',
-		borderRadius: 4,
+		borderRadius: 12,
 		padding: 10,
 		fontSize: 18,
 		fontWeight: 'bold',
 		textAlign: 'center',
+		flex: 1, // Permet à chaque TimePickerInput de prendre la place disponible sans dépasser
 	},
 });

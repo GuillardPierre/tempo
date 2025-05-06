@@ -5,15 +5,12 @@ import ThemedText from './utils/ThemedText';
 import CustomChip from './utils/CustomChip';
 import BurgerMenuSvg from './svg/burgerMenu';
 import { Worktime } from '../types/worktime';
+import StopSvg from './svg/stop';
+import { httpPut } from './utils/querySetup';
+import ENDPOINTS from './utils/ENDPOINT';
 
 type Props = {
 	worktime: Worktime;
-	type: 'time' | 'button';
-	text: string;
-	duration: number;
-	startTime: string;
-	endTime: string;
-	worktimeType: 'SINGLE' | 'RECURRING';
 	setModalType: (type: 'menu' | 'update') => void;
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: any) => void;
@@ -21,12 +18,6 @@ type Props = {
 
 export default function Block({
 	worktime,
-	type,
-	text,
-	duration,
-	startTime,
-	endTime,
-	worktimeType,
 	setModalType,
 	setModalVisible,
 	setSelectedWorktime,
@@ -50,7 +41,25 @@ export default function Block({
 
 	const categoryName = worktime.categoryName || worktime.category?.name || '';
 	const categoryColor =
-		worktimeType === 'SINGLE' ? colors.primaryLight : '#f7a94a';
+		worktime.type === 'SINGLE' ? colors.primaryLight : '#f7a94a';
+
+	const stopWorktime = async () => {
+		const newData = {
+			...worktime,
+			endTime: new Date(),
+			category: { id: worktime.categoryId, title: worktime.categoryName },
+		};
+		const rep = await httpPut(
+			`${ENDPOINTS.worktime.root}${worktime.id}`,
+			newData
+		);
+		if (rep.ok) {
+			const data = await rep.json();
+			console.log('data', data);
+		} else {
+			console.log('error', rep);
+		}
+	};
 
 	return (
 		<View
@@ -61,19 +70,19 @@ export default function Block({
 				},
 			]}
 		>
-			{type === 'time' && (
-				<View style={styles.timeContainer}>
-					<ThemedText>{convertTime(startTime)}</ThemedText>
-					<View style={styles.separator} />
-					<ThemedText>{convertTime(endTime)}</ThemedText>
-				</View>
-			)}
+			<View style={styles.timeContainer}>
+				<ThemedText>{convertTime(worktime.startTime)}</ThemedText>
+				<View style={styles.separator} />
+				<ThemedText>
+					{worktime.endTime ? convertTime(worktime.endTime) : '-'}
+				</ThemedText>
+			</View>
 			<ThemedText style={styles.mainText} variant='header2' color='primaryText'>
-				{categoryName}
+				{categoryName} {!worktime.endTime ? '- En cours...' : ''}
 			</ThemedText>
-			{type === 'time' && (
-				<>
-					<CustomChip>{convertDuration(duration)}</CustomChip>
+			<>
+				<CustomChip>{convertDuration(worktime.duration)}</CustomChip>
+				{worktime.endTime !== null ? (
 					<Pressable
 						onPress={() => {
 							Vibration.vibrate(50);
@@ -84,8 +93,17 @@ export default function Block({
 					>
 						<BurgerMenuSvg />
 					</Pressable>
-				</>
-			)}
+				) : (
+					<Pressable
+						onPress={() => {
+							Vibration.vibrate(50);
+							stopWorktime();
+						}}
+					>
+						<StopSvg />
+					</Pressable>
+				)}
+			</>
 		</View>
 	);
 }

@@ -21,9 +21,13 @@ export default function Homepage() {
 	const colors = useThemeColors();
 	const {
 		worktimes,
+		monthWorktimes,
+		unfinishedWorktimes,
 		categories,
 		date,
 		setDate,
+		month,
+		setMonth,
 		modalVisible,
 		setModalVisible,
 		modalType,
@@ -33,7 +37,6 @@ export default function Homepage() {
 		calendarIsOpen,
 		setCalendarIsOpen,
 		isConnected,
-		setIsConnected,
 		setWorktimes,
 		setCategories,
 		selectedWorktime,
@@ -62,26 +65,45 @@ export default function Homepage() {
 					setModalVisible={setModalVisible}
 					setModalType={setModalType}
 				/>
-				<DateDisplay date={date} setDate={setDate} />
+				<DateDisplay
+					date={date}
+					setDate={setDate}
+					setCalendarIsOpen={setCalendarIsOpen}
+				/>
 				<MainWrapper isOpen={calendarIsOpen} direction='top'>
-					<Calendar date={date} setDate={setDate} />
+					<Calendar
+						date={date}
+						setDate={setDate}
+						monthWorktimes={monthWorktimes}
+						month={month}
+						setMonth={setMonth}
+					/>
 				</MainWrapper>
+				{unfinishedWorktimes.length > 0 && (
+					<MainWrapper height={110}>
+						{unfinishedWorktimes.map((worktime, index) => (
+							<Block
+								key={worktime.id}
+								worktime={worktime}
+								setModalType={setModalType}
+								setModalVisible={setModalVisible}
+								setSelectedWorktime={setSelectedWorktime}
+							/>
+						))}
+					</MainWrapper>
+				)}
 				<MainWrapper>
-					{worktimes.map((worktime, index) => (
-						<Block
-							key={worktime.id}
-							worktime={worktime}
-							type={'time'}
-							text={worktime.categoryName}
-							startTime={worktime.startTime}
-							endTime={worktime.endTime}
-							duration={worktime.duration}
-							worktimeType={worktime.type}
-							setModalType={setModalType}
-							setModalVisible={setModalVisible}
-							setSelectedWorktime={setSelectedWorktime}
-						/>
-					))}
+					{worktimes
+						.filter((worktime) => worktime.endTime !== null)
+						.map((worktime, index) => (
+							<Block
+								key={worktime.id}
+								worktime={worktime}
+								setModalType={setModalType}
+								setModalVisible={setModalVisible}
+								setSelectedWorktime={setSelectedWorktime}
+							/>
+						))}
 				</MainWrapper>
 				<MainWrapper
 					isOpen={timerIsOpen}
@@ -105,7 +127,7 @@ export default function Homepage() {
 				<ModalMenu
 					modalVisible={modalVisible}
 					setModalVisible={setModalVisible}
-					disableScroll={modalType === 'update'}
+					// disableScroll={modalType === 'update'}
 				>
 					{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
 					{modalType === 'update' && (

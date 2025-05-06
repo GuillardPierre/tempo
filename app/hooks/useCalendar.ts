@@ -46,34 +46,9 @@ LocaleConfig.locales['fr'] = {
 LocaleConfig.defaultLocale = 'fr';
 
 export const useCalendar = (date: string, setDate: (date: string) => void) => {
-	const colors = useThemeColors();
-
-	const [currentMonth, setCurrentMonth] = useState(date);
-
-	const getDate = (count: number) => {
-		const theDate = new Date(date);
-		const newDate = theDate.setDate(theDate.getDate() + count);
-		return CalendarUtils.getCalendarDateString(newDate);
-	};
-
 	const onDayPress = useCallback((day: DateData) => {
 		setDate(day.dateString);
 	}, []);
 
-	const marked = useMemo(() => {
-		return {
-			[getDate(0)]: {
-				dotColor: 'red',
-				marked: true,
-			},
-			[date]: {
-				selected: true,
-				disableTouchEvent: true,
-				selectedColor: colors.secondary,
-				selectedTextColor: 'black',
-			},
-		};
-	}, [date]);
-
-	return { currentMonth, setCurrentMonth, onDayPress, marked };
+	return { onDayPress };
 };

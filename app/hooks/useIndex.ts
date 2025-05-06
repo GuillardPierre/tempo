@@ -6,6 +6,7 @@ import { Category, Worktime } from '../types/worktime';
 
 export const useIndex = () => {
 	const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
+	const [month, setMonth] = useState(new Date(date));
 	const [modalVisible, setModalVisible] = useState(false);
 	const [modalType, setModalType] = useState<'menu' | 'update'>('menu');
 	const [timerIsOpen, setTimerIsOpen] = useState(false);
@@ -16,13 +17,27 @@ export const useIndex = () => {
 	);
 	const [worktimes, setWorktimes] = useState<Worktime[]>([]);
 	const [categories, setCategories] = useState<Category[]>([]);
+	const [monthWorktimes, setMonthWorktimes] = useState<Worktime[]>([]);
+	const [unfinishedWorktimes, setUnfinishedWorktimes] = useState<Worktime[]>(
+		[]
+	);
+
+	// console.log('Worktimes', worktimes);
+	// console.log('Unfinished Worktimes', unfinishedWorktimes);
 
 	useEffect(() => {
 		checkConnection();
 		getCategrories();
+		getMonthWorktimes();
 	}, []);
 
-	// Nouvel useEffect pour déclencher getWorktimes à chaque changement de date
+	useEffect(() => {
+		getMonthWorktimes();
+		setUnfinishedWorktimes(
+			worktimes.filter((worktime) => worktime.endTime === null)
+		);
+	}, [worktimes, month]);
+
 	useEffect(() => {
 		if (isConnected) {
 			getWorktimes();
@@ -38,6 +53,18 @@ export const useIndex = () => {
 			setIsConnected(false);
 		}
 	}
+
+	const getMonthWorktimes = async () => {
+		try {
+			const rep = await httpGet(`${ENDPOINTS.schedule.month}${date}`);
+			if (rep.ok) {
+				const data = await rep.json();
+				setMonthWorktimes(data);
+			}
+		} catch (error) {
+			console.log('erreur:', error);
+		}
+	};
 
 	const getWorktimes = async () => {
 		try {
@@ -65,9 +92,13 @@ export const useIndex = () => {
 
 	return {
 		worktimes,
+		monthWorktimes,
+		unfinishedWorktimes,
 		categories,
 		date,
 		setDate,
+		month,
+		setMonth,
 		modalVisible,
 		setModalVisible,
 		modalType,
@@ -77,7 +108,6 @@ export const useIndex = () => {
 		calendarIsOpen,
 		setCalendarIsOpen,
 		isConnected,
-		setIsConnected,
 		setWorktimes,
 		setCategories,
 		selectedWorktime,

@@ -87,6 +87,8 @@ export async function httpPost(url: String, body: Object, option = {}) {
 }
 
 export async function httpPut(url: String, body: Object, option = {}) {
+	console.log('body PUT :', body);
+
 	await checkAndRefreshToken();
 	return fetch(makeUrl(url), {
 		method: 'PUT',
