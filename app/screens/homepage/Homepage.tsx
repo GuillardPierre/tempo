@@ -41,6 +41,7 @@ export default function Homepage() {
 		setCategories,
 		selectedWorktime,
 		setSelectedWorktime,
+		setUnfinishedWorktimes
 	} = useIndex();
 
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
@@ -88,6 +89,8 @@ export default function Homepage() {
 								setModalType={setModalType}
 								setModalVisible={setModalVisible}
 								setSelectedWorktime={setSelectedWorktime}
+								setWorktimes={setWorktimes}
+								setUnfinishedWorktimes={setUnfinishedWorktimes}
 							/>
 						))}
 					</MainWrapper>

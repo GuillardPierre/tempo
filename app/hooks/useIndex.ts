@@ -112,5 +112,6 @@ export const useIndex = () => {
 		setCategories,
 		selectedWorktime,
 		setSelectedWorktime,
+		setUnfinishedWorktimes
 	};
 };

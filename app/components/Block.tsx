@@ -14,6 +14,10 @@ type Props = {
 	setModalType: (type: 'menu' | 'update') => void;
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: any) => void;
+	setUnfinishedWorktimes?: (worktimes: Worktime[]) => void;
+	setWorktimes?:  (
+		worktimes: Worktime[] | ((prev: Worktime[]) => Worktime[])
+	) => void;
 };
 
 export default function Block({
@@ -21,6 +25,8 @@ export default function Block({
 	setModalType,
 	setModalVisible,
 	setSelectedWorktime,
+	setUnfinishedWorktimes,
+	setWorktimes,
 }: Props) {
 	const colors = useThemeColors();
 	const convertTime = (time: string) => {
@@ -46,6 +52,7 @@ export default function Block({
 	const stopWorktime = async () => {
 		const newData = {
 			...worktime,
+			isActive: false,
 			endTime: new Date(),
 			category: { id: worktime.categoryId, title: worktime.categoryName },
 		};
@@ -55,7 +62,15 @@ export default function Block({
 		);
 		if (rep.ok) {
 			const data = await rep.json();
-			console.log('data', data);
+			if (setUnfinishedWorktimes) {
+				setUnfinishedWorktimes([]);
+			}
+			if (setWorktimes) {
+				setWorktimes((prevWorktimes: Worktime[]) => [
+					...prevWorktimes,
+					data,
+				]);
+			}
 		} else {
 			console.log('error', rep);
 		}

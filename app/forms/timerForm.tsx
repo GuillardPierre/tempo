@@ -1,4 +1,4 @@
-import { Vibration, View, Text, StyleSheet } from 'react-native';
+import { Vibration, View, Text, StyleSheet, ScrollView } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import ButtonMenu from '../components/ButtonMenu';
 import TimePickerInput from './utils/TimePickerInput';
@@ -164,7 +164,7 @@ export default function TimerForm({
 				}}
 			>
 				{({ setFieldValue, values, handleSubmit, errors, touched }) => (
-					<View style={[styles.container]}>
+					<View style={styles.container}>
 						<Text style={[styles.label, { color: colors.secondaryText }]}>
 							Choisissez une activité :
 						</Text>
@@ -195,34 +195,23 @@ export default function TimerForm({
 								}
 							}}
 							searchable={true}
-							searchPlaceholder='Rechercher...'
+							searchPlaceholder='Tapez pour rechercher ou créer une catégorie'
 							onChangeSearchText={(text) => {
 								setSearchText(text);
 							}}
 							placeholder='Sélectionnez une catégorie'
-							style={{
-								borderWidth: 3,
-								borderColor: colors.primary,
-								borderRadius: 4,
-								marginBottom: 10,
-							}}
-							dropDownContainerStyle={{
-								backgroundColor: colors.background,
-								borderColor: colors.primary,
-							}}
+							style={[styles.dropdown, { borderColor: colors.primary }]}
+							dropDownContainerStyle={[
+								styles.dropdownContainer,
+								{ backgroundColor: colors.background, borderColor: colors.primary },
+							]}
 							listMode='MODAL'
 							modalAnimationType='slide'
 							zIndex={10000}
-							modalContentContainerStyle={{
-								backgroundColor: colors.background,
-								borderColor: colors.secondary,
-								borderWidth: 3,
-								borderRadius: 4,
-								padding: 10,
-								height: '50%',
-								width: '100%',
-								margin: 'auto',
-							}}
+							modalContentContainerStyle={[
+								styles.modalContentContainer,
+								{ backgroundColor: colors.background, borderColor: colors.secondary },
+							]}
 							ListEmptyComponent={(props) => (
 								<CreateCategoryButton
 									categoryName={searchText}
@@ -240,7 +229,7 @@ export default function TimerForm({
 						)}
 
 						{/* Sélecteurs de temps */}
-						<View style={[styles.timePickersContainer]}>
+						<View style={styles.timePickersContainer}>
 							<View>
 								<TimePickerInput
 									label='Début:'
@@ -251,28 +240,13 @@ export default function TimerForm({
 
 							{/* Fin */}
 							{endIsDefine ? (
-								<View
-									style={{
-										flexDirection: 'row',
-										alignItems: 'center',
-										height: '100%',
-									}}
-								>
+								<View style={styles.endTimeContainer}>
 									<TimePickerInput
 										label='Fin:'
 										value={values.endTime ? values.endTime : new Date()}
 										onChange={(date) => setFieldValue('endTime', date)}
 									/>
-									<View
-										style={{
-											flexDirection: 'row',
-											marginTop: 10,
-											marginLeft: 5,
-											height: '100%',
-
-											alignItems: 'center',
-										}}
-									>
+									<View style={styles.roundButtonContainer}>
 										<RoundButton
 											variant='primary'
 											type='close'
@@ -282,17 +256,9 @@ export default function TimerForm({
 									</View>
 								</View>
 							) : (
-								<View
-									style={{
-										flexDirection: 'row',
-										width: '50%',
-										height: '100%',
-										alignItems: 'center',
-										marginTop: 5,
-									}}
-								>
+								<View style={styles.addEndTimeContainer}>
 									<ButtonMenu
-										style={{ width: '50%', marginTop: 12 }}
+										style={styles.addEndTimeButton}
 										type='round'
 										text='+ FIN'
 										action={() => setEndIsDefine(true)}
@@ -304,7 +270,12 @@ export default function TimerForm({
 						{daysAreDisplayed() && (
 							<View style={styles.recurrenceContainer}>
 								<Text style={styles.recurrenceLabel}>Répétition :</Text>
-								<View style={styles.dayButtonsContainer}>
+								<ScrollView
+									style={styles.dayButtonsScroll}
+									contentContainerStyle={styles.dayButtonsContainer}
+									horizontal
+									showsHorizontalScrollIndicator={false}
+								>
 									{weekdays.map((day) => (
 										<Pressable
 											key={day.value}
@@ -334,12 +305,12 @@ export default function TimerForm({
 											</Text>
 										</Pressable>
 									))}
-								</View>
+								</ScrollView>
 							</View>
 						)}
 
 						<ButtonMenu
-							style={{ width: '75%', marginTop: 10 }}
+							style={styles.submitButton}
 							type='round'
 							text={
 								isEditing
@@ -367,12 +338,59 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
+	dropdown: {
+		borderWidth: 3,
+		borderRadius: 12,
+		marginBottom: 10,
+		width: '90%',
+		marginLeft: 'auto',
+		marginRight: 'auto',
+	},
+	dropdownContainer: {
+		borderWidth: 3,
+		borderRadius: 4,
+	},
+	modalContentContainer: {
+		borderWidth: 3,
+		borderRadius: 4,
+		padding: 10,
+		height: '50%',
+		width: '100%',
+		marginLeft: 'auto',
+		marginRight: 'auto',
+	},
 	timePickersContainer: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
 		justifyContent: 'flex-start',
+		width: '90%',
+		marginLeft: 'auto',
+		marginRight: 'auto',
+		gap: 20,
+	},
+	endTimeContainer: {
+		flexDirection: 'row',
+		alignItems: 'center',
+		height: '100%',
+	},
+	roundButtonContainer: {
+		flexDirection: 'row',
+		marginTop: 15,
+		marginLeft: 15,
+		height: '100%',
+		alignItems: 'center',
+	},
+	addEndTimeContainer: {
+		flexDirection: 'row',
+		width: '50%',
+		height: '100%',
+		alignItems: 'center',
+		marginTop: 5,
+		marginBottom: 20,
+	},
+	addEndTimeButton: {
 		width: '100%',
-		gap: 10,
+		marginTop: 12,
 	},
 	recurrenceContainer: {
 		marginVertical: 1,
@@ -382,15 +400,30 @@ const styles = StyleSheet.create({
 		fontSize: 16,
 		fontWeight: 'bold',
 		marginBottom: 10,
+		width: '90%',
+		marginLeft: 'auto',
+		marginRight: 'auto',
+	},
+	dayButtonsScroll: {
+		width: '90%',
+		marginLeft: 'auto',
+		marginRight: 'auto',
+		borderWidth: 2,
+		borderColor: '#cccccc',
+		borderRadius: 16,
+		backgroundColor: '#f7f7f7',
+		paddingVertical: 6,
 	},
 	dayButtonsContainer: {
 		flexDirection: 'row',
-		justifyContent: 'space-between',
-		gap: 5,
+		justifyContent: 'flex-start',
+		alignItems: 'center',
+		gap: 20,
+		paddingHorizontal: 2,
 	},
 	dayButton: {
-		width: 40,
-		height: 40,
+		width: 45,
+		height:45,
 		borderRadius: 20,
 		justifyContent: 'center',
 		alignItems: 'center',
@@ -411,8 +444,17 @@ const styles = StyleSheet.create({
 		marginBottom: 10,
 	},
 	submitButton: {
-		width: '15%',
-		marginInline: 'auto',
+		width: '75%',
 		marginTop: 10,
+		marginLeft: 'auto',
+		marginRight: 'auto',
+	},
+	arrowRight: {
+		position: 'absolute',
+		right: 10,
+		top: '50%',
+		transform: [{ translateY: -10 }],
+		fontSize: 16,
+		fontWeight: 'bold',
 	},
 });
