@@ -48,7 +48,7 @@ export default function TimePickerInput({
 					styles.input,
 					{
 						backgroundColor: colors.primaryLight,
-						borderColor: '#8955FD',
+						borderColor: colors.primary,
 					},
 				]}
 			>
@@ -78,9 +78,7 @@ export default function TimePickerInput({
 }
 
 const styles = StyleSheet.create({
-	container: {
-		// width: '100%', // Supprimé pour éviter que chaque input prenne toute la largeur
-		// flex: 1, // Permet à chaque TimePickerInput de partager l'espace disponible
+		container: {
 		marginBottom: 5,
 		textAlign: 'center',
 		width: 100,
@@ -92,7 +90,7 @@ const styles = StyleSheet.create({
 		marginBottom: 5,
 	},
 	input: {
-		borderWidth: 3,
+		borderWidth: 4,
 		borderStyle: 'solid',
 		borderRadius: 12,
 		padding: 10,

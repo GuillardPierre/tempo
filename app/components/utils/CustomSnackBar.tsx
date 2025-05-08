@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { useEffect } from 'react';
+import { StyleSheet } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 
 type Props = {
@@ -53,6 +53,9 @@ const styles = StyleSheet.create({
     zIndex: 1000,
   },
   snackbar: {
+    width: "90%",
     elevation: 6,
+    marginHorizontal: "auto",
+    borderRadius: 16,
   },
 });

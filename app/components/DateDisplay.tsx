@@ -59,6 +59,6 @@ const styles = StyleSheet.create({
 		marginInline: 10,
 		borderRadius: 16,
 		borderWidth: 2,
-		borderColor: '#8955FD',
+		borderColor: '#7678ED',
 	},
 });

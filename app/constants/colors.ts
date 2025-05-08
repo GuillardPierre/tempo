@@ -1,10 +1,11 @@
 export const Colors = {
 	light: {
-		primary: '#7B32F5',
-		primaryLight: '#C2B2FF',
+		primary: '#3D348B',
+		primaryLight: '#7678ED',
 		primaryText: '#F5F2FF',
 		secondaryText: '#000000',
-		secondary: '#FF8F33',
+		secondary: '#F18701',
+		secondaryLight: '#F7B801',
 		background: '#FFFFFF',
 		error: '#d05d5d',
 	},
@@ -14,6 +15,7 @@ export const Colors = {
 		primaryText: '#F5F2FF',
 		secondaryText: '#000000',
 		secondary: '#FF8F33',
+		secondaryLight: '#F7B801',
 		background: '#FFFFFF',
 		error: '#d05d5d',
 	},

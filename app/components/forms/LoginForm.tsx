@@ -1,3 +1,4 @@
+import React from 'react';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import { StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
@@ -48,6 +49,9 @@ export default function LoginForm({ setSnackBar }: Props) {
       setSnackBar('error', error.message || 'Erreur de connexion');
     },
   });
+
+  console.log("isPending", isPending);
+  
 
   return (
     <Formik

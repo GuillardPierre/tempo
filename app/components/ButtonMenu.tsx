@@ -1,7 +1,6 @@
 import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
 import ThemedText from './utils/ThemedText';
-import { Style } from 'react-native-paper/lib/typescript/components/List/utils';
-
+import { useThemeColors } from '../hooks/useThemeColors';
 type Props = {
 	text: string;
 	action: () => void;
@@ -10,8 +9,9 @@ type Props = {
 };
 
 export default function ButtonMenu({ text, action, type, style }: Props) {
+	const colors = useThemeColors();
 	return (
-		<Pressable style={[styles.button, styles[type], style]} onPress={action}>
+		<Pressable style={[styles.button, styles[type], style, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]} onPress={action}>
 			<ThemedText style={styles.textButton}>{text}</ThemedText>
 		</Pressable>
 	);
@@ -32,13 +32,9 @@ const styles = StyleSheet.create({
 	},
 	square: {
 		borderRadius: 8,
-		borderColor: '#8955FD',
-		backgroundColor: '#C2B2FF',
 	},
 	round: {
 		borderRadius: 9999,
-		backgroundColor: '#7B32F5',
-		borderColor: '#7B32F5',
 	},
 	textButton: {
 		fontSize: 20,

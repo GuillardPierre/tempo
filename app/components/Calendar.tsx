@@ -4,6 +4,7 @@ import { DateData, Calendar as RNCalendar } from 'react-native-calendars';
 import { useCalendar } from '../hooks/useCalendar';
 import { Worktime } from '../types/worktime';
 import { RRule } from 'rrule';
+import { useThemeColors } from '../hooks/useThemeColors';
 
 type Props = {
 	date: string;
@@ -20,15 +21,16 @@ export default function Calendar({
 	month,
 	setMonth,
 }: Props) {
+	const colors = useThemeColors();
+	console.log("Date", date);
+	
 	const { onDayPress } = useCalendar(date, setDate);
 
 	// const [month, setMonth] = useState(new Date(date));
 
-	console.log(month);
-
 	/**
 	 * Retourne un tableau de dates (format 'YYYY-MM-DD')
-	 * où le worktime s’applique, tronqué au mois de `monthDate`.
+	 * où le worktime s'applique, tronqué au mois de `monthDate`.
 	 *
 	 * @param {Worktime} wt – worktime { startTime, endTime, recurrence, type, … }
 	 * @param {Date} monthDate – une date quelconque dans le mois à traiter
@@ -54,15 +56,11 @@ export default function Calendar({
 		// RECURRING
 		if (wt.recurrence) {
 			const rule = RRule.fromString(wt.recurrence);
-			// On fixe le DTSTART au jour de startTime
 			rule.options.dtstart = new Date(wt.startTime);
-			// Limiter à l’intervalle du mois
 			rule.options.until = to;
 			const r = new RRule(rule.options);
 
-			// Génère toutes les occurrences entre from et to
 			const dates = r.between(from, to, true);
-			// On renvoie uniquement la partie date
 			return dates.map((d) => d.toISOString().slice(0, 10));
 		}
 	}
@@ -77,16 +75,17 @@ export default function Calendar({
 			[date: string]: {
 				dots: { key: string; color: string; selectedDotColor: string }[];
 				selected: boolean;
+				selectedColor?: string;
 			};
 		} = {};
 
 		// Définition des styles « dots »
 		const stylesByType = {
-			SINGLE: { key: 'single', color: 'red', selectedDotColor: 'red' },
+			SINGLE: { key: 'single', color: colors.primary, selectedDotColor: colors.primary },
 			RECURRING: {
 				key: 'recurring',
-				color: 'green',
-				selectedDotColor: 'green',
+				color: colors.secondary,
+				selectedDotColor: colors.secondary,
 			},
 		};
 
@@ -109,6 +108,12 @@ export default function Calendar({
 	}
 
 	const markedDates = buildMarkedDates(monthWorktimes, month);
+	// Ajout du style pour la date sélectionnée
+	markedDates[date] = {
+		...(markedDates[date] || { dots: [] }),
+		selected: true,
+		selectedColor: colors.primaryLight,
+	};
 
 	return (
 		<Fragment>

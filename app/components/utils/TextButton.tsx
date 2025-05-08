@@ -30,7 +30,7 @@ export default function TextButton({ onPress, text, style, isPending }: Props) {
 		>
 			<View style={styles.container}>
 				<ThemedText style={[style, styles.base]}>
-					{true && (
+					{isPending && (
 						<ActivityIndicator
 							style={{ transform: [{ translateY: 4 }], paddingRight: 5 }}
 							animating={true}

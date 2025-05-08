@@ -91,6 +91,8 @@ export default function Homepage() {
 								setSelectedWorktime={setSelectedWorktime}
 								setWorktimes={setWorktimes}
 								setUnfinishedWorktimes={setUnfinishedWorktimes}
+								setSnackBar={setSnackBar}
+								currentDate={date}
 							/>
 						))}
 					</MainWrapper>
@@ -105,6 +107,7 @@ export default function Homepage() {
 								setModalType={setModalType}
 								setModalVisible={setModalVisible}
 								setSelectedWorktime={setSelectedWorktime}
+								currentDate={date}
 							/>
 						))}
 				</MainWrapper>
@@ -119,6 +122,7 @@ export default function Homepage() {
 						setWorktimes={setWorktimes}
 						categories={categories}
 						setCategories={setCategories}
+						date={date}
 					/>
 				</MainWrapper>
 				<Footer

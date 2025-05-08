@@ -8,6 +8,8 @@ import { Worktime } from '../types/worktime';
 import StopSvg from './svg/stop';
 import { httpPut } from './utils/querySetup';
 import ENDPOINTS from './utils/ENDPOINT';
+import Chronometre from './utils/Chronometre';
+
 
 type Props = {
 	worktime: Worktime;
@@ -18,6 +20,8 @@ type Props = {
 	setWorktimes?:  (
 		worktimes: Worktime[] | ((prev: Worktime[]) => Worktime[])
 	) => void;
+	setSnackBar?: (type: "error" | "info", messageText: string) => void;
+	currentDate: string;
 };
 
 export default function Block({
@@ -27,6 +31,8 @@ export default function Block({
 	setSelectedWorktime,
 	setUnfinishedWorktimes,
 	setWorktimes,
+	setSnackBar,
+	currentDate,
 }: Props) {
 	const colors = useThemeColors();
 	const convertTime = (time: string) => {
@@ -47,7 +53,7 @@ export default function Block({
 
 	const categoryName = worktime.categoryName || worktime.category?.name || '';
 	const categoryColor =
-		worktime.type === 'SINGLE' ? colors.primaryLight : '#f7a94a';
+		worktime.type === 'SINGLE' ? colors.secondary : worktime.type === 'RECURRING' ? colors.primaryLight : colors.secondary;
 
 	const stopWorktime = async () => {
 		const newData = {
@@ -66,10 +72,16 @@ export default function Block({
 				setUnfinishedWorktimes([]);
 			}
 			if (setWorktimes) {
-				setWorktimes((prevWorktimes: Worktime[]) => [
-					...prevWorktimes,
-					data,
-				]);
+				const worktimeDay = new Date(data.startTime).toISOString().split('T')[0];
+				if (worktimeDay === currentDate) {
+					setWorktimes((prevWorktimes: Worktime[]) => [
+						...prevWorktimes.filter(wt => wt.id !== data.id),
+						data,
+					]);
+				}
+			}
+			if (setSnackBar) {
+				setSnackBar('info', 'Temps de travail terminé ! Bravo !');
 			}
 		} else {
 			console.log('error', rep);
@@ -96,7 +108,13 @@ export default function Block({
 				{categoryName} {!worktime.endTime ? '- En cours...' : ''}
 			</ThemedText>
 			<>
-				<CustomChip>{convertDuration(worktime.duration)}</CustomChip>
+				<CustomChip>
+					{typeof worktime.duration === 'number' ? (
+						convertDuration(worktime.duration)
+					) : (
+						<Chronometre startTime={worktime.startTime} />
+					)}
+				</CustomChip>
 				{worktime.endTime !== null ? (
 					<Pressable
 						onPress={() => {
@@ -134,7 +152,7 @@ const styles = StyleSheet.create({
 		borderRadius: 8,
 		borderStyle: 'solid',
 		borderWidth: 4,
-		borderColor: '#8955FD',
+		borderColor: '#3D348B',
 		paddingBlock: 5,
 		paddingHorizontal: 10,
 		marginBlock: 5,

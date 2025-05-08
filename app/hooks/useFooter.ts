@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { Animated, Vibration } from 'react-native';
 
 type Props = {
@@ -17,6 +17,11 @@ export const useFooter = ({
 	const rotateAnim = useRef(new Animated.Value(0)).current;
 	const calendarRotateAnim = useRef(new Animated.Value(0)).current;
 	const [buttonType, setButtonType] = useState<'add' | 'minus'>('add');
+
+	// Synchronisation avec timerIsOpen
+	useEffect(() => {
+		setButtonType(timerIsOpen ? 'minus' : 'add');
+	}, [timerIsOpen]);
 
 	const handleAddPress = () => {
 		Vibration.vibrate(50);

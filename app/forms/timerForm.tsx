@@ -18,6 +18,7 @@ import {
 } from '../types/worktime';
 import DropDownPicker from 'react-native-dropdown-picker';
 import CreateCategoryButton from './utils/CreateCategoryButton';
+import { useTimerForm } from './useTimerForm';
 
 interface CategoryData {
 	id: string | null;
@@ -34,8 +35,7 @@ type Props = {
 	) => void;
 	selectedWorktime?: SelectedWorktime | null;
 	isEditing?: boolean;
-	onUpdateSuccess?: () => void;
-	insideModal?: boolean;
+	date: string;
 };
 
 export default function TimerForm({
@@ -46,14 +46,33 @@ export default function TimerForm({
 	setCategories,
 	selectedWorktime = null,
 	isEditing = false,
-	onUpdateSuccess,
-	insideModal = false,
+	date,
 }: Props) {
 	const colors = useThemeColors();
-	const [endIsDefine, setEndIsDefine] = useState(!!selectedWorktime);
-	const [selectedDays, setSelectedDays] = useState<string[]>([]);
-	const [open, setOpen] = useState(false);
-	const [searchText, setSearchText] = useState('');
+
+	const {
+		endIsDefine,
+		setEndIsDefine,
+		selectedDays,
+		setSelectedDays,
+		open,
+		setOpen,
+		searchText,
+		setSearchText,
+		submitWorktime,
+		isPending,
+		handleCategoryCreated,
+		getInitialValues,
+		daysAreDisplayed,
+	} = useTimerForm({
+		setSnackBar,
+		setTimerIsOpen,
+		setWorktimes,
+		setCategories,
+		selectedWorktime,
+		isEditing,
+		date,
+	});
 
 	const weekdays = [
 		{ label: 'Lun', value: 'MO' },
@@ -71,76 +90,6 @@ export default function TimerForm({
 			if (byDayMatch) setSelectedDays(byDayMatch[1].split(','));
 		}
 	}, [selectedWorktime]);
-
-	const { mutate: submitWorktime } = useMutation({
-		mutationFn: async (formData: any) => {
-			const endpoint =
-				isEditing && selectedWorktime?.id
-					? selectedWorktime.type === 'RECURRING'
-						? `${ENDPOINTS.woktimeSeries.root}${selectedWorktime.id}`
-						: `${ENDPOINTS.worktime.root}${selectedWorktime.id}`
-					: formData.recurrence
-					? ENDPOINTS.woktimeSeries.create
-					: ENDPOINTS.worktime.create;
-
-			const method = isEditing ? httpPut : httpPost;
-			const response = await method(endpoint, formData);
-			if (!response.ok) throw new Error(await response.text());
-
-			return await response.json();
-		},
-		onSuccess: (data) => {
-			console.log('Success:', data);
-
-			setSnackBar('info', isEditing ? 'Activité modifiée' : 'Temps enregistré');
-			setTimerIsOpen(false);
-			if (setWorktimes) {
-				if (isEditing && data.id) {
-					setWorktimes((prev) =>
-						prev.map((wt) => (wt.id === data.id ? data : wt))
-					);
-				} else {
-					setWorktimes((prev) => [...prev, data]);
-				}
-			}
-			if (setCategories && data.category)
-				setCategories((prev) => [...prev, data.category]);
-		},
-		onError: (error: Error) => {
-			setSnackBar('error', error.message || 'Erreur');
-		},
-	});
-
-	const handleCategoryCreated = (category: Category) => {
-		setCategories?.((prev) => [...prev, category]);
-		setSnackBar('info', `Catégorie "${category.name}" créée`);
-	};
-
-	const getInitialValues = () => {
-		const initialValues = {
-			category: selectedWorktime
-				? {
-						id: String(selectedWorktime.categoryId),
-						title: selectedWorktime.categoryName || '',
-				  }
-				: { id: null, title: '' },
-			startTime: new Date(selectedWorktime?.startTime || Date.now()),
-			endTime: selectedWorktime?.endTime
-				? new Date(selectedWorktime.endTime)
-				: null,
-			recurrence: undefined as CreateRecurrenceRule | undefined,
-			startDate: selectedWorktime?.startDate
-				? new Date(selectedWorktime.startDate)
-				: new Date(),
-		};
-		return initialValues;
-	};
-
-	const daysAreDisplayed = () => {
-		if (selectedWorktime && selectedWorktime.type === 'SINGLE') return false;
-		if (selectedWorktime && selectedWorktime.type === 'RECURRING') return true;
-		if (endIsDefine && !selectedWorktime) return true;
-	};
 
 	return (
 		<View style={{ zIndex: 9999 }}>
@@ -230,7 +179,7 @@ export default function TimerForm({
 
 						{/* Sélecteurs de temps */}
 						<View style={styles.timePickersContainer}>
-							<View>
+							<View style={styles.timePickerContainer}>
 								<TimePickerInput
 									label='Début:'
 									value={values.startTime}
@@ -240,10 +189,10 @@ export default function TimerForm({
 
 							{/* Fin */}
 							{endIsDefine ? (
-								<View style={styles.endTimeContainer}>
+								<View style={styles.timePickerContainer}>
 									<TimePickerInput
 										label='Fin:'
-										value={values.endTime ? values.endTime : new Date()}
+										value={values.endTime ? values.endTime : new Date(date + 'T00:00:00')}
 										onChange={(date) => setFieldValue('endTime', date)}
 									/>
 									<View style={styles.roundButtonContainer}>
@@ -368,10 +317,11 @@ const styles = StyleSheet.create({
 		marginRight: 'auto',
 		gap: 20,
 	},
-	endTimeContainer: {
+	timePickerContainer: {
 		flexDirection: 'row',
 		alignItems: 'center',
 		height: '100%',
+		minHeight: 90
 	},
 	roundButtonContainer: {
 		flexDirection: 'row',
