@@ -6,9 +6,9 @@ const queryClient = new QueryClient();
 
 export default function RootLayout() {
 	return (
-		<PaperProvider>
-			<QueryClientProvider client={queryClient}>
-				<Stack
+			<PaperProvider>
+				<QueryClientProvider client={queryClient}>
+					<Stack
 					screenOptions={{
 						headerShown: false,
 					}}

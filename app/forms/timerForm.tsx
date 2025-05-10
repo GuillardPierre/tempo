@@ -311,7 +311,7 @@ const styles = StyleSheet.create({
 	timePickersContainer: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
-		justifyContent: 'flex-start',
+		justifyContent: 'center',
 		width: '90%',
 		marginLeft: 'auto',
 		marginRight: 'auto',
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
 		justifyContent: 'flex-start',
 		alignItems: 'center',
 		gap: 20,
-		paddingHorizontal: 2,
+		paddingHorizontal: 10,
 	},
 	dayButton: {
 		width: 45,

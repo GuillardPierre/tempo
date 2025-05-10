@@ -18,6 +18,7 @@ type Props = {
 		worktimes: Worktime[] | ((prev: Worktime[]) => Worktime[])
 	) => void;
 	setSnackBar: (type: 'error' | 'info', messageText: string) => void;
+	date: string;
 };
 
 export default function UpdateDeleteModal({
@@ -27,6 +28,7 @@ export default function UpdateDeleteModal({
 	setCategories,
 	setWorktimes,
 	setSnackBar,
+	date,
 }: Props) {
 	const colors = useThemeColors();
 	const [mode, setMode] = useState<'view' | 'edit' | 'delete'>('view');
@@ -119,12 +121,11 @@ export default function UpdateDeleteModal({
 							setCategories={setCategories}
 							selectedWorktime={selectedWorktime}
 							isEditing={true}
-							onUpdateSuccess={handleUpdateSuccess}
-							insideModal={true}
+							date={date}
 						/>
 					</View>
 
-					<View style={styles.buttonBack}>
+					<View style={[styles.buttonBack, { width: '77%', marginHorizontal: 'auto' }]}>
 						<ButtonMenu
 							type='round'
 							text='Annuler'

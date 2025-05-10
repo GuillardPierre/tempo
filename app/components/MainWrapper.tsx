@@ -21,28 +21,41 @@ export default function MainWrapper({
 }: Props) {
 	const colors = useThemeColors();
 	const animation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
+	const animatedHeight = useRef(new Animated.Value(isOpen ? height : 0)).current;
 	const [shouldRender, setShouldRender] = useState(isOpen);
 
 	useEffect(() => {
 		if (isOpen) {
 			setShouldRender(true);
-			// Animation d'ouverture
-			Animated.timing(animation, {
-				toValue: 1,
-				duration: 300,
-				useNativeDriver: false,
-			}).start();
+			Animated.parallel([
+				Animated.timing(animation, {
+					toValue: 1,
+					duration: 300,
+					useNativeDriver: false,
+				}),
+				Animated.timing(animatedHeight, {
+					toValue: height,
+					duration: 300,
+					useNativeDriver: false,
+				}),
+			]).start();
 		} else {
-			// Animation de fermeture
-			Animated.timing(animation, {
-				toValue: 0,
-				duration: 300,
-				useNativeDriver: false,
-			}).start(() => {
+			Animated.parallel([
+				Animated.timing(animation, {
+					toValue: 0,
+					duration: 300,
+					useNativeDriver: false,
+				}),
+				Animated.timing(animatedHeight, {
+					toValue: 0,
+					duration: 300,
+					useNativeDriver: false,
+				}),
+			]).start(() => {
 				setShouldRender(false);
 			});
 		}
-	}, [isOpen]);
+	}, [isOpen, height]);
 
 	if (!shouldRender) return null;
 
@@ -55,10 +68,8 @@ export default function MainWrapper({
 					flexGrow ? styles.flexContainer : {},
 					{
 						backgroundColor: colors.background,
-						maxHeight: animation.interpolate({
-							inputRange: [0, 1],
-							outputRange: ['0%', '100%'],
-						}),
+						height: animatedHeight,
+						maxHeight: animatedHeight,
 						transform: [
 							{
 								translateY: animation.interpolate({
@@ -83,7 +94,8 @@ export default function MainWrapper({
 				flexGrow ? styles.flexContainer : {},
 				{
 					backgroundColor: colors.background,
-					maxHeight: height,
+					height: animatedHeight,
+					maxHeight: animatedHeight,
 					transform: [
 						{
 							translateY: animation.interpolate({
@@ -96,8 +108,8 @@ export default function MainWrapper({
 			]}
 		>
 			<ScrollView
-				removeClippedSubviews={true} // Aide à améliorer les performances
-				keyboardShouldPersistTaps='handled' // Meilleure gestion du clavier
+				removeClippedSubviews={true} 
+				keyboardShouldPersistTaps='handled'
 				showsVerticalScrollIndicator={true}
 			>
 				{children}

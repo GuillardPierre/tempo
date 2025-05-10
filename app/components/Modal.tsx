@@ -29,18 +29,18 @@ export default function ModalMenu({
 				contentContainerStyle={styles.modalContainer}
 			>
 				<QueryClientProvider client={modalQueryClient}>
-					{disableScroll ? (
+				{disableScroll ? (
+					<View style={styles.modalContent}>{children}</View>
+				) : (
+					<ScrollView
+						style={styles.scrollContainer}
+						contentContainerStyle={styles.scrollContent}
+						keyboardShouldPersistTaps='handled'
+						removeClippedSubviews={true}
+					>
 						<View style={styles.modalContent}>{children}</View>
-					) : (
-						<ScrollView
-							style={styles.scrollContainer}
-							contentContainerStyle={styles.scrollContent}
-							keyboardShouldPersistTaps='handled'
-							removeClippedSubviews={true}
-						>
-							<View style={styles.modalContent}>{children}</View>
-						</ScrollView>
-					)}
+					</ScrollView>
+				)}
 				</QueryClientProvider>
 			</Modal>
 		</Portal>

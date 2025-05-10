@@ -70,12 +70,13 @@ export default function LoginForm({ setSnackBar }: Props) {
         touched,
       }) => (
         <>
-          <CustomTextInput
-            name='email'
-            label='Adresse email'
-            placeholder='Adresse email'
-            onChangeText={handleChange('email')}
-            onBlur={() => handleBlur('email')}
+          <View style={{ width: '90%' }}>
+            <CustomTextInput
+              name='email'
+              label='Adresse email'
+              placeholder='Adresse email'
+              onChangeText={handleChange('email')}
+              onBlur={() => handleBlur('email')}
             value={values.email}
             error={touched.email && errors.email ? errors.email : undefined}
           />
@@ -91,6 +92,7 @@ export default function LoginForm({ setSnackBar }: Props) {
               touched.password && errors.password ? errors.password : undefined
             }
           />
+          </View>
           <TextButton
             style={[styles.button, { backgroundColor: colors.secondary }]}
             onPress={handleSubmit}
@@ -113,9 +115,11 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   button: {
+    width: '77%',
     backgroundColor: '#007BFF',
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
+    alignSelf: 'center',
   },
 });

@@ -1,4 +1,4 @@
-import { StatusBar, StyleSheet } from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect } from 'expo-router';
 import React from 'react';
@@ -71,60 +71,62 @@ export default function Homepage() {
 					setDate={setDate}
 					setCalendarIsOpen={setCalendarIsOpen}
 				/>
-				<MainWrapper isOpen={calendarIsOpen} direction='top'>
-					<Calendar
-						date={date}
-						setDate={setDate}
-						monthWorktimes={monthWorktimes}
-						month={month}
-						setMonth={setMonth}
-					/>
-				</MainWrapper>
-				{unfinishedWorktimes.length > 0 && (
-					<MainWrapper height={110}>
-						{unfinishedWorktimes.map((worktime, index) => (
-							<Block
-								key={worktime.id}
-								worktime={worktime}
-								setModalType={setModalType}
-								setModalVisible={setModalVisible}
-								setSelectedWorktime={setSelectedWorktime}
-								setWorktimes={setWorktimes}
-								setUnfinishedWorktimes={setUnfinishedWorktimes}
-								setSnackBar={setSnackBar}
-								currentDate={date}
-							/>
-						))}
+					<View style={{ flex: 1, zIndex: 99999, overflow: 'hidden' }}>
+					<MainWrapper isOpen={calendarIsOpen} direction='top'>
+						<Calendar
+							date={date}
+							setDate={setDate}
+							monthWorktimes={monthWorktimes}
+							month={month}
+							setMonth={setMonth}
+						/>
 					</MainWrapper>
-				)}
-				<MainWrapper>
-					{worktimes
-						.filter((worktime) => worktime.endTime !== null)
-						.map((worktime, index) => (
-							<Block
-								key={worktime.id}
-								worktime={worktime}
-								setModalType={setModalType}
-								setModalVisible={setModalVisible}
-								setSelectedWorktime={setSelectedWorktime}
-								currentDate={date}
-							/>
-						))}
-				</MainWrapper>
-				<MainWrapper
-					isOpen={timerIsOpen}
-					direction='bottom'
-					flexGrow={timerIsOpen}
-				>
-					<TimerForm
-						setSnackBar={setSnackBar}
-						setTimerIsOpen={setTimerIsOpen}
-						setWorktimes={setWorktimes}
-						categories={categories}
-						setCategories={setCategories}
-						date={date}
-					/>
-				</MainWrapper>
+					{unfinishedWorktimes.length > 0 && (
+						<MainWrapper height={110}>
+							{unfinishedWorktimes.map((worktime, index) => (
+								<Block
+									key={worktime.id}
+									worktime={worktime}
+									setModalType={setModalType}
+									setModalVisible={setModalVisible}
+									setSelectedWorktime={setSelectedWorktime}
+									setWorktimes={setWorktimes}
+									setUnfinishedWorktimes={setUnfinishedWorktimes}
+									setSnackBar={setSnackBar}
+									currentDate={date}
+								/>
+							))}
+						</MainWrapper>
+					)}
+					<MainWrapper>
+						{worktimes
+							.filter((worktime) => worktime.endTime !== null)
+							.map((worktime, index) => (
+								<Block
+									key={worktime.id}
+									worktime={worktime}
+									setModalType={setModalType}
+									setModalVisible={setModalVisible}
+									setSelectedWorktime={setSelectedWorktime}
+									currentDate={date}
+								/>
+							))}
+					</MainWrapper>
+					<MainWrapper
+						isOpen={timerIsOpen}
+						direction='bottom'
+						flexGrow={timerIsOpen}
+					>
+						<TimerForm
+							setSnackBar={setSnackBar}
+							setTimerIsOpen={setTimerIsOpen}
+							setWorktimes={setWorktimes}
+							categories={categories}
+							setCategories={setCategories}
+							date={date}
+						/>
+					</MainWrapper>
+				</View>
 				<Footer
 					setTimerIsOpen={setTimerIsOpen}
 					timerIsOpen={timerIsOpen}
@@ -145,6 +147,7 @@ export default function Homepage() {
 							setCategories={setCategories}
 							setWorktimes={setWorktimes}
 							setSnackBar={setSnackBar}
+							date={date}
 						/>
 					)}
 				</ModalMenu>

@@ -3,7 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import ENDPOINTS from './ENDPOINT';
 
 let TOKEN: string | null = null;
-const EXPO_PUBLIC_BASE_URL = 'http://10.0.2.2:8080/';
+const EXPO_PUBLIC_BASE_URL = 'http://192.168.1.147:8080/';
 
 // Initialize token function
 const initToken = async () => {
