@@ -6,12 +6,28 @@ type Props = {
 	action: () => void;
 	type: 'square' | 'round';
 	style?: StyleProp<ViewStyle>;
+	fullWidth?: boolean;
 };
 
-export default function ButtonMenu({ text, action, type, style }: Props) {
+export default function ButtonMenu({
+	text,
+	action,
+	type,
+	style,
+	fullWidth = true,
+}: Props) {
 	const colors = useThemeColors();
 	return (
-		<Pressable style={[styles.button, styles[type], style, { backgroundColor: colors.primaryLight, borderColor: colors.primary }]} onPress={action}>
+		<Pressable
+			style={[
+				styles.button,
+				styles[type],
+				style,
+				{ backgroundColor: colors.primaryLight, borderColor: colors.primary },
+				!fullWidth && { width: 'auto', minWidth: 50, paddingHorizontal: 12 },
+			]}
+			onPress={action}
+		>
 			<ThemedText style={styles.textButton}>{text}</ThemedText>
 		</Pressable>
 	);

@@ -1,6 +1,6 @@
 import { z } from 'zod';
 
-export const createWorkTimeSchema = (endIsDefine: boolean) => {
+export const createWorkTimeSchema = () => {
 	return z
 		.object({
 			category: z.object({
@@ -18,7 +18,7 @@ export const createWorkTimeSchema = (endIsDefine: boolean) => {
 		})
 		.refine(
 			(data) => {
-				if (endIsDefine && data.endTime) {
+				if (data.endTime) {
 					return data.endTime > data.startTime;
 				}
 				return true;

@@ -1,0 +1,89 @@
+import { useState } from 'react';
+import { View } from 'react-native';
+import ThemedText from './utils/ThemedText';
+import { SegmentedButtons } from 'react-native-paper';
+import { useThemeColors } from '../hooks/useThemeColors';
+import AddRoundSvg from './svg/addRound';
+import ClockSvg from './svg/clock';
+import TimerForm from '../forms/timerForm';
+import { Category } from '../types/worktime';
+
+// Définir les props nécessaires pour TimerForm
+interface WorktimeSelectActionProps {
+	setSnackBar: (type: 'error' | 'info', message: string) => void;
+	setTimerIsOpen: (isOpen: boolean) => void;
+	setWorktimes?: (worktimes: any[] | ((prevWorktimes: any[]) => any[])) => void;
+	categories?: Category[];
+	setCategories?: (
+		categories: Category[] | ((prevCategories: Category[]) => Category[])
+	) => void;
+	date: string;
+}
+
+export default function WorktimeSelectAction({
+	setSnackBar,
+	setTimerIsOpen,
+	setWorktimes,
+	categories,
+	setCategories,
+	date,
+}: WorktimeSelectActionProps) {
+	const colors = useThemeColors();
+	const [value, setValue] = useState<string>('');
+
+	return (
+		<View style={{ gap: 10 }}>
+			<ThemedText variant='body' color='secondaryText'>
+				Choisissez une action :
+			</ThemedText>
+			<SegmentedButtons
+				value={value}
+				onValueChange={setValue}
+				density='regular'
+				buttons={[
+					{
+						icon: () => <AddRoundSvg />,
+						label: 'Activité',
+						value: 'addWorktime',
+						checkedColor: colors.primaryLight,
+					},
+					{
+						icon: () => <ClockSvg />,
+						label: 'Chronomètre',
+						value: 'startTimer',
+						checkedColor: colors.primaryLight,
+					},
+					// {
+					// 	icon: () => <AddRoundSvg />,
+					// 	label: 'Pause',
+					// 	value: 'addPause',
+					// 	checkedColor: colors.primaryLight,
+					// },
+				]}
+			/>
+
+			{value === 'addWorktime' && (
+				<TimerForm
+					mode='activity'
+					setSnackBar={setSnackBar}
+					setTimerIsOpen={setTimerIsOpen}
+					setWorktimes={setWorktimes}
+					categories={categories}
+					setCategories={setCategories}
+					date={date}
+				/>
+			)}
+			{value === 'startTimer' && (
+				<TimerForm
+					mode='chrono'
+					setSnackBar={setSnackBar}
+					setTimerIsOpen={setTimerIsOpen}
+					setWorktimes={setWorktimes}
+					categories={categories}
+					setCategories={setCategories}
+					date={date}
+				/>
+			)}
+		</View>
+	);
+}

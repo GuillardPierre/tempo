@@ -1,31 +1,26 @@
 import { Vibration, View, Text, StyleSheet, ScrollView } from 'react-native';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import ButtonMenu from '../components/ButtonMenu';
 import TimePickerInput from './utils/TimePickerInput';
 import RoundButton from '../components/utils/RoundButton';
 import { Formik } from 'formik';
-import { useMutation } from '@tanstack/react-query';
-import { httpPost, httpPut } from '../components/utils/querySetup';
-import ENDPOINTS from '../components/utils/ENDPOINT';
 import { useThemeColors } from '../hooks/useThemeColors';
 import { Pressable } from 'react-native';
 import { createWorkTimeSchema } from '../schema/createWorkTime';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
-import {
-	Category,
-	CreateRecurrenceRule,
-	SelectedWorktime,
-} from '../types/worktime';
+import { Category, SelectedWorktime } from '../types/worktime';
 import DropDownPicker from 'react-native-dropdown-picker';
 import CreateCategoryButton from './utils/CreateCategoryButton';
 import { useTimerForm } from './useTimerForm';
+
+type TimerFormMode = 'chrono' | 'activity';
 
 interface CategoryData {
 	id: string | null;
 	title: string;
 }
 
-type Props = {
+interface Props {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
 	setTimerIsOpen: (isOpen: boolean) => void;
 	setWorktimes?: (worktimes: any[] | ((prevWorktimes: any[]) => any[])) => void;
@@ -36,7 +31,24 @@ type Props = {
 	selectedWorktime?: SelectedWorktime | null;
 	isEditing?: boolean;
 	date: string;
-};
+	mode: TimerFormMode;
+}
+
+function formatLocalDateTime(date: Date) {
+	const pad = (n: number) => n.toString().padStart(2, '0');
+	return (
+		date.getFullYear() +
+		'-' +
+		pad(date.getMonth() + 1) +
+		'-' +
+		pad(date.getDate()) +
+		'T' +
+		pad(date.getHours()) +
+		':' +
+		pad(date.getMinutes()) +
+		':00'
+	);
+}
 
 export default function TimerForm({
 	setSnackBar,
@@ -47,12 +59,11 @@ export default function TimerForm({
 	selectedWorktime = null,
 	isEditing = false,
 	date,
+	mode,
 }: Props) {
 	const colors = useThemeColors();
 
 	const {
-		endIsDefine,
-		setEndIsDefine,
 		selectedDays,
 		setSelectedDays,
 		open,
@@ -60,7 +71,6 @@ export default function TimerForm({
 		searchText,
 		setSearchText,
 		submitWorktime,
-		isPending,
 		handleCategoryCreated,
 		getInitialValues,
 		daysAreDisplayed,
@@ -95,20 +105,19 @@ export default function TimerForm({
 		<View style={{ zIndex: 9999 }}>
 			<Formik
 				initialValues={getInitialValues()}
-				validationSchema={toFormikValidationSchema(
-					createWorkTimeSchema(endIsDefine)
-				)}
+				validationSchema={toFormikValidationSchema(createWorkTimeSchema())}
 				onSubmit={(values) => {
 					submitWorktime({
 						...values,
-						startTime: values.startTime.toISOString(),
+						startTime: formatLocalDateTime(values.startTime),
 						endTime:
-							endIsDefine && values.endTime
-								? values.endTime.toISOString()
+							mode === 'activity' && values.endTime
+								? formatLocalDateTime(values.endTime)
 								: undefined,
-						recurrence: selectedDays.length
-							? `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`
-							: undefined,
+						recurrence:
+							mode === 'activity' && selectedDays.length
+								? `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`
+								: undefined,
 					});
 				}}
 			>
@@ -152,14 +161,20 @@ export default function TimerForm({
 							style={[styles.dropdown, { borderColor: colors.primary }]}
 							dropDownContainerStyle={[
 								styles.dropdownContainer,
-								{ backgroundColor: colors.background, borderColor: colors.primary },
+								{
+									backgroundColor: colors.background,
+									borderColor: colors.primary,
+								},
 							]}
 							listMode='MODAL'
 							modalAnimationType='slide'
 							zIndex={10000}
 							modalContentContainerStyle={[
 								styles.modalContentContainer,
-								{ backgroundColor: colors.background, borderColor: colors.secondary },
+								{
+									backgroundColor: colors.background,
+									borderColor: colors.secondary,
+								},
 							]}
 							ListEmptyComponent={(props) => (
 								<CreateCategoryButton
@@ -183,40 +198,46 @@ export default function TimerForm({
 								<TimePickerInput
 									label='Début:'
 									value={values.startTime}
-									onChange={(date) => setFieldValue('startTime', date)}
+									onChange={(date) => {
+										setFieldValue('startTime', date);
+										values.endTime &&
+											date > values.endTime &&
+											setFieldValue('endTime', date);
+									}}
 								/>
+								{mode === 'chrono' && (
+									<ButtonMenu
+										fullWidth={false}
+										style={{
+											marginLeft: 10,
+											alignSelf: 'flex-end',
+											marginBottom: 10,
+										}}
+										type='round'
+										text='Lancer Chronomètre'
+										action={() => {
+											Vibration.vibrate(50);
+											handleSubmit();
+										}}
+									/>
+								)}
 							</View>
-
-							{/* Fin */}
-							{endIsDefine ? (
+							{mode === 'activity' && (
 								<View style={styles.timePickerContainer}>
 									<TimePickerInput
 										label='Fin:'
-										value={values.endTime ? values.endTime : new Date(date + 'T00:00:00')}
+										value={
+											values.endTime
+												? values.endTime
+												: new Date(date + 'T00:00:00')
+										}
 										onChange={(date) => setFieldValue('endTime', date)}
-									/>
-									<View style={styles.roundButtonContainer}>
-										<RoundButton
-											variant='primary'
-											type='close'
-											svgSize={18}
-											onPress={() => setEndIsDefine(false)}
-										/>
-									</View>
-								</View>
-							) : (
-								<View style={styles.addEndTimeContainer}>
-									<ButtonMenu
-										style={styles.addEndTimeButton}
-										type='round'
-										text='+ FIN'
-										action={() => setEndIsDefine(true)}
 									/>
 								</View>
 							)}
 						</View>
 
-						{daysAreDisplayed() && (
+						{mode === 'activity' && daysAreDisplayed() && (
 							<View style={styles.recurrenceContainer}>
 								<Text style={styles.recurrenceLabel}>Répétition :</Text>
 								<ScrollView
@@ -258,21 +279,17 @@ export default function TimerForm({
 							</View>
 						)}
 
-						<ButtonMenu
-							style={styles.submitButton}
-							type='round'
-							text={
-								isEditing
-									? 'Mettre à jour'
-									: endIsDefine
-									? "Enregistrer l'activité"
-									: 'Lancer Chronomètre'
-							}
-							action={() => {
-								Vibration.vibrate(50);
-								handleSubmit();
-							}}
-						/>
+						{mode === 'activity' && (
+							<ButtonMenu
+								style={styles.submitButton}
+								type='round'
+								text={isEditing ? 'Mettre à jour' : "Enregistrer l'activité"}
+								action={() => {
+									Vibration.vibrate(50);
+									handleSubmit();
+								}}
+							/>
+						)}
 					</View>
 				)}
 			</Formik>
@@ -319,9 +336,9 @@ const styles = StyleSheet.create({
 	},
 	timePickerContainer: {
 		flexDirection: 'row',
-		alignItems: 'center',
+		alignItems: 'flex-end',
 		height: '100%',
-		minHeight: 90
+		minHeight: 90,
 	},
 	roundButtonContainer: {
 		flexDirection: 'row',
@@ -373,7 +390,7 @@ const styles = StyleSheet.create({
 	},
 	dayButton: {
 		width: 45,
-		height:45,
+		height: 45,
 		borderRadius: 20,
 		justifyContent: 'center',
 		alignItems: 'center',

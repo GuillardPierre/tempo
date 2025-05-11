@@ -4,7 +4,9 @@ import TextButton from '@/app/components/utils/TextButton';
 import ThemedText from '@/app/components/utils/ThemedText';
 import useSnackBar from '@/app/hooks/useSnackBar';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { useEffect } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 
 export default function Login() {
@@ -12,6 +14,14 @@ export default function Login() {
   const router = useRouter();
   const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
+  const getToken = async () => {
+    const token = await AsyncStorage.getItem('token');
+    console.log('TOKEN', token);
+  };
+
+  useEffect(() => {
+    getToken();
+  }, []);
   return (
     <SafeAreaView
       style={[

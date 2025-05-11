@@ -1,6 +1,6 @@
 import { StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Redirect } from 'expo-router';
+import { Redirect, useRouter } from 'expo-router';
 import React from 'react';
 import { useIndex } from '@/app/hooks/useIndex';
 import Header from '@/app/components/Header';
@@ -16,6 +16,11 @@ import { useThemeColors } from '@/app/hooks/useThemeColors';
 import CustomSnackBar from '@/app/components/utils/CustomSnackBar';
 import useSnackBar from '@/app/hooks/useSnackBar';
 import UpdateDeleteModal from '@/app/components/ModalComponents/UpdateDeleteModal';
+import BlockWrapper from '@/app/components/BlockWrapper';
+import ThemedText from '@/app/components/utils/ThemedText';
+import RoundButton from '@/app/components/utils/RoundButton';
+import { checkAndRefreshToken } from '@/app/components/utils/querySetup';
+import WorktimeSelectAction from '@/app/components/WorktimeSelectAction';
 
 export default function Homepage() {
 	const colors = useThemeColors();
@@ -41,10 +46,13 @@ export default function Homepage() {
 		setCategories,
 		selectedWorktime,
 		setSelectedWorktime,
-		setUnfinishedWorktimes
+		setUnfinishedWorktimes,
+		color,
+		open,
+		message,
+		setOpen,
+		setSnackBar,
 	} = useIndex();
-
-	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
 	if (isConnected === null) {
 		<Redirect href={'/screens/auth/Login'} />;
@@ -71,7 +79,7 @@ export default function Homepage() {
 					setDate={setDate}
 					setCalendarIsOpen={setCalendarIsOpen}
 				/>
-					<View style={{ flex: 1, zIndex: 99999, overflow: 'hidden' }}>
+				<View style={{ flex: 1, zIndex: 99999, overflow: 'hidden' }}>
 					<MainWrapper isOpen={calendarIsOpen} direction='top'>
 						<Calendar
 							date={date}
@@ -111,13 +119,45 @@ export default function Homepage() {
 									currentDate={date}
 								/>
 							))}
+						{worktimes.length === 0 && (
+							<BlockWrapper backgroundColor={colors.primaryLight}>
+								<View style={{ flex: 1, justifyContent: 'center' }}>
+									<ThemedText variant='body' color='primaryText'>
+										Rien de prévu pour ce jour-ci !{' '}
+									</ThemedText>
+									<View
+										style={{
+											flexDirection: 'row',
+											alignItems: 'center',
+											flexWrap: 'wrap',
+										}}
+									>
+										<ThemedText variant='body' color='primaryText'>
+											Reposez-vous ou appuyez sur
+										</ThemedText>
+										<View style={{ marginHorizontal: 4 }}>
+											<RoundButton
+												onPress={() => {}}
+												svgSize={12}
+												type='add'
+												variant='secondary'
+												btnSize={25}
+											/>
+										</View>
+										<ThemedText variant='body' color='primaryText'>
+											pour enregistrer une activité
+										</ThemedText>
+									</View>
+								</View>
+							</BlockWrapper>
+						)}
 					</MainWrapper>
 					<MainWrapper
 						isOpen={timerIsOpen}
 						direction='bottom'
 						flexGrow={timerIsOpen}
 					>
-						<TimerForm
+						<WorktimeSelectAction
 							setSnackBar={setSnackBar}
 							setTimerIsOpen={setTimerIsOpen}
 							setWorktimes={setWorktimes}

@@ -9,7 +9,7 @@ import StopSvg from './svg/stop';
 import { httpPut } from './utils/querySetup';
 import ENDPOINTS from './utils/ENDPOINT';
 import Chronometre from './utils/Chronometre';
-
+import BlockWrapper from './BlockWrapper';
 
 type Props = {
 	worktime: Worktime;
@@ -17,10 +17,10 @@ type Props = {
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: any) => void;
 	setUnfinishedWorktimes?: (worktimes: Worktime[]) => void;
-	setWorktimes?:  (
+	setWorktimes?: (
 		worktimes: Worktime[] | ((prev: Worktime[]) => Worktime[])
 	) => void;
-	setSnackBar?: (type: "error" | "info", messageText: string) => void;
+	setSnackBar?: (type: 'error' | 'info', messageText: string) => void;
 	currentDate: string;
 };
 
@@ -53,7 +53,11 @@ export default function Block({
 
 	const categoryName = worktime.categoryName || worktime.category?.name || '';
 	const categoryColor =
-		worktime.type === 'SINGLE' ? colors.secondary : worktime.type === 'RECURRING' ? colors.primaryLight : colors.secondary;
+		worktime.type === 'SINGLE'
+			? colors.secondary
+			: worktime.type === 'RECURRING'
+			? colors.primaryLight
+			: colors.secondary;
 
 	const stopWorktime = async () => {
 		const newData = {
@@ -72,10 +76,12 @@ export default function Block({
 				setUnfinishedWorktimes([]);
 			}
 			if (setWorktimes) {
-				const worktimeDay = new Date(data.startTime).toISOString().split('T')[0];
+				const worktimeDay = new Date(data.startTime)
+					.toISOString()
+					.split('T')[0];
 				if (worktimeDay === currentDate) {
 					setWorktimes((prevWorktimes: Worktime[]) => [
-						...prevWorktimes.filter(wt => wt.id !== data.id),
+						...prevWorktimes.filter((wt) => wt.id !== data.id),
 						data,
 					]);
 				}
@@ -89,14 +95,7 @@ export default function Block({
 	};
 
 	return (
-		<View
-			style={[
-				styles.container,
-				{
-					backgroundColor: categoryColor,
-				},
-			]}
-		>
+		<BlockWrapper backgroundColor={categoryColor}>
 			<View style={styles.timeContainer}>
 				<ThemedText>{convertTime(worktime.startTime)}</ThemedText>
 				<View style={styles.separator} />
@@ -137,7 +136,7 @@ export default function Block({
 					</Pressable>
 				)}
 			</>
-		</View>
+		</BlockWrapper>
 	);
 }
 

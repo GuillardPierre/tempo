@@ -3,6 +3,7 @@ import { jwtDecode } from 'jwt-decode';
 import ENDPOINTS from './ENDPOINT';
 
 let TOKEN: string | null = null;
+let REFRESH_TOKEN: string | null = null;
 const EXPO_PUBLIC_BASE_URL = 'http://192.168.1.147:8080/';
 
 // Initialize token function
@@ -11,21 +12,38 @@ const initToken = async () => {
 	return TOKEN;
 };
 
+const initRefreshToken = async () => {
+	REFRESH_TOKEN = await AsyncStorage.getItem('refreshToken');
+	return REFRESH_TOKEN;
+};
+
 // Execute the initialization
 initToken().catch((err) => console.error('Failed to initialize token:', err));
+initRefreshToken().catch((err) =>
+	console.error('Failed to initialize refresh token:', err)
+);
 
 export const getDecodedToken = () => (TOKEN ? jwtDecode(TOKEN) : null);
-export const decodedToken = null; // Initial value, use getDecodedToken() for current value
+export const decodedRefreshToken = () =>
+	REFRESH_TOKEN ? jwtDecode(REFRESH_TOKEN) : null;
 
 export async function checkAndRefreshToken() {
 	const token = await AsyncStorage.getItem('token');
-	if (!token) return;
+	console.log('token :', token);
+
+	if (!token) {
+		TOKEN = null;
+		return false;
+	}
 	try {
 		const decoded = jwtDecode(token);
 		const now = Math.floor(Date.now() / 1000);
 		if (decoded.exp && decoded.exp - now < 60) {
 			const refreshToken = await AsyncStorage.getItem('refreshToken');
-			if (!refreshToken) return;
+			if (!refreshToken) {
+				TOKEN = null;
+				return false;
+			}
 			const response = await fetch(
 				`${EXPO_PUBLIC_BASE_URL}${ENDPOINTS.auth.refresh}`,
 				{
@@ -41,14 +59,24 @@ export async function checkAndRefreshToken() {
 				if (data.refreshToken)
 					await AsyncStorage.setItem('refreshToken', data.refreshToken);
 				TOKEN = data.token;
+				return true;
+			} else {
+				await AsyncStorage.removeItem('token');
+				await AsyncStorage.removeItem('refreshToken');
+				TOKEN = null;
+				return false;
 			}
 		}
+		return true;
 	} catch (e) {
-		console.error('Erreur lors du décodage ou du refresh du token', e);
+		await AsyncStorage.removeItem('token');
+		await AsyncStorage.removeItem('refreshToken');
+		TOKEN = null;
+		return false;
 	}
 }
 
-export function makeHeaders() {
+export function makeHeaders(isLogin: boolean = false) {
 	const headers = new Headers();
 	headers.append('Content-Type', 'application/json');
 	if (TOKEN) {
@@ -74,13 +102,27 @@ export async function httpGet(url: String, option = {}) {
 	});
 }
 
-export async function httpPost(url: String, body: Object, option = {}) {
-	console.log('body de la requête :', body);
-
-	await checkAndRefreshToken();
+export async function httpPost(
+	url: String,
+	body: Object,
+	option = { isLogin: false }
+) {
+	console.log('body POST :', body);
+	console.log('option :', option);
+	console.log('REFRESH_TOKEN :', REFRESH_TOKEN);
+	console.log('TOKEN :', TOKEN);
+	if (option.isLogin) {
+		TOKEN = null;
+		REFRESH_TOKEN = null;
+	}
+	if (!option.isLogin) {
+		console.log('checkAndRefreshToken');
+		await checkAndRefreshToken();
+	}
 	return fetch(makeUrl(url), {
 		method: 'POST',
 		...option,
+
 		...makeHeaders(),
 		body: JSON.stringify(body),
 	});

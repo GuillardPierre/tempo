@@ -18,9 +18,8 @@ export function getToken() {
 }
 
 export async function deleteToken() {
-	return await AsyncStorage.removeItem('token').then(() => {
-		return true;
-	});
+	await AsyncStorage.removeItem('token');
+	await AsyncStorage.removeItem('refreshToken');
 }
 
 export const formatDate = (dateString: string | undefined): string => {

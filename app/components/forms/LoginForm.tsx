@@ -25,7 +25,9 @@ export default function LoginForm({ setSnackBar }: Props) {
   >({
     mutationFn: async (formData) => {
       AsyncStorage.clear();
-      const response = await httpPost(ENDPOINTS.auth.login, formData);
+      const response = await httpPost(ENDPOINTS.auth.login, formData, {
+        isLogin: true,
+      });
 
       if (!response.ok) {
         const errorMessage = await response.text();
@@ -48,10 +50,7 @@ export default function LoginForm({ setSnackBar }: Props) {
       console.error('Erreur de connexion:', error);
       setSnackBar('error', error.message || 'Erreur de connexion');
     },
-  });
-
-  console.log("isPending", isPending);
-  
+  }); 
 
   return (
     <Formik

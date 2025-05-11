@@ -1,8 +1,10 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
-import { httpGet } from '../components/utils/querySetup';
+import { httpGet, checkAndRefreshToken } from '../components/utils/querySetup';
 import ENDPOINTS from '../components/utils/ENDPOINT';
 import { Category, Worktime } from '../types/worktime';
+import { useRouter } from 'expo-router';
+import useSnackBar from '@/app/hooks/useSnackBar';
 
 export const useIndex = () => {
 	const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -21,6 +23,8 @@ export const useIndex = () => {
 	const [unfinishedWorktimes, setUnfinishedWorktimes] = useState<Worktime[]>(
 		[]
 	);
+	const router = useRouter();
+	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
 	// console.log('Worktimes', worktimes);
 	// console.log('Unfinished Worktimes', unfinishedWorktimes);
@@ -43,6 +47,17 @@ export const useIndex = () => {
 			getWorktimes();
 		}
 	}, [date]);
+
+	useEffect(() => {
+		async function verifyToken() {
+			const isValid = await checkAndRefreshToken();
+			if (!isValid) {
+				setSnackBar('error', 'Vous avez été déconnecté');
+				router.replace('/screens/auth/Login');
+			}
+		}
+		verifyToken();
+	}, []);
 
 	async function checkConnection() {
 		const value = await AsyncStorage.getItem('token');
@@ -112,6 +127,11 @@ export const useIndex = () => {
 		setCategories,
 		selectedWorktime,
 		setSelectedWorktime,
-		setUnfinishedWorktimes
+		setUnfinishedWorktimes,
+		color,
+		open,
+		message,
+		setOpen,
+		setSnackBar,
 	};
 };
