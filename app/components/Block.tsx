@@ -39,15 +39,15 @@ export default function Block({
 		const date = new Date(time);
 		const hours = date.getHours().toString().padStart(2, '0');
 		const minutes = date.getMinutes().toString().padStart(2, '0');
-		return `${hours}:${minutes}`;
+		return `${hours}h${minutes}`;
 	};
 
 	const convertDuration = (duration: number) => {
 		const hours = Math.floor(duration / 60);
 		if (hours > 0) {
-			return `${hours}:${duration % 60 < 10 ? '0' : ''}${duration % 60}`;
+			return `${hours}h${duration % 60 < 10 ? '0' : ''}${duration % 60}`;
 		} else {
-			return `0:${duration % 60 < 10 ? '0' : ''}${duration}`;
+			return `${duration < 10 ? '0' : ''}${duration}m`;
 		}
 	};
 

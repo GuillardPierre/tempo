@@ -22,8 +22,6 @@ export default function Calendar({
 	setMonth,
 }: Props) {
 	const colors = useThemeColors();
-	console.log("Date", date);
-	
 	const { onDayPress } = useCalendar(date, setDate);
 
 	// const [month, setMonth] = useState(new Date(date));
@@ -81,11 +79,15 @@ export default function Calendar({
 
 		// Définition des styles « dots »
 		const stylesByType = {
-			SINGLE: { key: 'single', color: colors.primary, selectedDotColor: colors.primary },
-			RECURRING: {
-				key: 'recurring',
+			SINGLE: {
+				key: 'single',
 				color: colors.secondary,
 				selectedDotColor: colors.secondary,
+			},
+			RECURRING: {
+				key: 'recurring',
+				color: colors.primary,
+				selectedDotColor: colors.primary,
 			},
 		};
 
@@ -127,7 +129,6 @@ export default function Calendar({
 				onMonthChange={(month: DateData) =>
 					setMonth(new Date(month.dateString))
 				}
-				locale={'fr'}
 				firstDay={1}
 			/>
 		</Fragment>

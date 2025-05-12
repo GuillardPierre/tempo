@@ -9,6 +9,7 @@ type Props = {
 	flexGrow?: boolean;
 	disableScroll?: boolean;
 	height?: number;
+	fullHeight?: boolean;
 };
 
 export default function MainWrapper({
@@ -17,41 +18,54 @@ export default function MainWrapper({
 	direction = 'bottom',
 	flexGrow = false,
 	disableScroll = false,
-	height = 1000,
+	height,
+	fullHeight = false,
 }: Props) {
 	const colors = useThemeColors();
 	const animation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
-	const animatedHeight = useRef(new Animated.Value(isOpen ? height : 0)).current;
+	const animatedHeight = useRef(
+		new Animated.Value(isOpen && typeof height === 'number' ? height : 0)
+	).current;
 	const [shouldRender, setShouldRender] = useState(isOpen);
 
 	useEffect(() => {
 		if (isOpen) {
 			setShouldRender(true);
-			Animated.parallel([
+			const animations = [
 				Animated.timing(animation, {
 					toValue: 1,
 					duration: 300,
 					useNativeDriver: false,
 				}),
-				Animated.timing(animatedHeight, {
-					toValue: height,
-					duration: 300,
-					useNativeDriver: false,
-				}),
-			]).start();
+			];
+			if (typeof height === 'number') {
+				animations.push(
+					Animated.timing(animatedHeight, {
+						toValue: height,
+						duration: 300,
+						useNativeDriver: false,
+					})
+				);
+			}
+			Animated.parallel(animations).start();
 		} else {
-			Animated.parallel([
+			const animations = [
 				Animated.timing(animation, {
 					toValue: 0,
 					duration: 300,
 					useNativeDriver: false,
 				}),
-				Animated.timing(animatedHeight, {
-					toValue: 0,
-					duration: 300,
-					useNativeDriver: false,
-				}),
-			]).start(() => {
+			];
+			if (typeof height === 'number') {
+				animations.push(
+					Animated.timing(animatedHeight, {
+						toValue: 0,
+						duration: 300,
+						useNativeDriver: false,
+					})
+				);
+			}
+			Animated.parallel(animations).start(() => {
 				setShouldRender(false);
 			});
 		}
@@ -66,10 +80,13 @@ export default function MainWrapper({
 				style={[
 					styles.container,
 					flexGrow ? styles.flexContainer : {},
+					fullHeight ? { height: '100%' } : {},
+					// fullHeight ? { flex: 1 } : {},
 					{
 						backgroundColor: colors.background,
-						height: animatedHeight,
-						maxHeight: animatedHeight,
+						...(typeof height === 'number'
+							? { height: animatedHeight, maxHeight: animatedHeight }
+							: {}),
 						transform: [
 							{
 								translateY: animation.interpolate({
@@ -92,10 +109,10 @@ export default function MainWrapper({
 			style={[
 				styles.container,
 				flexGrow ? styles.flexContainer : {},
+				fullHeight ? { flex: 1 } : {},
 				{
 					backgroundColor: colors.background,
-					height: animatedHeight,
-					maxHeight: animatedHeight,
+					...(typeof height === 'number' ? { height: animatedHeight } : {}),
 					transform: [
 						{
 							translateY: animation.interpolate({
@@ -108,7 +125,7 @@ export default function MainWrapper({
 			]}
 		>
 			<ScrollView
-				removeClippedSubviews={true} 
+				removeClippedSubviews={true}
 				keyboardShouldPersistTaps='handled'
 				showsVerticalScrollIndicator={true}
 			>
@@ -120,7 +137,6 @@ export default function MainWrapper({
 
 const styles = StyleSheet.create({
 	container: {
-		flex: 1,
 		marginInline: 10,
 		marginBlock: 5,
 		paddingHorizontal: 10,

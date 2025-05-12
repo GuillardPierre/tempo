@@ -33,25 +33,44 @@ export default function WorktimeSelectAction({
 
 	return (
 		<View style={{ gap: 10 }}>
-			<ThemedText variant='body' color='secondaryText'>
-				Choisissez une action :
-			</ThemedText>
+			{value === '' && (
+				<ThemedText
+					variant='body'
+					color='secondaryText'
+					style={{ marginLeft: 20 }}
+				>
+					Choisissez une action :
+				</ThemedText>
+			)}
 			<SegmentedButtons
 				value={value}
 				onValueChange={setValue}
 				density='regular'
+				theme={{
+					colors: {
+						secondaryContainer: colors.primaryLight,
+					},
+				}}
+				style={{
+					borderWidth: 3,
+					borderColor: colors.primary,
+					borderRadius: 25,
+					backgroundColor: colors.background,
+				}}
 				buttons={[
 					{
 						icon: () => <AddRoundSvg />,
 						label: 'Activité',
 						value: 'addWorktime',
-						checkedColor: colors.primaryLight,
+						checkedColor: colors.primaryText,
+						uncheckedColor: colors.secondaryText,
 					},
 					{
 						icon: () => <ClockSvg />,
 						label: 'Chronomètre',
 						value: 'startTimer',
-						checkedColor: colors.primaryLight,
+						checkedColor: colors.primaryText,
+						uncheckedColor: colors.secondaryText,
 					},
 					// {
 					// 	icon: () => <AddRoundSvg />,

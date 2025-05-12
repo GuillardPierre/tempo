@@ -29,7 +29,6 @@ export const decodedRefreshToken = () =>
 
 export async function checkAndRefreshToken() {
 	const token = await AsyncStorage.getItem('token');
-	console.log('token :', token);
 
 	if (!token) {
 		TOKEN = null;
@@ -107,10 +106,6 @@ export async function httpPost(
 	body: Object,
 	option = { isLogin: false }
 ) {
-	console.log('body POST :', body);
-	console.log('option :', option);
-	console.log('REFRESH_TOKEN :', REFRESH_TOKEN);
-	console.log('TOKEN :', TOKEN);
 	if (option.isLogin) {
 		TOKEN = null;
 		REFRESH_TOKEN = null;

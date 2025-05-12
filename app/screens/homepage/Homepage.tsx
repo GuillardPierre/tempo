@@ -106,7 +106,7 @@ export default function Homepage() {
 							))}
 						</MainWrapper>
 					)}
-					<MainWrapper>
+					<MainWrapper fullHeight={true}>
 						{worktimes
 							.filter((worktime) => worktime.endTime !== null)
 							.map((worktime, index) => (
@@ -152,11 +152,7 @@ export default function Homepage() {
 							</BlockWrapper>
 						)}
 					</MainWrapper>
-					<MainWrapper
-						isOpen={timerIsOpen}
-						direction='bottom'
-						flexGrow={timerIsOpen}
-					>
+					<MainWrapper isOpen={timerIsOpen} direction='bottom' flexGrow={false}>
 						<WorktimeSelectAction
 							setSnackBar={setSnackBar}
 							setTimerIsOpen={setTimerIsOpen}
@@ -176,7 +172,6 @@ export default function Homepage() {
 				<ModalMenu
 					modalVisible={modalVisible}
 					setModalVisible={setModalVisible}
-					// disableScroll={modalType === 'update'}
 				>
 					{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
 					{modalType === 'update' && (

@@ -123,9 +123,6 @@ export default function TimerForm({
 			>
 				{({ setFieldValue, values, handleSubmit, errors, touched }) => (
 					<View style={styles.container}>
-						<Text style={[styles.label, { color: colors.secondaryText }]}>
-							Choisissez une activité :
-						</Text>
 						<DropDownPicker
 							open={open}
 							value={values.category.id}
@@ -338,7 +335,7 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		alignItems: 'flex-end',
 		height: '100%',
-		minHeight: 90,
+		minHeight: 80,
 	},
 	roundButtonContainer: {
 		flexDirection: 'row',

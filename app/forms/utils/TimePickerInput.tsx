@@ -78,7 +78,7 @@ export default function TimePickerInput({
 }
 
 const styles = StyleSheet.create({
-		container: {
+	container: {
 		marginBottom: 5,
 		textAlign: 'center',
 		width: 100,
@@ -97,6 +97,6 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: 'bold',
 		textAlign: 'center',
-		flex: 1, // Permet à chaque TimePickerInput de prendre la place disponible sans dépasser
+		flex: 1,
 	},
 });
