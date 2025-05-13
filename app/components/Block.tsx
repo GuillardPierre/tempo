@@ -10,6 +10,7 @@ import { httpPut } from './utils/querySetup';
 import ENDPOINTS from './utils/ENDPOINT';
 import Chronometre from './utils/Chronometre';
 import BlockWrapper from './BlockWrapper';
+import { formatLocalDateTime } from './utils/utils';
 
 type Props = {
 	worktime: Worktime;
@@ -66,9 +67,13 @@ export default function Block({
 			endTime: new Date(),
 			category: { id: worktime.categoryId, title: worktime.categoryName },
 		};
+		const formattedData = {
+			...newData,
+			endTime: formatLocalDateTime(new Date()),
+		};
 		const rep = await httpPut(
 			`${ENDPOINTS.worktime.root}${worktime.id}`,
-			newData
+			formattedData
 		);
 		if (rep.ok) {
 			const data = await rep.json();
