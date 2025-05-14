@@ -15,6 +15,7 @@ const ENDPOINTS = {
 	},
 	category: {
 		root: 'category/',
+		all: 'category/all',
 		create: 'category/create',
 	},
 	schedule: {

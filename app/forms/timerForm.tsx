@@ -226,7 +226,9 @@ export default function TimerForm({
 										value={
 											values.endTime
 												? values.endTime
-												: new Date(date + 'T00:00:00')
+												: new Date(
+														date + 'T' + new Date().toTimeString().slice(0, 8)
+												  )
 										}
 										onChange={(date) => setFieldValue('endTime', date)}
 									/>
