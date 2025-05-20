@@ -74,7 +74,11 @@ export const useIndex = () => {
 			const rep = await httpGet(`${ENDPOINTS.schedule.month}${date}`);
 			if (rep.ok) {
 				const data = await rep.json();
-				setMonthWorktimes(data);
+				if (data.length === 0) {
+					setMonthWorktimes([]);
+				} else {
+					setMonthWorktimes(data);
+				}
 			}
 		} catch (error) {
 			console.log('erreur:', error);

@@ -301,15 +301,13 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'column',
 		justifyContent: 'center',
-		alignItems: 'center',
+		alignItems: 'flex-start',
 	},
 	dropdown: {
 		borderWidth: 3,
 		borderRadius: 12,
 		marginBottom: 10,
-		width: '90%',
-		marginLeft: 'auto',
-		marginRight: 'auto',
+		width: '100%',
 	},
 	dropdownContainer: {
 		borderWidth: 3,
@@ -327,10 +325,8 @@ const styles = StyleSheet.create({
 	timePickersContainer: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
-		justifyContent: 'center',
-		width: '90%',
-		marginLeft: 'auto',
-		marginRight: 'auto',
+		justifyContent: 'flex-start',
+		width: '100%',
 		gap: 20,
 	},
 	timePickerContainer: {
@@ -339,39 +335,19 @@ const styles = StyleSheet.create({
 		height: '100%',
 		minHeight: 80,
 	},
-	roundButtonContainer: {
-		flexDirection: 'row',
-		marginTop: 15,
-		marginLeft: 15,
-		height: '100%',
-		alignItems: 'center',
-	},
-	addEndTimeContainer: {
-		flexDirection: 'row',
-		width: '50%',
-		height: '100%',
-		alignItems: 'center',
-		marginTop: 5,
-		marginBottom: 20,
-	},
-	addEndTimeButton: {
-		width: '100%',
-		marginTop: 12,
-	},
 	recurrenceContainer: {
-		marginVertical: 1,
 		width: '100%',
 	},
 	recurrenceLabel: {
 		fontSize: 16,
 		fontWeight: 'bold',
 		marginBottom: 10,
-		width: '90%',
+		width: '100%',
 		marginLeft: 'auto',
 		marginRight: 'auto',
 	},
 	dayButtonsScroll: {
-		width: '90%',
+		width: '100%',
 		marginLeft: 'auto',
 		marginRight: 'auto',
 		borderWidth: 2,
@@ -412,15 +388,5 @@ const styles = StyleSheet.create({
 	submitButton: {
 		width: '75%',
 		marginTop: 10,
-		marginLeft: 'auto',
-		marginRight: 'auto',
-	},
-	arrowRight: {
-		position: 'absolute',
-		right: 10,
-		top: '50%',
-		transform: [{ translateY: -10 }],
-		fontSize: 16,
-		fontWeight: 'bold',
 	},
 });

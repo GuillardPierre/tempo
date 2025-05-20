@@ -90,8 +90,8 @@ export default function Calendar({
 				selectedDotColor: colors.primary,
 			},
 		};
-
-		worktimes.forEach((wt) => {
+		if (worktimes.length === 0) return marked;
+		worktimes?.forEach((wt) => {
 			const dates = expandWorktimeDates(wt, monthDate);
 			if (!dates) return;
 			dates.forEach((date) => {

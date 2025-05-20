@@ -114,6 +114,7 @@ export default function UpdateDeleteModal({
 
 					<View style={styles.formContainer}>
 						<TimerForm
+							mode='activity'
 							setSnackBar={setSnackBar}
 							setTimerIsOpen={setModalVisible}
 							setWorktimes={setWorktimes}
@@ -125,7 +126,12 @@ export default function UpdateDeleteModal({
 						/>
 					</View>
 
-					<View style={[styles.buttonBack, { width: '77%', marginHorizontal: 'auto' }]}>
+					<View
+						style={[
+							styles.buttonBack,
+							{ width: '77%', marginHorizontal: 'auto' },
+						]}
+					>
 						<ButtonMenu
 							type='round'
 							text='Annuler'

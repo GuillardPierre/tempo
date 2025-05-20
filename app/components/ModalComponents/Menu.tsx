@@ -17,7 +17,7 @@ export default function Menu({ setModalVisible }: Props) {
 		<View style={styles.container}>
 			<ButtonMenu
 				type='square'
-				text={isHomepage ? 'Mes catégories' : 'Mes temps de travail'}
+				text={isHomepage ? 'Mes catégories' : 'Ecran principal'}
 				action={() => {
 					if (isHomepage) {
 						router.push('/screens/categories');

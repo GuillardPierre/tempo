@@ -22,9 +22,9 @@ export default function ButtonMenu({
 			style={[
 				styles.button,
 				styles[type],
-				style,
 				{ backgroundColor: colors.primaryLight, borderColor: colors.primary },
 				!fullWidth && { width: 'auto', minWidth: 50, paddingHorizontal: 12 },
+				style,
 			]}
 			onPress={action}
 		>

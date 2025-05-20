@@ -8,18 +8,15 @@ import DateDisplay from '@/app/components/DateDisplay';
 import MainWrapper from '@/app/components/MainWrapper';
 import Calendar from '@/app/components/Calendar';
 import Block from '@/app/components/Block';
-import TimerForm from '@/app/forms/timerForm';
 import Footer from '@/app/components/Footer';
 import ModalMenu from '@/app/components/Modal';
 import Menu from '@/app/components/ModalComponents/Menu';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import CustomSnackBar from '@/app/components/utils/CustomSnackBar';
-import useSnackBar from '@/app/hooks/useSnackBar';
 import UpdateDeleteModal from '@/app/components/ModalComponents/UpdateDeleteModal';
 import BlockWrapper from '@/app/components/BlockWrapper';
 import ThemedText from '@/app/components/utils/ThemedText';
 import RoundButton from '@/app/components/utils/RoundButton';
-import { checkAndRefreshToken } from '@/app/components/utils/querySetup';
 import WorktimeSelectAction from '@/app/components/WorktimeSelectAction';
 
 export default function Homepage() {
@@ -152,7 +149,12 @@ export default function Homepage() {
 							</BlockWrapper>
 						)}
 					</MainWrapper>
-					<MainWrapper isOpen={timerIsOpen} direction='bottom' flexGrow={false}>
+					<MainWrapper
+						isOpen={timerIsOpen}
+						direction='bottom'
+						flexGrow={false}
+						style={{ paddingHorizontal: 30 }}
+					>
 						<WorktimeSelectAction
 							setSnackBar={setSnackBar}
 							setTimerIsOpen={setTimerIsOpen}

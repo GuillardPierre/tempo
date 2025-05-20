@@ -1,4 +1,10 @@
-import { StyleSheet, Animated, ScrollView } from 'react-native';
+import {
+	StyleSheet,
+	Animated,
+	ScrollView,
+	StyleProp,
+	ViewStyle,
+} from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
 import { useEffect, useRef, useState } from 'react';
 
@@ -10,6 +16,7 @@ type Props = {
 	disableScroll?: boolean;
 	height?: number;
 	fullHeight?: boolean;
+	style?: StyleProp<ViewStyle>;
 };
 
 export default function MainWrapper({
@@ -20,6 +27,7 @@ export default function MainWrapper({
 	disableScroll = false,
 	height,
 	fullHeight = false,
+	style,
 }: Props) {
 	const colors = useThemeColors();
 	const animation = useRef(new Animated.Value(isOpen ? 1 : 0)).current;
@@ -73,7 +81,6 @@ export default function MainWrapper({
 
 	if (!shouldRender) return null;
 
-	// Si disableScroll est true, retourner simplement les enfants dans une Animated.View
 	if (disableScroll) {
 		return (
 			<Animated.View
@@ -81,7 +88,6 @@ export default function MainWrapper({
 					styles.container,
 					flexGrow ? styles.flexContainer : {},
 					fullHeight ? { height: '100%' } : {},
-					// fullHeight ? { flex: 1 } : {},
 					{
 						backgroundColor: colors.background,
 						...(typeof height === 'number'
@@ -96,6 +102,7 @@ export default function MainWrapper({
 							},
 						],
 					},
+					style,
 				]}
 			>
 				{children}
@@ -103,7 +110,6 @@ export default function MainWrapper({
 		);
 	}
 
-	// Sinon, utiliser un ScrollView
 	return (
 		<Animated.View
 			style={[
@@ -122,6 +128,7 @@ export default function MainWrapper({
 						},
 					],
 				},
+				style,
 			]}
 		>
 			<ScrollView

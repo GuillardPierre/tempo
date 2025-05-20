@@ -3,14 +3,13 @@ import { Portal, Modal } from 'react-native-paper';
 import { useThemeColors } from '../hooks/useThemeColors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 
-// Création d'un nouveau QueryClient spécifique pour les modales
 const modalQueryClient = new QueryClient();
 
 type Props = {
 	children: React.ReactNode;
 	modalVisible: boolean;
 	setModalVisible: (visible: boolean) => void;
-	disableScroll?: boolean; // Ajout d'une option pour désactiver le défilement
+	disableScroll?: boolean;
 };
 
 export default function ModalMenu({
@@ -29,18 +28,18 @@ export default function ModalMenu({
 				contentContainerStyle={styles.modalContainer}
 			>
 				<QueryClientProvider client={modalQueryClient}>
-				{disableScroll ? (
-					<View style={styles.modalContent}>{children}</View>
-				) : (
-					<ScrollView
-						style={styles.scrollContainer}
-						contentContainerStyle={styles.scrollContent}
-						keyboardShouldPersistTaps='handled'
-						removeClippedSubviews={true}
-					>
+					{disableScroll ? (
 						<View style={styles.modalContent}>{children}</View>
-					</ScrollView>
-				)}
+					) : (
+						<ScrollView
+							style={styles.scrollContainer}
+							contentContainerStyle={styles.scrollContent}
+							keyboardShouldPersistTaps='handled'
+							removeClippedSubviews={true}
+						>
+							<View style={styles.modalContent}>{children}</View>
+						</ScrollView>
+					)}
 				</QueryClientProvider>
 			</Modal>
 		</Portal>
