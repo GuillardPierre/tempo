@@ -4,6 +4,7 @@ const ENDPOINTS = {
 		signup: 'user/signup',
 		logout: 'user/logout',
 		refresh: 'user/refresh-token',
+		delete: 'user/delete',
 	},
 	worktime: {
 		root: 'worktime/',

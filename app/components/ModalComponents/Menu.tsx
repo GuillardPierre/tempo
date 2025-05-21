@@ -22,13 +22,20 @@ export default function Menu({ setModalVisible }: Props) {
 					if (isHomepage) {
 						router.push('/screens/categories');
 					} else {
-						router.push('/screens/homepage/Homepage');
+						router.push('/screens/Homepage');
 					}
 					setModalVisible(false);
 				}}
 			/>
-			<ButtonMenu type='square' text='Profil' action={() => {}} />
-			<ButtonMenu type='square' text='Paramètres' action={() => {}} />
+			<ButtonMenu
+				type='square'
+				text='Profil'
+				action={() => {
+					router.push('/screens/profile');
+					setModalVisible(false);
+				}}
+			/>
+			{/* <ButtonMenu type='square' text='Paramètres' action={() => {}} /> */}
 			<ButtonMenu
 				type='square'
 				text='Se déconnecter'
@@ -47,7 +54,8 @@ const styles = StyleSheet.create({
 	container: {
 		width: '100%',
 		padding: 5,
-		gap: 10, // Espace entre les boutons
+		gap: 10,
+		paddingHorizontal: 50,
 		alignItems: 'center',
 	},
 });

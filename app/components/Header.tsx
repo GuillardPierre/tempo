@@ -6,7 +6,7 @@ import SquareButton from './utils/SquareButton';
 type Props = {
 	modalVisible: boolean;
 	setModalVisible: (visible: boolean) => void;
-	setModalType: (type: 'menu' | 'update') => void;
+	setModalType: (type: 'menu' | 'update' | 'delete') => void;
 };
 
 export default function Header({
@@ -18,7 +18,7 @@ export default function Header({
 	return (
 		<View style={[styles.header, { backgroundColor: colors.primary }]}>
 			<ThemedText variant='header1' color='primaryText'>
-				Temp-o-s
+				⏳Tempos⌛
 			</ThemedText>
 			<SquareButton
 				type={modalVisible ? 'close' : 'menu'}

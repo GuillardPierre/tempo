@@ -126,8 +126,8 @@ export default function Categories() {
 						<ThemedText variant='header2' color='secondaryText'>
 							Êtes-vous sûr de vouloir supprimer cette catégorie ?
 						</ThemedText>
-						<BlockWrapper backgroundColor={colors.secondary}>
-							<ThemedText color='secondaryText'>
+						<BlockWrapper backgroundColor={colors.error}>
+							<ThemedText color='primaryText'>
 								Attention toutes les entrées de cette catégorie seront
 								supprimées.
 							</ThemedText>
