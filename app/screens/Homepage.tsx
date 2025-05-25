@@ -55,6 +55,21 @@ export default function Homepage() {
 		<Redirect href={'/screens/auth/Login'} />;
 	}
 
+	// Ajout des fonctions pour ouverture/fermeture exclusive
+	function toggleCalendar() {
+		setCalendarIsOpen((prev) => {
+			if (!prev) setTimerIsOpen(false);
+			return !prev;
+		});
+	}
+
+	function toggleTimer() {
+		setTimerIsOpen((prev) => {
+			if (!prev) setCalendarIsOpen(false);
+			return !prev;
+		});
+	}
+
 	return (
 		<>
 			<SafeAreaView
@@ -74,7 +89,7 @@ export default function Homepage() {
 				<DateDisplay
 					date={date}
 					setDate={setDate}
-					setCalendarIsOpen={setCalendarIsOpen}
+					setCalendarIsOpen={toggleCalendar}
 				/>
 				<View style={{ flex: 1, zIndex: 99999, overflow: 'hidden' }}>
 					<MainWrapper isOpen={calendarIsOpen} direction='top'>
@@ -157,7 +172,7 @@ export default function Homepage() {
 					>
 						<WorktimeSelectAction
 							setSnackBar={setSnackBar}
-							setTimerIsOpen={setTimerIsOpen}
+							setTimerIsOpen={toggleTimer}
 							setWorktimes={setWorktimes}
 							categories={categories}
 							setCategories={setCategories}
@@ -166,10 +181,10 @@ export default function Homepage() {
 					</MainWrapper>
 				</View>
 				<Footer
-					setTimerIsOpen={setTimerIsOpen}
+					setTimerIsOpen={toggleTimer}
 					timerIsOpen={timerIsOpen}
 					calendarIsOpen={calendarIsOpen}
-					setCalendarIsOpen={setCalendarIsOpen}
+					setCalendarIsOpen={toggleCalendar}
 				/>
 				<ModalMenu
 					modalVisible={modalVisible}

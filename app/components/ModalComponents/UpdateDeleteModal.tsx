@@ -8,6 +8,7 @@ import DeleteBlock from './DeleteBlock';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import { Button } from 'react-native-paper';
 import useSnackBar from '@/app/hooks/useSnackBar';
+import RoundButton from '../utils/RoundButton';
 
 type Props = {
 	setModalVisible: (visible: boolean) => void;
@@ -82,24 +83,18 @@ export default function UpdateDeleteModal({
 					</View>
 
 					<View style={styles.buttonsContainer}>
-						<Button
-							mode='elevated'
-							onPress={() => setMode('edit')}
-							buttonColor={colors.primary}
-							textColor='white'
+						<ButtonMenu
+							type='round'
+							action={() => setMode('edit')}
 							style={styles.actionButton}
-						>
-							Modifier
-						</Button>
-						<Button
-							mode='elevated'
-							buttonColor={colors.error}
-							textColor='white'
-							onPress={() => setMode('delete')}
+							text='Modifier'
+						/>
+						<ButtonMenu
+							type='round'
+							action={() => setMode('delete')}
 							style={styles.actionButton}
-						>
-							Supprimer
-						</Button>
+							text='Supprimer'
+						/>
 					</View>
 				</View>
 			)}

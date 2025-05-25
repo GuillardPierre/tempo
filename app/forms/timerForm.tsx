@@ -12,6 +12,8 @@ import { Category, SelectedWorktime } from '../types/worktime';
 import DropDownPicker from 'react-native-dropdown-picker';
 import CreateCategoryButton from './utils/CreateCategoryButton';
 import { useTimerForm } from './useTimerForm';
+import BlockWrapper from '../components/BlockWrapper';
+import ThemedText from '../components/utils/ThemedText';
 
 type TimerFormMode = 'chrono' | 'activity';
 
@@ -173,14 +175,22 @@ export default function TimerForm({
 									borderColor: colors.secondary,
 								},
 							]}
-							ListEmptyComponent={(props) => (
-								<CreateCategoryButton
-									categoryName={searchText}
-									onSuccess={(category) => {
-										handleCategoryCreated(category);
-									}}
-								/>
-							)}
+							ListEmptyComponent={(props) =>
+								searchText.length > 0 ? (
+									<CreateCategoryButton
+										categoryName={searchText}
+										onSuccess={(category) => {
+											handleCategoryCreated(category);
+										}}
+									/>
+								) : (
+									<BlockWrapper backgroundColor={colors.primaryLight}>
+										<ThemedText>
+											Créez une catégorie en tapant dans la barre de recherche
+										</ThemedText>
+									</BlockWrapper>
+								)
+							}
 						/>
 
 						{touched.category?.title && errors.category?.title && (

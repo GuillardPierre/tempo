@@ -4,10 +4,10 @@ import { useThemeColors } from '../hooks/useThemeColors';
 import { useFooter } from '../hooks/useFooter';
 
 type Props = {
-	setTimerIsOpen: (isOpen: boolean) => void;
+	setTimerIsOpen: () => void;
 	timerIsOpen: boolean;
 	calendarIsOpen: boolean;
-	setCalendarIsOpen: (isOpen: boolean) => void;
+	setCalendarIsOpen: () => void;
 };
 
 export default function Footer({

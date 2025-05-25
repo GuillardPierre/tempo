@@ -11,7 +11,7 @@ import { Category } from '../types/worktime';
 // Définir les props nécessaires pour TimerForm
 interface WorktimeSelectActionProps {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
-	setTimerIsOpen: (isOpen: boolean) => void;
+	setTimerIsOpen: () => void;
 	setWorktimes?: (worktimes: any[] | ((prevWorktimes: any[]) => any[])) => void;
 	categories?: Category[];
 	setCategories?: (

@@ -8,7 +8,7 @@ import { useDateDisplay } from '../hooks/useDateDisplay';
 type Props = {
 	date: string;
 	setDate: (date: string) => void;
-	setCalendarIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+	setCalendarIsOpen: () => void;
 };
 
 export default function DateDisplay({
@@ -27,7 +27,7 @@ export default function DateDisplay({
 				svgSize={15}
 				onPress={handlePrevious}
 			/>
-			<Pressable onPress={() => setCalendarIsOpen((prev) => !prev)}>
+			<Pressable onPress={setCalendarIsOpen}>
 				<ThemedText variant='header2' color='primaryText'>
 					{(() => {
 						const d = new Date(date);

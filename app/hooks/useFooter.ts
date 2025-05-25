@@ -2,10 +2,10 @@ import { useRef, useState, useEffect } from 'react';
 import { Animated, Vibration } from 'react-native';
 
 type Props = {
-	setTimerIsOpen: (isOpen: boolean) => void;
+	setTimerIsOpen: () => void;
 	timerIsOpen: boolean;
 	calendarIsOpen: boolean;
-	setCalendarIsOpen: (isOpen: boolean) => void;
+	setCalendarIsOpen: () => void;
 };
 
 export const useFooter = ({
@@ -25,7 +25,7 @@ export const useFooter = ({
 
 	const handleAddPress = () => {
 		Vibration.vibrate(50);
-		setTimerIsOpen(!timerIsOpen);
+		setTimerIsOpen();
 
 		Animated.timing(rotateAnim, {
 			toValue: 1,
@@ -39,7 +39,7 @@ export const useFooter = ({
 
 	const handleCalendarPress = () => {
 		Vibration.vibrate(50);
-		setCalendarIsOpen(!calendarIsOpen);
+		setCalendarIsOpen();
 
 		Animated.timing(calendarRotateAnim, {
 			toValue: 1,

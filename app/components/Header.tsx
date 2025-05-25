@@ -1,7 +1,9 @@
-import { StyleSheet, Vibration, View } from 'react-native';
+import { Pressable, StyleSheet, Vibration, View } from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
 import ThemedText from './utils/ThemedText';
 import SquareButton from './utils/SquareButton';
+import { router } from 'expo-router';
+import ArrowBackSvg from './svg/arrowback';
 
 type Props = {
 	modalVisible: boolean;
@@ -17,9 +19,23 @@ export default function Header({
 	const colors = useThemeColors();
 	return (
 		<View style={[styles.header, { backgroundColor: colors.primary }]}>
-			<ThemedText variant='header1' color='primaryText'>
-				⏳Tempos⌛
-			</ThemedText>
+			<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+				{router.canGoBack() && (
+					<Pressable
+						style={{
+							backgroundColor: colors.secondary,
+							borderRadius: 100,
+							padding: 5,
+						}}
+						onPress={() => router.back()}
+					>
+						<ArrowBackSvg fill={colors.primaryText} />
+					</Pressable>
+				)}
+				<ThemedText variant='header1' color='primaryText'>
+					⏳Tempos⌛
+				</ThemedText>
+			</View>
 			<SquareButton
 				type={modalVisible ? 'close' : 'menu'}
 				onPress={() => {
