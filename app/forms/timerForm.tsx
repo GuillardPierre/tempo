@@ -106,7 +106,9 @@ export default function TimerForm({
 	return (
 		<View style={{ zIndex: 9999 }}>
 			<Formik
-				initialValues={getInitialValues()}
+				initialValues={{
+					...getInitialValues(),
+				}}
 				validationSchema={toFormikValidationSchema(createWorkTimeSchema())}
 				onSubmit={(values) => {
 					submitWorktime({
@@ -120,187 +122,208 @@ export default function TimerForm({
 							mode === 'activity' && selectedDays.length
 								? `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`
 								: undefined,
+						endDate: values.endDate
+							? formatLocalDateTime(values.endDate)
+							: undefined,
 					});
 				}}
 			>
-				{({ setFieldValue, values, handleSubmit, errors, touched }) => (
-					<View style={styles.container}>
-						<DropDownPicker
-							open={open}
-							value={values.category.id}
-							items={categories.map((c) => ({
-								label: c.name,
-								value: String(c.id),
-							}))}
-							setOpen={setOpen}
-							setValue={(callback) => {
-								const currentValue = callback(values.category.id);
-								return currentValue;
-							}}
-							onSelectItem={(item) => {
-								if (item && item.value) {
-									const value = item.value.toString();
-									const category = categories.find(
-										(c) => String(c.id) === value
-									);
-									if (category) {
-										setFieldValue('category', {
-											id: value,
-											title: category.name,
-										});
+				{({ setFieldValue, values, handleSubmit, errors, touched }) => {
+					return (
+						<View style={styles.container}>
+							<DropDownPicker
+								open={open}
+								value={values.category.id}
+								items={categories.map((c) => ({
+									label: c.name,
+									value: String(c.id),
+								}))}
+								setOpen={setOpen}
+								setValue={(callback) => {
+									const currentValue = callback(values.category.id);
+									return currentValue;
+								}}
+								onSelectItem={(item) => {
+									if (item && item.value) {
+										const value = item.value.toString();
+										const category = categories.find(
+											(c) => String(c.id) === value
+										);
+										if (category) {
+											setFieldValue('category', {
+												id: value,
+												title: category.name,
+											});
+										}
 									}
+								}}
+								searchable={true}
+								searchPlaceholder='Tapez pour rechercher ou créer une catégorie'
+								onChangeSearchText={(text) => {
+									setSearchText(text);
+								}}
+								placeholder='Sélectionnez une catégorie'
+								style={[styles.dropdown, { borderColor: colors.primary }]}
+								dropDownContainerStyle={[
+									styles.dropdownContainer,
+									{
+										backgroundColor: colors.background,
+										borderColor: colors.primary,
+									},
+								]}
+								listMode='MODAL'
+								modalAnimationType='slide'
+								zIndex={10000}
+								modalContentContainerStyle={[
+									styles.modalContentContainer,
+									{
+										backgroundColor: colors.background,
+										borderColor: colors.secondary,
+									},
+								]}
+								ListEmptyComponent={(props) =>
+									searchText.length > 0 ? (
+										<CreateCategoryButton
+											categoryName={searchText}
+											onSuccess={(category) => {
+												handleCategoryCreated(category);
+											}}
+										/>
+									) : (
+										<BlockWrapper backgroundColor={colors.primaryLight}>
+											<ThemedText>
+												Créez une catégorie en tapant dans la barre de recherche
+											</ThemedText>
+										</BlockWrapper>
+									)
 								}
-							}}
-							searchable={true}
-							searchPlaceholder='Tapez pour rechercher ou créer une catégorie'
-							onChangeSearchText={(text) => {
-								setSearchText(text);
-							}}
-							placeholder='Sélectionnez une catégorie'
-							style={[styles.dropdown, { borderColor: colors.primary }]}
-							dropDownContainerStyle={[
-								styles.dropdownContainer,
-								{
-									backgroundColor: colors.background,
-									borderColor: colors.primary,
-								},
-							]}
-							listMode='MODAL'
-							modalAnimationType='slide'
-							zIndex={10000}
-							modalContentContainerStyle={[
-								styles.modalContentContainer,
-								{
-									backgroundColor: colors.background,
-									borderColor: colors.secondary,
-								},
-							]}
-							ListEmptyComponent={(props) =>
-								searchText.length > 0 ? (
-									<CreateCategoryButton
-										categoryName={searchText}
-										onSuccess={(category) => {
-											handleCategoryCreated(category);
-										}}
-									/>
-								) : (
-									<BlockWrapper backgroundColor={colors.primaryLight}>
-										<ThemedText>
-											Créez une catégorie en tapant dans la barre de recherche
-										</ThemedText>
-									</BlockWrapper>
-								)
-							}
-						/>
+							/>
 
-						{touched.category?.title && errors.category?.title && (
-							<Text style={[styles.errorText, { color: colors.primary }]}>
-								{errors.category.title}
-							</Text>
-						)}
+							{touched.category?.title && errors.category?.title && (
+								<Text style={[styles.errorText, { color: colors.primary }]}>
+									{errors.category.title}
+								</Text>
+							)}
 
-						{/* Sélecteurs de temps */}
-						<View style={styles.timePickersContainer}>
-							<View style={styles.timePickerContainer}>
-								<TimePickerInput
-									label='Début:'
-									value={values.startTime}
-									onChange={(date) => {
-										setFieldValue('startTime', date);
-										values.endTime &&
-											date > values.endTime &&
-											setFieldValue('endTime', date);
-									}}
-								/>
-								{mode === 'chrono' && (
-									<ButtonMenu
-										fullWidth={false}
-										style={{
-											marginLeft: 10,
-											alignSelf: 'flex-end',
-											marginBottom: 10,
-										}}
-										type='round'
-										text='Lancer Chronomètre'
-										action={() => {
-											Vibration.vibrate(50);
-											handleSubmit();
-										}}
-									/>
-								)}
-							</View>
-							{mode === 'activity' && (
+							{/* Sélecteurs de temps */}
+							<View style={styles.timePickersContainer}>
 								<View style={styles.timePickerContainer}>
 									<TimePickerInput
-										label='Fin:'
-										value={
-											values.endTime
-												? values.endTime
-												: new Date(
-														date + 'T' + new Date().toTimeString().slice(0, 8)
-												  )
-										}
-										onChange={(date) => setFieldValue('endTime', date)}
+										label='Heure début:'
+										value={values.startTime}
+										onChange={(date) => {
+											setFieldValue('startTime', date);
+											values.endTime &&
+												date > values.endTime &&
+												setFieldValue('endTime', date);
+										}}
 									/>
+									{mode === 'chrono' && (
+										<ButtonMenu
+											fullWidth={false}
+											style={{
+												marginLeft: 10,
+												alignSelf: 'flex-end',
+												marginBottom: 10,
+											}}
+											type='round'
+											text='Lancer Chronomètre'
+											action={() => {
+												Vibration.vibrate(50);
+												handleSubmit();
+											}}
+										/>
+									)}
 								</View>
-							)}
-						</View>
-
-						{mode === 'activity' && daysAreDisplayed() && (
-							<View style={styles.recurrenceContainer}>
-								<Text style={styles.recurrenceLabel}>Répétition :</Text>
-								<ScrollView
-									style={styles.dayButtonsScroll}
-									contentContainerStyle={styles.dayButtonsContainer}
-									horizontal
-									showsHorizontalScrollIndicator={false}
-								>
-									{weekdays.map((day) => (
-										<Pressable
-											key={day.value}
-											style={[
-												styles.dayButton,
-												selectedDays.includes(day.value) && {
-													backgroundColor: colors.secondary,
-												},
-											]}
-											onPress={() =>
-												setSelectedDays((prev) =>
-													prev.includes(day.value)
-														? prev.filter((d) => d !== day.value)
-														: [...prev, day.value]
-												)
+								{mode === 'activity' && (
+									<View style={styles.timePickerContainer}>
+										<TimePickerInput
+											label='Heure fin:'
+											value={
+												values.endTime
+													? values.endTime
+													: new Date(
+															date + 'T' + new Date().toTimeString().slice(0, 8)
+													  )
 											}
-										>
-											<Text
+											onChange={(date) => setFieldValue('endTime', date)}
+										/>
+									</View>
+								)}
+							</View>
+
+							{mode === 'activity' && daysAreDisplayed() && (
+								<View style={styles.recurrenceContainer}>
+									<Text style={styles.recurrenceLabel}>
+										Répétition (non obligatoire) :
+									</Text>
+									<ScrollView
+										style={styles.dayButtonsScroll}
+										contentContainerStyle={styles.dayButtonsContainer}
+										horizontal
+										showsHorizontalScrollIndicator={false}
+									>
+										{weekdays.map((day) => (
+											<Pressable
+												key={day.value}
 												style={[
-													styles.dayButtonText,
+													styles.dayButton,
 													selectedDays.includes(day.value) && {
-														color: 'white',
+														backgroundColor: colors.secondary,
 													},
 												]}
+												onPress={() => {
+													Vibration.vibrate(50);
+													setSelectedDays((prev) =>
+														prev.includes(day.value)
+															? prev.filter((d) => d !== day.value)
+															: [...prev, day.value]
+													);
+												}}
 											>
-												{day.label}
-											</Text>
-										</Pressable>
-									))}
-								</ScrollView>
-							</View>
-						)}
+												<Text
+													style={[
+														styles.dayButtonText,
+														selectedDays.includes(day.value) && {
+															color: 'white',
+														},
+													]}
+												>
+													{day.label}
+												</Text>
+											</Pressable>
+										))}
+									</ScrollView>
+									{selectedDays.length > 0 && (
+										<TimePickerInput
+											label='Date de fin (non obligatoire):'
+											value={values.endDate}
+											onChange={(date) => {
+												console.log('date', date);
+												setFieldValue('endDate', date);
+											}}
+											style={{ width: '100%' }}
+											mode='date'
+											display='calendar'
+										/>
+									)}
+								</View>
+							)}
 
-						{mode === 'activity' && (
-							<ButtonMenu
-								style={styles.submitButton}
-								type='round'
-								text={isEditing ? 'Mettre à jour' : "Enregistrer l'activité"}
-								action={() => {
-									Vibration.vibrate(50);
-									handleSubmit();
-								}}
-							/>
-						)}
-					</View>
-				)}
+							{mode === 'activity' && (
+								<ButtonMenu
+									style={styles.submitButton}
+									type='round'
+									text={isEditing ? 'Mettre à jour' : "Enregistrer l'activité"}
+									action={() => {
+										Vibration.vibrate(50);
+										handleSubmit();
+									}}
+								/>
+							)}
+						</View>
+					);
+				}}
 			</Formik>
 		</View>
 	);
@@ -311,7 +334,7 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'column',
 		justifyContent: 'center',
-		alignItems: 'flex-start',
+		alignItems: 'center',
 	},
 	dropdown: {
 		borderWidth: 3,
@@ -335,15 +358,16 @@ const styles = StyleSheet.create({
 	timePickersContainer: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
-		justifyContent: 'flex-start',
+		justifyContent: 'space-around',
 		width: '100%',
 		gap: 20,
 	},
 	timePickerContainer: {
 		flexDirection: 'row',
 		alignItems: 'flex-end',
-		height: '100%',
-		minHeight: 80,
+		// height: '100%',
+		// minHeight: 80,
+		// maxHeight: 100,
 	},
 	recurrenceContainer: {
 		width: '100%',
@@ -351,9 +375,9 @@ const styles = StyleSheet.create({
 	recurrenceLabel: {
 		fontSize: 16,
 		fontWeight: 'bold',
-		marginBottom: 10,
+		marginBottom: 5,
 		width: '100%',
-		marginLeft: 'auto',
+		marginLeft: 5,
 		marginRight: 'auto',
 	},
 	dayButtonsScroll: {

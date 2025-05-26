@@ -8,18 +8,21 @@ type BlockWrapperProps = {
 	children: React.ReactNode;
 	backgroundColor?: string;
 	style?: StyleProp<ViewStyle>;
+	direction?: 'row' | 'column';
 };
 
 export default function BlockWrapper({
 	children,
 	backgroundColor,
 	style,
+	direction = 'row',
 }: BlockWrapperProps) {
 	return (
 		<View
 			style={[
 				styles.container,
 				backgroundColor ? { backgroundColor } : {},
+				{ flexDirection: direction },
 				style,
 			]}
 		>
@@ -32,7 +35,6 @@ const styles = StyleSheet.create({
 	container: {
 		flex: 1,
 		minHeight: 80,
-		flexDirection: 'row',
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		width: '100%',

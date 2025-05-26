@@ -6,8 +6,6 @@ import { ActivityIndicator, View } from 'react-native';
 export default function Index() {
 	const [isConnected, setIsConnected] = useState<boolean | null>(null);
 
-	console.log('IsConnected', isConnected);
-
 	useEffect(() => {
 		async function checkConnection() {
 			const connected = await IsConnected();

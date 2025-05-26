@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useRef, useState, useEffect } from 'react';
 import { Animated, Vibration } from 'react-native';
 
@@ -60,6 +61,11 @@ export const useFooter = ({
 		outputRange: ['0deg', '360deg'],
 	});
 
+	const handleStatsPress = () => {
+		Vibration.vibrate(50);
+		router.push('/screens/charts');
+	};
+
 	return {
 		buttonType,
 		setButtonType,
@@ -67,5 +73,6 @@ export const useFooter = ({
 		handleCalendarPress,
 		spin,
 		calendarSpin,
+		handleStatsPress,
 	};
 };

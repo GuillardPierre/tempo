@@ -51,8 +51,9 @@ export function useTimerForm({
 
 			const method = isEditing ? httpPut : httpPost;
 			const response = await method(endpoint, formData);
-			if (!response.ok) throw new Error(await response.text());
+			console.log('formData', formData);
 
+			if (!response.ok) throw new Error(await response.text());
 			return await response.json();
 		},
 		onSuccess: (data) => {
@@ -103,11 +104,14 @@ export function useTimerForm({
 				: new Date(date + 'T' + new Date().toTimeString().slice(0, 8)),
 			endTime: selectedWorktime?.endTime
 				? new Date(selectedWorktime.endTime)
-				: null,
+				: undefined,
 			recurrence: undefined as CreateRecurrenceRule | undefined,
 			startDate: selectedWorktime?.startDate
 				? new Date(selectedWorktime.startDate)
 				: new Date(date + 'T00:00:00'),
+			endDate: selectedWorktime?.endDate
+				? new Date(selectedWorktime.endDate)
+				: undefined,
 		};
 		return initialValues;
 	};

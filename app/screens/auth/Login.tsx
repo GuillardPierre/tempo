@@ -10,79 +10,78 @@ import { useEffect } from 'react';
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
 
 export default function Login() {
-  const colors = useThemeColors();
-  const router = useRouter();
-  const { color, open, message, setOpen, setSnackBar } = useSnackBar();
+	const colors = useThemeColors();
+	const router = useRouter();
+	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
-  const getToken = async () => {
-    const token = await AsyncStorage.getItem('token');
-    console.log('TOKEN', token);
-  };
+	const getToken = async () => {
+		const token = await AsyncStorage.getItem('token');
+	};
 
-  useEffect(() => {
-    getToken();
-  }, []);
-  return (
-    <SafeAreaView
-      style={[
-        styles.container,
-        {
-          backgroundColor: colors.primary,
-        },
-      ]}
-    >
-      <StatusBar backgroundColor={colors.primary} barStyle='light-content' />
-      <ThemedText variant='header1' color='primaryText'>
-        Bienvenue sur Tempos
-      </ThemedText>
+	useEffect(() => {
+		getToken();
+	}, []);
+	return (
+		<SafeAreaView
+			style={[
+				styles.container,
+				{
+					backgroundColor: colors.primary,
+				},
+			]}
+		>
+			<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
+			<ThemedText variant='header1' color='primaryText'>
+				Bienvenue sur Tempos
+			</ThemedText>
 
-      <ThemedText style={styles.header} variant='body' color='primaryText'>
-        Gérez votre temps efficacement avec un suivi statistique tout au long de
-        l'année
-      </ThemedText>
-      <LoginForm setSnackBar={setSnackBar} />
+			<ThemedText style={styles.header} variant='body' color='primaryText'>
+				Gérez votre temps efficacement avec un suivi statistique tout au long de
+				l'année
+			</ThemedText>
+			<LoginForm setSnackBar={setSnackBar} />
 
-      <TextButton
-        style={styles.button}
-        onPress={() => {
-          router.push('/screens/auth/Signup');
-        }}
-        text='Pas encore de compte ?'
-      />
-      <CustomSnackBar
-        color={color}
-        message={message}
-        open={open}
-        setOpen={setOpen}
-      />
-    </SafeAreaView>
-  );
+			<TextButton
+				style={styles.button}
+				onPress={() => {
+					router.push('/screens/auth/Signup');
+				}}
+				text='Pas encore de compte ?'
+			/>
+			<CustomSnackBar
+				color={color}
+				message={message}
+				open={open}
+				setOpen={setOpen}
+			/>
+		</SafeAreaView>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 20,
-  },
-  header: {
-    fontSize: 18,
-    textAlign: 'center',
-    marginBlock: 20,
-  },
-  link: {
-    fontWeight: 'bold',
-    fontSize: 16,
-    padding: 10,
-    borderRadius: 5,
-    textDecorationLine: 'underline',
-    marginTop: 20,
-  },
-  button: {
-    backgroundColor: '#007BFF',
-    padding: 10,
-    borderRadius: 5,
-    marginTop: 20,
-  },
+	container: {
+		flex: 1,
+		justifyContent: 'center',
+		alignItems: 'center',
+		padding: 20,
+	},
+	header: {
+		fontSize: 18,
+		textAlign: 'center',
+		marginBlock: 20,
+	},
+	link: {
+		fontWeight: 'bold',
+		fontSize: 16,
+		padding: 10,
+		borderRadius: 5,
+		textDecorationLine: 'underline',
+		marginTop: 20,
+	},
+	button: {
+		backgroundColor: '#007BFF',
+		padding: 10,
+		borderRadius: 5,
+		marginTop: 20,
+	},
 });

@@ -24,6 +24,7 @@ export default function Footer({
 		handleCalendarPress,
 		spin,
 		calendarSpin,
+		handleStatsPress,
 	} = useFooter({
 		setTimerIsOpen,
 		timerIsOpen,
@@ -37,9 +38,7 @@ export default function Footer({
 				type='stats'
 				variant='secondary'
 				btnSize={50}
-				onPress={() => {
-					Vibration.vibrate(50);
-				}}
+				onPress={handleStatsPress}
 			/>
 			<Animated.View style={{ transform: [{ rotate: calendarSpin }] }}>
 				<RoundButton

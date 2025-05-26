@@ -64,6 +64,7 @@ export interface CreateWorktimePayload {
  */
 export interface WorktimeSeries extends Omit<Worktime, 'recurrence'> {
 	startDate: string;
+	endDate?: string;
 	recurrence: CreateRecurrenceRule;
 }
 
@@ -71,10 +72,10 @@ export interface WorktimeSeries extends Omit<Worktime, 'recurrence'> {
  * Interface pour l'objet worktime sélectionné pour modification/suppression
  */
 export interface SelectedWorktime extends Worktime {
-	isRecurring?: boolean; // Indique si c'est une instance récurrente
-	startDate?: string; // Date de début pour les séries récurrentes
-	occurrenceId?: number; // ID spécifique à une occurrence dans une série
-	originalStartTime?: string; // Heure de début originale pour identifier une occurrence spécifique
-	// Propriétés aidant à l'édition du worktime
+	isRecurring?: boolean;
+	startDate?: string;
+	endDate?: string;
+	occurrenceId?: number;
+	originalStartTime?: string;
 	formattedDuration?: string; // Durée formatée pour affichage
 }

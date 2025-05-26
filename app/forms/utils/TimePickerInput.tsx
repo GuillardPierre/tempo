@@ -7,9 +7,11 @@ import { StyleProp, ViewStyle } from 'react-native';
 
 type Props = {
 	label?: string;
-	value: Date;
+	value?: Date;
 	onChange: (date: Date) => void;
 	style?: StyleProp<ViewStyle>;
+	mode?: 'time' | 'date';
+	display?: 'spinner' | 'calendar';
 };
 
 export default function TimePickerInput({
@@ -17,24 +19,39 @@ export default function TimePickerInput({
 	value,
 	onChange,
 	style,
+	mode = 'time',
+	display = 'spinner',
 }: Props) {
 	const [show, setShow] = useState(false);
 	const colors = useThemeColors();
 
-	const onTimeChange = (_: any, selectedDate?: Date) => {
+	const onTimeChange = (event: any, selectedDate?: Date) => {
 		setShow(false);
-		if (selectedDate) {
-			onChange(selectedDate);
+		if (event.type === 'set') {
+			const dateToUse =
+				selectedDate ??
+				(event.nativeEvent && event.nativeEvent.timestamp
+					? new Date(event.nativeEvent.timestamp)
+					: undefined);
+			if (dateToUse) {
+				onChange(dateToUse);
+			}
 		}
+		// Si annulé, ne rien faire
 	};
 
 	const formatTime = (date: Date) => {
 		const hours = String(date.getHours()).padStart(2, '0');
 		const minutes = String(date.getMinutes()).padStart(2, '0');
-
 		return `${hours}:${minutes}`;
 	};
 
+	const formatDate = (date: Date) => {
+		const day = String(date.getDate()).padStart(2, '0');
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const year = date.getFullYear();
+		return `${day}/${month}/${year}`;
+	};
 	return (
 		<View style={[styles.container, style]}>
 			{label && (
@@ -60,17 +77,24 @@ export default function TimePickerInput({
 						fontWeight: 'bold',
 					}}
 				>
-					{formatTime(value)}
+					{value
+						? mode === 'time'
+							? formatTime(value)
+							: formatDate(value)
+						: mode === 'date'
+						? 'Sélectionner une date'
+						: 'Sélectionner une heure'}
 				</ThemedText>
 			</Pressable>
 
 			{show && (
 				<DateTimePicker
-					value={value}
-					mode='time'
+					value={value ?? new Date()}
+					mode={mode}
 					is24Hour={true}
 					onChange={onTimeChange}
-					display={'spinner'}
+					display={display}
+					{...(Platform.OS === 'ios' ? { locale: 'fr-FR' } : {})}
 				/>
 			)}
 		</View>
@@ -81,7 +105,7 @@ const styles = StyleSheet.create({
 	container: {
 		marginBottom: 5,
 		textAlign: 'center',
-		width: 100,
+		width: 150,
 	},
 	label: {
 		fontSize: 16,
@@ -97,6 +121,6 @@ const styles = StyleSheet.create({
 		fontSize: 18,
 		fontWeight: 'bold',
 		textAlign: 'center',
-		flex: 1,
+		height: 55,
 	},
 });

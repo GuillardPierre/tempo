@@ -2,8 +2,8 @@ import { Fragment, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { DateData, Calendar as RNCalendar } from 'react-native-calendars';
 import { useCalendar } from '../hooks/useCalendar';
-import { Worktime } from '../types/worktime';
-import { RRule } from 'rrule';
+import { Worktime, WorktimeSeries } from '../types/worktime';
+import { getRRuleFromRecurrence } from './utils/rrule';
 import { useThemeColors } from '../hooks/useThemeColors';
 
 type Props = {
@@ -24,18 +24,30 @@ export default function Calendar({
 	const colors = useThemeColors();
 	const { onDayPress } = useCalendar(date, setDate);
 
-	// const [month, setMonth] = useState(new Date(date));
+	// Définition des styles « dots »
+	const stylesByType = {
+		SINGLE: {
+			key: 'single',
+			color: colors.secondary,
+			selectedDotColor: colors.secondary,
+		},
+		RECURRING: {
+			key: 'recurring',
+			color: colors.primary,
+			selectedDotColor: colors.primary,
+		},
+	};
 
 	/**
 	 * Retourne un tableau de dates (format 'YYYY-MM-DD')
 	 * où le worktime s'applique, tronqué au mois de `monthDate`.
 	 *
-	 * @param {Worktime} wt – worktime { startTime, endTime, recurrence, type, … }
+	 * @param {Worktime | WorktimeSeries} wt – worktime { startTime, endTime, recurrence, type, … }
 	 * @param {Date} monthDate – une date quelconque dans le mois à traiter
 	 * @returns {string[]}
 	 */
 	function expandWorktimeDates(
-		wt: Worktime,
+		wt: Worktime | WorktimeSeries,
 		monthDate: Date
 	): string[] | undefined {
 		const year = monthDate.getFullYear();
@@ -51,14 +63,17 @@ export default function Calendar({
 			return [];
 		}
 
-		// RECURRING
-		if (wt.recurrence) {
-			const rule = RRule.fromString(wt.recurrence);
-			rule.options.dtstart = new Date(wt.startTime);
-			rule.options.until = to;
-			const r = new RRule(rule.options);
-
-			const dates = r.between(from, to, true);
+		// RÉCURRENCE
+		if (wt.recurrence && typeof wt.recurrence === 'string') {
+			const endDate = (wt as any).endDate;
+			const rrule = getRRuleFromRecurrence(
+				wt.recurrence,
+				wt.startTime,
+				endDate,
+				to
+			);
+			if (!rrule) return [];
+			const dates = rrule.between(from, to, true);
 			return dates.map((d) => d.toISOString().slice(0, 10));
 		}
 	}
@@ -77,19 +92,6 @@ export default function Calendar({
 			};
 		} = {};
 
-		// Définition des styles « dots »
-		const stylesByType = {
-			SINGLE: {
-				key: 'single',
-				color: colors.secondary,
-				selectedDotColor: colors.secondary,
-			},
-			RECURRING: {
-				key: 'recurring',
-				color: colors.primary,
-				selectedDotColor: colors.primary,
-			},
-		};
 		if (worktimes.length === 0) return marked;
 		worktimes?.forEach((wt) => {
 			const dates = expandWorktimeDates(wt, monthDate);

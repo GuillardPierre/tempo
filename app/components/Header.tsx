@@ -2,7 +2,7 @@ import { Pressable, StyleSheet, Vibration, View } from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
 import ThemedText from './utils/ThemedText';
 import SquareButton from './utils/SquareButton';
-import { router } from 'expo-router';
+import { router, usePathname } from 'expo-router';
 import ArrowBackSvg from './svg/arrowback';
 
 type Props = {
@@ -17,10 +17,11 @@ export default function Header({
 	setModalType,
 }: Props) {
 	const colors = useThemeColors();
+	const pathname = usePathname();
 	return (
 		<View style={[styles.header, { backgroundColor: colors.primary }]}>
 			<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-				{router.canGoBack() && (
+				{router.canGoBack() && pathname !== '/screens/homepage' && (
 					<Pressable
 						style={{
 							backgroundColor: colors.secondary,
@@ -33,7 +34,7 @@ export default function Header({
 					</Pressable>
 				)}
 				<ThemedText variant='header1' color='primaryText'>
-					⏳Tempos⌛
+					⏳Tempos
 				</ThemedText>
 			</View>
 			<SquareButton
