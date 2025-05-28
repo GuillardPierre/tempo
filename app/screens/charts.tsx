@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dimensions, StatusBar, StyleSheet, View } from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
@@ -8,44 +8,13 @@ import ThemedText from '../components/utils/ThemedText';
 import { LineChart, PieChart, StackedBarChart } from 'react-native-chart-kit';
 import BlockWrapper from '../components/BlockWrapper';
 import { SegmentedButtons } from 'react-native-paper';
-
-const data = [
-	{
-		name: 'Classe',
-		population: 18, // heures sur la période
-		color: 'rgba(52, 152, 219, 1)',
-		legendFontColor: '#7F7F7F',
-		legendFontSize: 15,
-	},
-	{
-		name: 'Préparations',
-		population: 10,
-		color: 'rgba(46, 204, 113, 1)',
-		legendFontColor: '#7F7F7F',
-		legendFontSize: 15,
-	},
-	{
-		name: 'Corrections',
-		population: 7,
-		color: 'rgba(241, 196, 15, 1)',
-		legendFontColor: '#7F7F7F',
-		legendFontSize: 15,
-	},
-	{
-		name: 'Réunions',
-		population: 4,
-		color: 'rgba(231, 76, 60, 1)',
-		legendFontColor: '#7F7F7F',
-		legendFontSize: 15,
-	},
-	{
-		name: 'Autres',
-		population: 3,
-		color: 'rgba(155, 89, 182, 1)',
-		legendFontColor: '#7F7F7F',
-		legendFontSize: 15,
-	},
-];
+import { httpGet } from '../components/utils/querySetup';
+import ENDPOINTS from '../components/utils/ENDPOINT';
+import {
+	getCurrentWeekRange,
+	getCurrentMonthRange,
+	getCurrentSchoolYearRange,
+} from '../utils/dateRanges';
 
 const data2 = {
 	labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin'],
@@ -91,6 +60,67 @@ export default function Charts() {
 	const colors = useThemeColors();
 	const screenWidth = Dimensions.get('window').width;
 	const [value, setValue] = useState<string>('week');
+	const [categoryTimeSpent, setCategoryTimeSpent] = useState<any>(null);
+
+	const getCategoryTimeSpent = async (range: { from: string; to: string }) => {
+		const url = `${
+			ENDPOINTS.charts.categoryTimeSpent
+		}?from=${encodeURIComponent(range.from)}&to=${encodeURIComponent(
+			range.to
+		)}`;
+		console.log(url);
+		const rep = await httpGet(url);
+		// Traite la réponse ici
+		console.log(rep);
+		if (rep.ok) {
+			const chartColors = [
+				'rgba(52, 152, 219, 1)',
+				'rgba(46, 204, 113, 1)',
+				'rgba(241, 196, 15, 1)',
+				'rgba(231, 76, 60, 1)',
+				'rgba(155, 89, 182, 1)',
+				'rgba(52, 73, 94, 1)',
+				'rgba(26, 188, 156, 1)',
+				'rgba(230, 126, 34, 1)',
+				'rgba(149, 165, 166, 1)',
+				'rgba(243, 156, 18, 1)',
+			];
+			const legendFontColor = '#7F7F7F';
+			const legendFontSize = 15;
+
+			let data = await rep.json();
+
+			if (Array.isArray(data)) {
+				console.log(data);
+
+				data = data.map((entry, idx) => ({
+					name: entry.name || `Catégorie ${idx + 1}`,
+					population: Number(entry.duration) || 0,
+					color: chartColors[idx % chartColors.length],
+					legendFontColor,
+					legendFontSize,
+				}));
+			}
+
+			setCategoryTimeSpent(data);
+		}
+	};
+
+	useEffect(() => {
+		let range;
+		if (value === 'week') {
+			range = getCurrentWeekRange();
+		} else if (value === 'month') {
+			range = getCurrentMonthRange();
+		} else if (value === 'year') {
+			range = getCurrentSchoolYearRange();
+		}
+		if (range) {
+			getCategoryTimeSpent(range);
+		}
+		// eslint-disable-next-line react-hooks/exhaustive-deps
+	}, [value]);
+
 	return (
 		<>
 			<SafeAreaView
@@ -156,7 +186,7 @@ export default function Charts() {
 								Moyenne globale
 							</ThemedText>
 							<PieChart
-								data={data}
+								data={categoryTimeSpent || []}
 								width={screenWidth - 40}
 								height={245}
 								chartConfig={chartConfig}

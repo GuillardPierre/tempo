@@ -24,6 +24,10 @@ const ENDPOINTS = {
 		day: 'schedule/day/',
 		month: 'schedule/month/',
 	},
+	charts: {
+		root: 'stats/',
+		categoryTimeSpent: 'stats/categories',
+	},
 };
 
 export default ENDPOINTS;

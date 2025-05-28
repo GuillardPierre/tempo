@@ -111,7 +111,6 @@ export async function httpPost(
 		REFRESH_TOKEN = null;
 	}
 	if (!option.isLogin) {
-		console.log('checkAndRefreshToken');
 		await checkAndRefreshToken();
 	}
 	return fetch(makeUrl(url), {
