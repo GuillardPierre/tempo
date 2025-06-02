@@ -115,9 +115,7 @@ export default function Charts() {
         ) {
           // Conversion des minutes en heures
           const dataInHours = data.total.data.map((v: number) =>
-            typeof v === 'number' && value !== 'year' && isFinite(v)
-              ? v / 60
-              : v
+            typeof v === 'number' && isFinite(v) ? v / 60 : v
           );
           setLineChartData({
             labels: data.total.labels,
