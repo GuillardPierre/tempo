@@ -4,6 +4,7 @@ import {
 	ScrollView,
 	StyleProp,
 	ViewStyle,
+	Dimensions,
 } from 'react-native';
 import { useThemeColors } from '../hooks/useThemeColors';
 import { useEffect, useRef, useState } from 'react';
@@ -16,6 +17,7 @@ type Props = {
 	disableScroll?: boolean;
 	height?: number;
 	fullHeight?: boolean;
+	maxHeight?: number | `${number}%`;
 	style?: StyleProp<ViewStyle>;
 };
 
@@ -27,6 +29,7 @@ export default function MainWrapper({
 	disableScroll = false,
 	height,
 	fullHeight = false,
+	maxHeight,
 	style,
 }: Props) {
 	const colors = useThemeColors();
@@ -35,6 +38,7 @@ export default function MainWrapper({
 		new Animated.Value(isOpen && typeof height === 'number' ? height : 0)
 	).current;
 	const [shouldRender, setShouldRender] = useState(isOpen);
+	const screenHeight = Dimensions.get('window').height;
 
 	useEffect(() => {
 		if (isOpen) {
@@ -81,60 +85,49 @@ export default function MainWrapper({
 
 	if (!shouldRender) return null;
 
+	const getMaxHeight = () => {
+		if (typeof maxHeight === 'number') {
+			return maxHeight;
+		}
+		if (typeof maxHeight === 'string' && maxHeight.endsWith('%')) {
+			const percentage = parseInt(maxHeight, 10);
+			return (screenHeight * percentage) / 100;
+		}
+		return undefined;
+	};
+
+	const containerStyle = {
+		...styles.container,
+		...(flexGrow ? styles.flexContainer : {}),
+		...(fullHeight ? { flex: 1 } : {}),
+		backgroundColor: colors.background,
+		...(typeof height === 'number'
+			? { height: animatedHeight, maxHeight: animatedHeight }
+			: {}),
+		maxHeight: getMaxHeight(),
+		transform: [
+			{
+				translateY: animation.interpolate({
+					inputRange: [0, 1],
+					outputRange: direction === 'bottom' ? [300, 0] : [-300, 0],
+				}),
+			},
+		],
+		...(style as object),
+	};
+
 	if (disableScroll) {
-		return (
-			<Animated.View
-				style={[
-					styles.container,
-					flexGrow ? styles.flexContainer : {},
-					fullHeight ? { height: '100%' } : {},
-					{
-						backgroundColor: colors.background,
-						...(typeof height === 'number'
-							? { height: animatedHeight, maxHeight: animatedHeight }
-							: {}),
-						transform: [
-							{
-								translateY: animation.interpolate({
-									inputRange: [0, 1],
-									outputRange: direction === 'bottom' ? [300, 0] : [-300, 0],
-								}),
-							},
-						],
-					},
-					style,
-				]}
-			>
-				{children}
-			</Animated.View>
-		);
+		return <Animated.View style={containerStyle}>{children}</Animated.View>;
 	}
 
 	return (
-		<Animated.View
-			style={[
-				styles.container,
-				flexGrow ? styles.flexContainer : {},
-				fullHeight ? { flex: 1 } : {},
-				{
-					backgroundColor: colors.background,
-					...(typeof height === 'number' ? { height: animatedHeight } : {}),
-					transform: [
-						{
-							translateY: animation.interpolate({
-								inputRange: [0, 1],
-								outputRange: direction === 'bottom' ? [300, 0] : [-300, 0],
-							}),
-						},
-					],
-				},
-				style,
-			]}
-		>
+		<Animated.View style={containerStyle}>
 			<ScrollView
 				removeClippedSubviews={true}
 				keyboardShouldPersistTaps='handled'
 				showsVerticalScrollIndicator={true}
+				contentContainerStyle={styles.scrollContent}
+				bounces={false}
 			>
 				{children}
 			</ScrollView>

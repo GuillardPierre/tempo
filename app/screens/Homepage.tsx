@@ -20,202 +20,231 @@ import RoundButton from '@/app/components/utils/RoundButton';
 import WorktimeSelectAction from '@/app/components/WorktimeSelectAction';
 
 export default function Homepage() {
-  const colors = useThemeColors();
-  const {
-    worktimes,
-    monthWorktimes,
-    unfinishedWorktimes,
-    categories,
-    date,
-    setDate,
-    month,
-    setMonth,
-    modalVisible,
-    setModalVisible,
-    modalType,
-    setModalType,
-    timerIsOpen,
-    setTimerIsOpen,
-    calendarIsOpen,
-    setCalendarIsOpen,
-    isConnected,
-    setWorktimes,
-    setCategories,
-    selectedWorktime,
-    setSelectedWorktime,
-    setUnfinishedWorktimes,
-    color,
-    open,
-    message,
-    setOpen,
-    setSnackBar,
-  } = useIndex();
+	const colors = useThemeColors();
+	const {
+		worktimes,
+		monthWorktimes,
+		unfinishedWorktimes,
+		categories,
+		date,
+		setDate,
+		month,
+		setMonth,
+		modalVisible,
+		setModalVisible,
+		modalType,
+		setModalType,
+		timerIsOpen,
+		setTimerIsOpen,
+		calendarIsOpen,
+		setCalendarIsOpen,
+		isConnected,
+		setWorktimes,
+		setCategories,
+		selectedWorktime,
+		setSelectedWorktime,
+		setUnfinishedWorktimes,
+		color,
+		open,
+		message,
+		setOpen,
+		setSnackBar,
+		formIsOpen,
+		setFormIsOpen,
+	} = useIndex();
 
-  if (isConnected === null) {
-    <Redirect href={'/screens/auth/Login'} />;
-  }
+	if (isConnected === null) {
+		<Redirect href={'/screens/auth/Login'} />;
+	}
 
-  // Ajout des fonctions pour ouverture/fermeture exclusive
-  function toggleCalendar() {
-    setCalendarIsOpen((prev) => {
-      if (!prev) setTimerIsOpen(false);
-      return !prev;
-    });
-  }
+	// Ajout des fonctions pour ouverture/fermeture exclusive
+	function toggleCalendar() {
+		setCalendarIsOpen((prev) => {
+			if (!prev) setTimerIsOpen(false);
+			return !prev;
+		});
+	}
 
-  function toggleTimer() {
-    setTimerIsOpen((prev) => {
-      if (!prev) setCalendarIsOpen(false);
-      return !prev;
-    });
-  }
+	function toggleTimer() {
+		setTimerIsOpen((prev) => {
+			if (!prev) setCalendarIsOpen(false);
+			return !prev;
+		});
+	}
 
-  return (
-    <>
-      <SafeAreaView
-        style={[
-          styles.container,
-          {
-            backgroundColor: colors.primary,
-          },
-        ]}
-      >
-        <StatusBar backgroundColor={colors.primary} barStyle='light-content' />
-        <Header
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-          setModalType={setModalType}
-        />
-        <DateDisplay
-          date={date}
-          setDate={setDate}
-          setCalendarIsOpen={toggleCalendar}
-        />
-        <View style={{ flex: 1, zIndex: 99999, overflow: 'hidden' }}>
-          <MainWrapper isOpen={calendarIsOpen} direction='top'>
-            <Calendar
-              date={date}
-              setDate={setDate}
-              monthWorktimes={monthWorktimes}
-              month={month}
-              setMonth={setMonth}
-            />
-          </MainWrapper>
-          {unfinishedWorktimes.length > 0 && (
-            <MainWrapper height={110}>
-              {unfinishedWorktimes.map((worktime, index) => (
-                <Block
-                  key={`${worktime.type}-${worktime.id}`}
-                  worktime={worktime}
-                  setModalType={setModalType}
-                  setModalVisible={setModalVisible}
-                  setSelectedWorktime={setSelectedWorktime}
-                  setWorktimes={setWorktimes}
-                  setUnfinishedWorktimes={setUnfinishedWorktimes}
-                  setSnackBar={setSnackBar}
-                  currentDate={date}
-                />
-              ))}
-            </MainWrapper>
-          )}
-          <MainWrapper fullHeight={true}>
-            {worktimes
-              .filter((worktime) => worktime.endTime !== null)
-              .map((worktime, index) => (
-                <Block
-                  key={`${worktime.type}-${worktime.id}`}
-                  worktime={worktime}
-                  setModalType={setModalType}
-                  setModalVisible={setModalVisible}
-                  setSelectedWorktime={setSelectedWorktime}
-                  currentDate={date}
-                />
-              ))}
-            {worktimes.length === 0 && (
-              <BlockWrapper backgroundColor={colors.primaryLight}>
-                <View style={{ flex: 1, justifyContent: 'center' }}>
-                  <ThemedText variant='body' color='primaryText'>
-                    Rien de prévu pour ce jour-ci !{' '}
-                  </ThemedText>
-                  <View
-                    style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    <ThemedText variant='body' color='primaryText'>
-                      Reposez-vous ou appuyez sur
-                    </ThemedText>
-                    <View style={{ marginHorizontal: 4 }}>
-                      <RoundButton
-                        onPress={() => {}}
-                        svgSize={12}
-                        type='add'
-                        variant='secondary'
-                        btnSize={25}
-                      />
-                    </View>
-                    <ThemedText variant='body' color='primaryText'>
-                      pour enregistrer une activité
-                    </ThemedText>
-                  </View>
-                </View>
-              </BlockWrapper>
-            )}
-          </MainWrapper>
-          <MainWrapper
-            isOpen={timerIsOpen}
-            direction='bottom'
-            flexGrow={false}
-            style={{ paddingHorizontal: 30 }}
-          >
-            <WorktimeSelectAction
-              setSnackBar={setSnackBar}
-              setTimerIsOpen={toggleTimer}
-              setWorktimes={setWorktimes}
-              categories={categories}
-              setCategories={setCategories}
-              date={date}
-            />
-          </MainWrapper>
-        </View>
-        <Footer
-          setTimerIsOpen={toggleTimer}
-          timerIsOpen={timerIsOpen}
-          calendarIsOpen={calendarIsOpen}
-          setCalendarIsOpen={toggleCalendar}
-        />
-        <ModalMenu
-          modalVisible={modalVisible}
-          setModalVisible={setModalVisible}
-        >
-          {modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
-          {modalType === 'update' && (
-            <UpdateDeleteModal
-              selectedWorktime={selectedWorktime}
-              setModalVisible={setModalVisible}
-              categories={categories}
-              setCategories={setCategories}
-              setWorktimes={setWorktimes}
-              setSnackBar={setSnackBar}
-              date={date}
-            />
-          )}
-        </ModalMenu>
-        <CustomSnackBar
-          color={color}
-          message={message}
-          open={open}
-          setOpen={setOpen}
-        />
-      </SafeAreaView>
-    </>
-  );
+	return (
+		<>
+			<SafeAreaView
+				style={[
+					styles.container,
+					{
+						backgroundColor: colors.primary,
+					},
+				]}
+			>
+				<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
+				<Header
+					modalVisible={modalVisible}
+					setModalVisible={setModalVisible}
+					setModalType={setModalType}
+				/>
+				<DateDisplay
+					date={date}
+					setDate={setDate}
+					setCalendarIsOpen={toggleCalendar}
+				/>
+				<View
+					style={{
+						flex: 1,
+						zIndex: 99999,
+						overflow: 'hidden',
+						maxHeight: '90%',
+					}}
+				>
+					<MainWrapper
+						isOpen={calendarIsOpen}
+						direction='top'
+						maxHeight='50%'
+						style={{ marginBottom: 0 }}
+					>
+						<Calendar
+							date={date}
+							setDate={setDate}
+							monthWorktimes={monthWorktimes}
+							month={month}
+							setMonth={setMonth}
+						/>
+					</MainWrapper>
+					{unfinishedWorktimes.length > 0 && (
+						<MainWrapper height={110}>
+							{unfinishedWorktimes.map((worktime, index) => (
+								<Block
+									key={`${worktime.type}-${worktime.id}`}
+									worktime={worktime}
+									setModalType={setModalType}
+									setModalVisible={setModalVisible}
+									setSelectedWorktime={setSelectedWorktime}
+									setWorktimes={setWorktimes}
+									setUnfinishedWorktimes={setUnfinishedWorktimes}
+									setSnackBar={setSnackBar}
+									currentDate={date}
+								/>
+							))}
+						</MainWrapper>
+					)}
+					<MainWrapper
+						fullHeight={!calendarIsOpen && !timerIsOpen}
+						style={{
+							maxHeight: timerIsOpen
+								? formIsOpen
+									? '38%'
+									: '80%'
+								: calendarIsOpen
+								? '37%'
+								: 'auto',
+						}}
+						flexGrow={true}
+					>
+						{worktimes
+							.filter((worktime) => worktime.endTime !== null)
+							.map((worktime, index) => (
+								<Block
+									key={`${worktime.type}-${worktime.id}`}
+									worktime={worktime}
+									setModalType={setModalType}
+									setModalVisible={setModalVisible}
+									setSelectedWorktime={setSelectedWorktime}
+									currentDate={date}
+								/>
+							))}
+						{worktimes.length === 0 && (
+							<BlockWrapper backgroundColor={colors.primaryLight}>
+								<View style={{ flex: 1, justifyContent: 'center' }}>
+									<ThemedText variant='body' color='primaryText'>
+										Rien de prévu pour ce jour-ci !{' '}
+									</ThemedText>
+									<View
+										style={{
+											flexDirection: 'row',
+											alignItems: 'center',
+											flexWrap: 'wrap',
+										}}
+									>
+										<ThemedText variant='body' color='primaryText'>
+											Reposez-vous ou appuyez sur
+										</ThemedText>
+										<View style={{ marginHorizontal: 4 }}>
+											<RoundButton
+												onPress={() => {}}
+												svgSize={12}
+												type='add'
+												variant='secondary'
+												btnSize={25}
+											/>
+										</View>
+										<ThemedText variant='body' color='primaryText'>
+											pour enregistrer une activité
+										</ThemedText>
+									</View>
+								</View>
+							</BlockWrapper>
+						)}
+					</MainWrapper>
+					<MainWrapper
+						isOpen={timerIsOpen}
+						direction='bottom'
+						maxHeight='40%'
+						style={{
+							paddingHorizontal: 30,
+						}}
+					>
+						<WorktimeSelectAction
+							setSnackBar={setSnackBar}
+							setTimerIsOpen={toggleTimer}
+							setWorktimes={setWorktimes}
+							categories={categories}
+							setCategories={setCategories}
+							date={date}
+							setFormIsOpen={setFormIsOpen}
+						/>
+					</MainWrapper>
+				</View>
+				<Footer
+					setTimerIsOpen={toggleTimer}
+					timerIsOpen={timerIsOpen}
+					calendarIsOpen={calendarIsOpen}
+					setCalendarIsOpen={toggleCalendar}
+				/>
+				<ModalMenu
+					modalVisible={modalVisible}
+					setModalVisible={setModalVisible}
+				>
+					{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
+					{modalType === 'update' && (
+						<UpdateDeleteModal
+							selectedWorktime={selectedWorktime}
+							setModalVisible={setModalVisible}
+							categories={categories}
+							setCategories={setCategories}
+							setWorktimes={setWorktimes}
+							setSnackBar={setSnackBar}
+							date={date}
+						/>
+					)}
+				</ModalMenu>
+				<CustomSnackBar
+					color={color}
+					message={message}
+					open={open}
+					setOpen={setOpen}
+				/>
+			</SafeAreaView>
+		</>
+	);
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
+	container: {
+		flex: 1,
+	},
 });

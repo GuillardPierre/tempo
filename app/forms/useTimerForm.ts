@@ -53,8 +53,8 @@ export function useTimerForm({
 			const response = await method(endpoint, formData);
 			console.log('formData', formData);
 
-			if (!response.ok) throw new Error(await response.text());
-			return await response.json();
+			if (response && !response.ok) throw new Error(await response.text());
+			if (response) return await response.json();
 		},
 		onSuccess: (data) => {
 			setSnackBar(

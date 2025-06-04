@@ -9,6 +9,7 @@ type BlockWrapperProps = {
 	backgroundColor?: string;
 	style?: StyleProp<ViewStyle>;
 	direction?: 'row' | 'column';
+	fullHeight?: boolean;
 };
 
 export default function BlockWrapper({
@@ -16,6 +17,7 @@ export default function BlockWrapper({
 	backgroundColor,
 	style,
 	direction = 'row',
+	fullHeight = false,
 }: BlockWrapperProps) {
 	return (
 		<View
@@ -24,6 +26,7 @@ export default function BlockWrapper({
 				backgroundColor ? { backgroundColor } : {},
 				{ flexDirection: direction },
 				style,
+				fullHeight ? { flex: 1 } : { height: 90, maxHeight: 90 },
 			]}
 		>
 			{children}

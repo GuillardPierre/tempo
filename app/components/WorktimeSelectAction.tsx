@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View } from 'react-native';
 import ThemedText from './utils/ThemedText';
 import { SegmentedButtons } from 'react-native-paper';
@@ -18,6 +18,7 @@ interface WorktimeSelectActionProps {
 		categories: Category[] | ((prevCategories: Category[]) => Category[])
 	) => void;
 	date: string;
+	setFormIsOpen: (isOpen: boolean) => void;
 }
 
 export default function WorktimeSelectAction({
@@ -27,9 +28,14 @@ export default function WorktimeSelectAction({
 	categories,
 	setCategories,
 	date,
+	setFormIsOpen,
 }: WorktimeSelectActionProps) {
 	const colors = useThemeColors();
 	const [value, setValue] = useState<string>('');
+
+	useEffect(() => {
+		setFormIsOpen(value === 'addWorktime' || value === 'startTimer');
+	}, [value]);
 
 	return (
 		<View style={{ gap: 10 }}>
