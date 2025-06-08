@@ -137,7 +137,7 @@ export default function Homepage() {
 						style={{
 							maxHeight: timerIsOpen
 								? formIsOpen
-									? '38%'
+									? '50%'
 									: '80%'
 								: calendarIsOpen
 								? '37%'

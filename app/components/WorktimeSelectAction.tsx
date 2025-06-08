@@ -7,6 +7,7 @@ import AddRoundSvg from './svg/addRound';
 import ClockSvg from './svg/clock';
 import TimerForm from '../forms/timerForm';
 import { Category } from '../types/worktime';
+import PauseForm from '../forms/PauseForm';
 
 // Définir les props nécessaires pour TimerForm
 interface WorktimeSelectActionProps {
@@ -73,17 +74,18 @@ export default function WorktimeSelectAction({
 					},
 					{
 						icon: () => <ClockSvg />,
-						label: 'Chronomètre',
+						label: 'Chrono',
 						value: 'startTimer',
 						checkedColor: colors.primaryText,
 						uncheckedColor: colors.secondaryText,
 					},
-					// {
-					// 	icon: () => <AddRoundSvg />,
-					// 	label: 'Pause',
-					// 	value: 'addPause',
-					// 	checkedColor: colors.primaryLight,
-					// },
+					{
+						icon: () => <AddRoundSvg />,
+						label: 'Vacances',
+						value: 'addPause',
+						checkedColor: colors.primaryText,
+						uncheckedColor: colors.secondaryText,
+					},
 				]}
 			/>
 
@@ -106,6 +108,13 @@ export default function WorktimeSelectAction({
 					setWorktimes={setWorktimes}
 					categories={categories}
 					setCategories={setCategories}
+					date={date}
+				/>
+			)}
+			{value === 'addPause' && (
+				<PauseForm
+					setSnackBar={setSnackBar}
+					setTimerIsOpen={setTimerIsOpen}
 					date={date}
 				/>
 			)}

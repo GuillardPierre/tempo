@@ -165,7 +165,10 @@ export default function TimerForm({
 									setSearchText(text);
 								}}
 								placeholder='Sélectionnez une catégorie'
-								style={[styles.dropdown, { borderColor: colors.primary }]}
+								style={[
+									styles.dropdown,
+									{ borderColor: colors.primary, width: '100%' },
+								]}
 								dropDownContainerStyle={[
 									styles.dropdownContainer,
 									{
@@ -225,7 +228,6 @@ export default function TimerForm({
 								display='calendar'
 							/>
 
-							{/* Sélecteurs de temps */}
 							<View style={styles.timePickersContainer}>
 								<View style={styles.timePickerContainer}>
 									<TimePickerInput
@@ -242,6 +244,7 @@ export default function TimerForm({
 										<ButtonMenu
 											fullWidth={false}
 											style={{
+												transform: [{ translateY: 7 }],
 												marginLeft: 10,
 												alignSelf: 'flex-end',
 												marginBottom: 10,
@@ -255,12 +258,6 @@ export default function TimerForm({
 													values.startDate > new Date() ||
 													values.startTime > new Date()
 												) {
-													console.log('values.startTime', values.startTime);
-													console.log('values.startDate', values.startDate);
-													console.log(
-														(values.startTime || values.startDate) > new Date()
-													);
-
 													setSnackBar(
 														'error',
 														'Vous ne pouvez pas démarrer un chronomètre dans le futur. Veuillez choisir une date/heure valide.'
@@ -400,6 +397,7 @@ const styles = StyleSheet.create({
 	dropdownContainer: {
 		borderWidth: 3,
 		borderRadius: 4,
+		width: '100%',
 	},
 	modalContentContainer: {
 		borderWidth: 3,

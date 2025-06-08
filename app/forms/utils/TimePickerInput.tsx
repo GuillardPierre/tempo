@@ -73,7 +73,7 @@ export default function TimePickerInput({
 					style={{
 						color: colors.primaryText,
 						textAlign: 'center',
-						fontSize: 20,
+						fontSize: 18,
 						fontWeight: 'bold',
 					}}
 				>

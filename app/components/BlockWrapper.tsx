@@ -25,8 +25,8 @@ export default function BlockWrapper({
 				styles.container,
 				backgroundColor ? { backgroundColor } : {},
 				{ flexDirection: direction },
+				fullHeight ? { flex: 1 } : { height: 80, maxHeight: 80 },
 				style,
-				fullHeight ? { flex: 1 } : { height: 90, maxHeight: 90 },
 			]}
 		>
 			{children}
@@ -37,7 +37,6 @@ export default function BlockWrapper({
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
-		minHeight: 80,
 		justifyContent: 'space-between',
 		alignItems: 'center',
 		width: '100%',

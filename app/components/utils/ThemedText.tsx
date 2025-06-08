@@ -12,7 +12,7 @@ const styles = StyleSheet.create({
 		fontWeight: 700,
 	},
 	body: {
-		fontSize: 18,
+		fontSize: 16,
 		fontWeight: 400,
 	},
 });

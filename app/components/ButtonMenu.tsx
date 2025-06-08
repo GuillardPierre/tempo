@@ -28,7 +28,9 @@ export default function ButtonMenu({
 			]}
 			onPress={action}
 		>
-			<ThemedText style={styles.textButton}>{text}</ThemedText>
+			<ThemedText variant='body' style={styles.textButton}>
+				{text}
+			</ThemedText>
 		</Pressable>
 	);
 }
@@ -53,7 +55,7 @@ const styles = StyleSheet.create({
 		borderRadius: 9999,
 	},
 	textButton: {
-		fontSize: 20,
+		fontSize: 18,
 		fontWeight: 'bold',
 		textAlign: 'center',
 	},

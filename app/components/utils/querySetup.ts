@@ -108,6 +108,7 @@ export async function httpPost(
 	body: Object,
 	option = { isLogin: false }
 ) {
+	console.log('body POST :', body);
 	if (option.isLogin) {
 		TOKEN = null;
 		REFRESH_TOKEN = null;
@@ -115,7 +116,6 @@ export async function httpPost(
 	if (!option.isLogin) {
 		await checkAndRefreshToken();
 	}
-	console.log('url', makeUrl(url));
 	try {
 		return fetch(makeUrl(url), {
 			method: 'POST',
