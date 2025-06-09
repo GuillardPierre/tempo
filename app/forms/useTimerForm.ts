@@ -111,6 +111,7 @@ export function useTimerForm({
 			endDate: selectedWorktime?.endDate
 				? new Date(selectedWorktime.endDate)
 				: undefined,
+			ignoreExceptions: selectedWorktime?.ignoreExceptions ? true : false,
 		};
 		return initialValues;
 	};

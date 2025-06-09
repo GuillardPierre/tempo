@@ -125,8 +125,6 @@ export const useIndex = () => {
 		}
 	};
 
-	console.log('recurrenceException', recurrenceExceptions);
-
 	return {
 		worktimes,
 		monthWorktimes,

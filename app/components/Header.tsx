@@ -21,7 +21,7 @@ export default function Header({
 	return (
 		<View style={[styles.header, { backgroundColor: colors.primary }]}>
 			<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-				{router.canGoBack() && pathname !== '/screens/homepage' && (
+				{router.canGoBack() && pathname !== '/screens/Homepage' && (
 					<Pressable
 						style={{
 							backgroundColor: colors.secondary,

@@ -42,7 +42,7 @@ export interface Worktime {
 	recurrence?: string;
 	active: boolean;
 	seriesId: number | null;
-	// Ajoutez d'autres propriétés si nécessaire
+	ignoreExceptions?: boolean; // Uniquement pour les wortimeSeries
 }
 
 /**
@@ -78,6 +78,7 @@ export interface SelectedWorktime extends Worktime {
 	occurrenceId?: number;
 	originalStartTime?: string;
 	formattedDuration?: string; // Durée formatée pour affichage
+	ignoreExceptions?: boolean;
 }
 
 /**

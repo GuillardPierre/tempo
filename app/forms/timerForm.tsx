@@ -344,18 +344,36 @@ export default function TimerForm({
 													</Pressable>
 												))}
 											</ScrollView>
-											{selectedDays.length > 0 && (
-												<TimePickerInput
-													label='Date de fin (non obligatoire):'
-													value={values.endDate}
-													onChange={(date) => {
-														setFieldValue('endDate', date);
+
+											<TimePickerInput
+												label='Date de fin (non obligatoire):'
+												value={values.endDate}
+												onChange={(date) => {
+													setFieldValue('endDate', date);
+												}}
+												style={{ width: '100%' }}
+												mode='date'
+												display='calendar'
+											/>
+											<BlockWrapper>
+												<ThemedText variant='body' color='secondaryText'>
+													Vous voulez que vos temps de travail soient comptés
+													même en vacances ? Activez l'option ci-dessous.
+												</ThemedText>
+											</BlockWrapper>
+											<View
+												style={{ flexDirection: 'row', alignItems: 'center' }}
+											>
+												<Switch
+													value={values.ignoreExceptions}
+													onValueChange={(value) => {
+														setFieldValue('ignoreExceptions', value);
 													}}
-													style={{ width: '100%' }}
-													mode='date'
-													display='calendar'
 												/>
-											)}
+												<ThemedText variant='body' color='secondaryText'>
+													Ignorer les exceptions de la série ?
+												</ThemedText>
+											</View>
 										</View>
 									)}
 								</>

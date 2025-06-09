@@ -16,35 +16,6 @@ import {
 	getCurrentSchoolYearRange,
 } from '../utils/dateRanges';
 
-const data2 = {
-	labels: ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin'],
-	datasets: [
-		{
-			data: [38, 42, 36, 45, 40, 39], // heures totales par mois
-			color: (opacity = 0.5) => `#34495e`, // couleur de la courbe
-			strokeWidth: 3,
-		},
-	],
-	legend: ['Temps de travail total'], // optionnel
-};
-
-const data3 = {
-	labels: ['Cat1', 'Cat2', 'TOTAL'],
-	legend: ['temps actuel', 'temps estimé'],
-	data: [
-		[60, 60],
-		[30, 30],
-		[90, 90],
-	],
-	barColors: ['#dfe4ea', '#ced6e0', '#a4b0be'],
-};
-
-const graphStyle = {
-	borderRadius: 16,
-	overflow: 'hidden',
-	marginTop: 10,
-};
-
 const chartConfig = {
 	backgroundGradientFrom: '#1E2923',
 	backgroundGradientFromOpacity: 0,
@@ -78,7 +49,7 @@ export default function Charts() {
 					datasets: [
 						{ data: [0], color: (opacity = 0.5) => `#34495e`, strokeWidth: 3 },
 					],
-					legend: ['Temps de travail total'],
+					// legend: ['Temps de travail total'],
 				});
 			} else {
 				if (Array.isArray(data.categories)) {
@@ -124,7 +95,7 @@ export default function Charts() {
 								strokeWidth: 3,
 							},
 						],
-						legend: ['Temps de travail total (heures)'],
+						// legend: ['Temps de travail total (heures)'],
 					});
 				}
 			}
@@ -243,7 +214,7 @@ export default function Charts() {
 						/>
 						<BlockWrapper direction='column' fullHeight={true}>
 							<ThemedText variant='header2' color='secondaryText'>
-								Moyenne globale
+								Répartition globale
 							</ThemedText>
 							<PieChart
 								data={safePieChartData}
@@ -257,9 +228,14 @@ export default function Charts() {
 							/>
 						</BlockWrapper>
 						<BlockWrapper direction='column' fullHeight={true}>
-							<ThemedText variant='header2' color='secondaryText'>
-								Temps de travail
-							</ThemedText>
+							<View style={{ flexDirection: 'row', alignItems: 'center' }}>
+								<ThemedText variant='header2' color='secondaryText'>
+									Temps de travail{' '}
+								</ThemedText>
+								<ThemedText variant='body' color='secondaryText'>
+									(en heures)
+								</ThemedText>
+							</View>
 							<LineChart
 								data={safeLineChartData}
 								width={screenWidth - 55}
