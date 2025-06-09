@@ -6,7 +6,7 @@ import { useThemeColors } from '../hooks/useThemeColors';
 import AddRoundSvg from './svg/addRound';
 import ClockSvg from './svg/clock';
 import TimerForm from '../forms/timerForm';
-import { Category } from '../types/worktime';
+import { Category, RecurrenceException } from '../types/worktime';
 import PauseForm from '../forms/PauseForm';
 
 // Définir les props nécessaires pour TimerForm
@@ -20,6 +20,14 @@ interface WorktimeSelectActionProps {
 	) => void;
 	date: string;
 	setFormIsOpen: (isOpen: boolean) => void;
+	setRecurrenceExceptions: (
+		recurrenceExceptions:
+			| RecurrenceException[]
+			| ((
+					prevRecurrenceExceptions: RecurrenceException[]
+			  ) => RecurrenceException[])
+	) => void;
+	recurrenceExceptions: RecurrenceException[];
 }
 
 export default function WorktimeSelectAction({
@@ -30,6 +38,8 @@ export default function WorktimeSelectAction({
 	setCategories,
 	date,
 	setFormIsOpen,
+	setRecurrenceExceptions,
+	recurrenceExceptions,
 }: WorktimeSelectActionProps) {
 	const colors = useThemeColors();
 	const [value, setValue] = useState<string>('');
@@ -116,6 +126,8 @@ export default function WorktimeSelectAction({
 					setSnackBar={setSnackBar}
 					setTimerIsOpen={setTimerIsOpen}
 					date={date}
+					setRecurrenceExceptions={setRecurrenceExceptions}
+					recurrenceExceptions={recurrenceExceptions}
 				/>
 			)}
 		</View>

@@ -349,7 +349,6 @@ export default function TimerForm({
 													label='Date de fin (non obligatoire):'
 													value={values.endDate}
 													onChange={(date) => {
-														console.log('date', date);
 														setFieldValue('endDate', date);
 													}}
 													style={{ width: '100%' }}

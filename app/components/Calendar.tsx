@@ -1,8 +1,11 @@
-import { Fragment, useState } from 'react';
 import { StyleSheet } from 'react-native';
-import { DateData, Calendar as RNCalendar } from 'react-native-calendars';
+import { Calendar as RNCalendar } from 'react-native-calendars';
 import { useCalendar } from '../hooks/useCalendar';
-import { Worktime, WorktimeSeries } from '../types/worktime';
+import {
+	RecurrenceException,
+	Worktime,
+	WorktimeSeries,
+} from '../types/worktime';
 import { getRRuleFromRecurrence } from './utils/rrule';
 import { useThemeColors } from '../hooks/useThemeColors';
 
@@ -12,6 +15,7 @@ type Props = {
 	monthWorktimes: Worktime[];
 	month: Date;
 	setMonth: (date: Date) => void;
+	recurrenceExceptions: RecurrenceException[];
 };
 
 export default function Calendar({
@@ -20,38 +24,36 @@ export default function Calendar({
 	monthWorktimes,
 	month,
 	setMonth,
+	recurrenceExceptions,
 }: Props) {
 	const colors = useThemeColors();
 	const { onDayPress } = useCalendar(date, setDate);
 
-	// Définition des styles « dots »
-	const stylesByType = {
-		SINGLE: {
-			key: 'single',
-			color: colors.secondary,
-			selectedDotColor: colors.secondary,
-		},
-		RECURRING: {
-			key: 'recurring',
-			color: colors.primary,
-			selectedDotColor: colors.primary,
-		},
-	};
+	/**
+	 * Vérifie si une date est dans une période d'exception
+	 */
+	function isDateInException(
+		date: Date,
+		exceptions: RecurrenceException[]
+	): boolean {
+		const timestamp = date.getTime();
+		return exceptions.some((exception) => {
+			const start = new Date(exception.pauseStart).getTime();
+			const end = new Date(exception.pauseEnd).getTime();
+			return timestamp >= start && timestamp <= end;
+		});
+	}
 
 	/**
 	 * Retourne un tableau de dates (format 'YYYY-MM-DD')
 	 * où le worktime s'applique, tronqué au mois de `monthDate`.
-	 *
-	 * @param {Worktime | WorktimeSeries} wt – worktime { startTime, endTime, recurrence, type, … }
-	 * @param {Date} monthDate – une date quelconque dans le mois à traiter
-	 * @returns {string[]}
 	 */
 	function expandWorktimeDates(
 		wt: Worktime | WorktimeSeries,
 		monthDate: Date
 	): string[] | undefined {
 		const year = monthDate.getFullYear();
-		const month = monthDate.getMonth(); // 0-indexed
+		const month = monthDate.getMonth();
 		const from = new Date(year, month, 1, 0, 0, 0);
 		const to = new Date(year, month + 1, 0, 23, 59, 59);
 
@@ -63,7 +65,6 @@ export default function Calendar({
 			return [];
 		}
 
-		// RÉCURRENCE
 		if (wt.recurrence && typeof wt.recurrence === 'string') {
 			const endDate = (wt as any).endDate;
 			const rrule = getRRuleFromRecurrence(
@@ -72,73 +73,128 @@ export default function Calendar({
 				endDate,
 				to
 			);
+
 			if (!rrule) return [];
-			const dates = rrule.between(from, to, true);
-			return dates.map((d) => d.toISOString().slice(0, 10));
+
+			const dates = rrule
+				.between(from, to)
+				.map((d) => d.toISOString().slice(0, 10))
+				.filter((date) => {
+					const dateObj = new Date(date);
+					return !isDateInException(dateObj, recurrenceExceptions);
+				});
+
+			return dates;
 		}
+
+		return [];
 	}
 
-	/**
-	 * @param {Array} worktimes – tableau des worktime objets
-	 * @param {Date}  monthDate  – date dans le mois à afficher
-	 * @returns {Object} markedDates
-	 */
-	function buildMarkedDates(worktimes: Worktime[], monthDate: Date) {
-		const marked: {
-			[date: string]: {
-				dots: { key: string; color: string; selectedDotColor: string }[];
-				selected: boolean;
-				selectedColor?: string;
-			};
-		} = {};
+	// Préparer les marqueurs pour le calendrier
+	const markedDates: any = {};
 
-		if (worktimes.length === 0) return marked;
-		worktimes?.forEach((wt) => {
-			const dates = expandWorktimeDates(wt, monthDate);
-			if (!dates) return;
-			dates.forEach((date) => {
-				if (!marked[date]) {
-					marked[date] = { dots: [], selected: false };
+	// Ajouter les worktimes comme des points
+	monthWorktimes.forEach((wt) => {
+		const dates = expandWorktimeDates(wt, month);
+		if (dates) {
+			dates.forEach((d) => {
+				if (!markedDates[d]) {
+					markedDates[d] = {};
 				}
-				// On empêche les doublons de même type
-				const style = stylesByType[wt.type];
-				if (!marked[date].dots.some((d) => d.key === style.key)) {
-					marked[date].dots.push(style);
-				}
+				markedDates[d] = {
+					...markedDates[d],
+					marked: true,
+					dotColor: wt.type === 'SINGLE' ? colors.secondary : colors.primary,
+				};
 			});
-		});
+		}
+	});
 
-		return marked;
+	// Ajouter les exceptions comme des périodes
+	recurrenceExceptions.forEach((exception) => {
+		const start = new Date(exception.pauseStart);
+		const end = new Date(exception.pauseEnd);
+
+		// Générer toutes les dates entre start et end
+		let current = new Date(start);
+		while (current <= end) {
+			const dateStr = current.toISOString().slice(0, 10);
+
+			// Vérifier si la date est dans le mois actuel
+			if (
+				current.getMonth() === month.getMonth() &&
+				current.getFullYear() === month.getFullYear()
+			) {
+				const isStart = current.getTime() === start.getTime();
+				const isEnd = current.getTime() === end.getTime();
+
+				markedDates[dateStr] = {
+					...markedDates[dateStr], // Préserver les marqueurs existants
+					color: colors.primaryLight,
+					textColor: colors.primaryText,
+					...(isStart && { startingDay: true }),
+					...(isEnd && { endingDay: true }),
+					...(!isStart && !isEnd && { color: colors.primaryLight }),
+					// Si on a déjà un point, on le garde avec sa couleur d'origine
+					...(markedDates[dateStr]?.marked && {
+						marked: true,
+						dotColor: markedDates[dateStr].dotColor,
+					}),
+				};
+			}
+
+			// Passer au jour suivant
+			current.setDate(current.getDate() + 1);
+		}
+	});
+
+	// Marquer la date sélectionnée
+	if (markedDates[date]) {
+		markedDates[date] = {
+			...markedDates[date],
+			selected: true,
+		};
+	} else {
+		markedDates[date] = { selected: true };
 	}
-
-	const markedDates = buildMarkedDates(monthWorktimes, month);
-	// Ajout du style pour la date sélectionnée
-	markedDates[date] = {
-		...(markedDates[date] || { dots: [] }),
-		selected: true,
-		selectedColor: colors.primaryLight,
-	};
 
 	return (
-		<Fragment>
-			<RNCalendar
-				markingType={'multi-dot'}
-				enableSwipeMonths
-				current={date}
-				style={styles.calendar}
-				onDayPress={onDayPress}
-				markedDates={markedDates}
-				onMonthChange={(month: DateData) =>
-					setMonth(new Date(month.dateString))
-				}
-				firstDay={1}
-			/>
-		</Fragment>
+		<RNCalendar
+			style={styles.calendar}
+			theme={{
+				calendarBackground: colors.background,
+				monthTextColor: colors.secondaryText,
+				textSectionTitleColor: colors.secondaryText,
+				dayTextColor: colors.secondaryText,
+				todayTextColor: colors.primaryText,
+				todayBackgroundColor: colors.secondary,
+				selectedDayTextColor: colors.primary,
+				selectedDayBackgroundColor: colors.primary,
+				textDisabledColor: colors.secondaryText,
+			}}
+			current={date}
+			onDayPress={onDayPress}
+			markedDates={markedDates}
+			markingType='period'
+			onMonthChange={(month) => {
+				setMonth(new Date(month.timestamp));
+			}}
+			firstDay={1}
+		/>
 	);
 }
 
 const styles = StyleSheet.create({
 	calendar: {
-		marginBottom: 0,
+		marginBottom: 10,
+		borderRadius: 10,
+		elevation: 4,
+		shadowColor: '#000',
+		shadowOffset: {
+			width: 0,
+			height: 2,
+		},
+		shadowOpacity: 0.23,
+		shadowRadius: 2.62,
 	},
 });

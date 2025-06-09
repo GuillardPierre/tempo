@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { httpGet, checkAndRefreshToken } from '../components/utils/querySetup';
 import ENDPOINTS from '../components/utils/ENDPOINT';
-import { Category, Worktime } from '../types/worktime';
+import { Category, RecurrenceException, Worktime } from '../types/worktime';
 import { useRouter } from 'expo-router';
 import useSnackBar from '@/app/hooks/useSnackBar';
 
@@ -22,6 +22,9 @@ export const useIndex = () => {
 	const [worktimes, setWorktimes] = useState<Worktime[]>([]);
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [monthWorktimes, setMonthWorktimes] = useState<Worktime[]>([]);
+	const [recurrenceExceptions, setRecurrenceExceptions] = useState<
+		RecurrenceException[]
+	>([]);
 	const [unfinishedWorktimes, setUnfinishedWorktimes] = useState<Worktime[]>(
 		[]
 	);
@@ -33,6 +36,7 @@ export const useIndex = () => {
 		checkConnection();
 		getCategrories();
 		getMonthWorktimes();
+		getRecurrenceExceptions();
 	}, []);
 
 	useEffect(() => {
@@ -109,9 +113,24 @@ export const useIndex = () => {
 		}
 	};
 
+	const getRecurrenceExceptions = async () => {
+		try {
+			const rep = await httpGet(`${ENDPOINTS.recurrenceException.root}all`);
+			if (rep.ok) {
+				const data = await rep.json();
+				setRecurrenceExceptions(data);
+			}
+		} catch (error) {
+			console.log('erreur:', error);
+		}
+	};
+
+	console.log('recurrenceException', recurrenceExceptions);
+
 	return {
 		worktimes,
 		monthWorktimes,
+		recurrenceExceptions,
 		unfinishedWorktimes,
 		categories,
 		date,
@@ -128,6 +147,7 @@ export const useIndex = () => {
 		setCalendarIsOpen,
 		isConnected,
 		setWorktimes,
+		setRecurrenceExceptions,
 		setCategories,
 		selectedWorktime,
 		setSelectedWorktime,

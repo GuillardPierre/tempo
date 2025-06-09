@@ -11,21 +11,51 @@ import ButtonMenu from '../components/ButtonMenu';
 import { httpPost } from '../components/utils/querySetup';
 import ENDPOINTS from '../components/utils/ENDPOINT';
 import BlockWrapper from '../components/BlockWrapper';
+import { RecurrenceException } from '../types/worktime';
 
 interface Props {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
-	setTimerIsOpen: () => void;
+	setTimerIsOpen: (open: boolean) => void;
 	date: string;
+	setRecurrenceExceptions: (
+		recurrenceExceptions:
+			| RecurrenceException[]
+			| ((
+					prevRecurrenceExceptions: RecurrenceException[]
+			  ) => RecurrenceException[])
+	) => void;
+	recurrenceExceptions: RecurrenceException[];
 }
 
 export default function PauseForm({
 	setSnackBar,
 	setTimerIsOpen,
 	date,
+	setRecurrenceExceptions,
+	recurrenceExceptions,
 }: Props) {
 	const colors = useThemeColors();
 
+	const checkOverlap = (start: Date, end: Date): boolean => {
+		return recurrenceExceptions.some((exception) => {
+			const exceptionStart = new Date(exception.pauseStart);
+			const exceptionEnd = new Date(exception.pauseEnd);
+
+			return (
+				(start >= exceptionStart && start <= exceptionEnd) ||
+				(end >= exceptionStart && end <= exceptionEnd) ||
+				(start <= exceptionStart && end >= exceptionEnd)
+			);
+		});
+	};
+
 	const handleSubmit = async (values: any) => {
+		// Vérifier les chevauchements
+		if (checkOverlap(values.pauseStart, values.pauseEnd)) {
+			setSnackBar('error', 'Cette période chevauche une pause existante');
+			return;
+		}
+
 		try {
 			const response = await httpPost(
 				`${ENDPOINTS.recurrenceException.create}`,
@@ -33,7 +63,12 @@ export default function PauseForm({
 			);
 			console.log('response', response);
 			if (response?.status === 201) {
+				const data = await response.json();
+				console.log('data', data);
+
 				setSnackBar('info', 'Pause ajoutée avec succès');
+				setRecurrenceExceptions((prev) => [...prev, data]);
+				setTimerIsOpen(false);
 			} else {
 				setSnackBar('error', "Erreur lors de l'ajout de la pause");
 			}

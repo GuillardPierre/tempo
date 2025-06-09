@@ -81,7 +81,6 @@ export default function Charts() {
 					legend: ['Temps de travail total'],
 				});
 			} else {
-				// console.log('data', data);
 				if (Array.isArray(data.categories)) {
 					const chartColors = [
 						'rgba(52, 152, 219, 1)',

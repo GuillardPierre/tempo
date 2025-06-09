@@ -24,6 +24,7 @@ export default function Homepage() {
 	const {
 		worktimes,
 		monthWorktimes,
+		recurrenceExceptions,
 		unfinishedWorktimes,
 		categories,
 		date,
@@ -40,6 +41,7 @@ export default function Homepage() {
 		setCalendarIsOpen,
 		isConnected,
 		setWorktimes,
+		setRecurrenceExceptions,
 		setCategories,
 		selectedWorktime,
 		setSelectedWorktime,
@@ -113,6 +115,7 @@ export default function Homepage() {
 							monthWorktimes={monthWorktimes}
 							month={month}
 							setMonth={setMonth}
+							recurrenceExceptions={recurrenceExceptions}
 						/>
 					</MainWrapper>
 					{unfinishedWorktimes.length > 0 && (
@@ -206,6 +209,8 @@ export default function Homepage() {
 							setCategories={setCategories}
 							date={date}
 							setFormIsOpen={setFormIsOpen}
+							setRecurrenceExceptions={setRecurrenceExceptions}
+							recurrenceExceptions={recurrenceExceptions}
 						/>
 					</MainWrapper>
 				</View>

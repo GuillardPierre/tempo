@@ -125,13 +125,7 @@ export async function httpPost(
 			body: JSON.stringify(body),
 		});
 	} catch (error) {
-		console.log("Erreur d'inscription:", error);
-
-		if (error instanceof TypeError) {
-			console.log('Message:', error.message);
-			console.log('Stack:', error.stack);
-			alert('Erreur réseau : ' + error.message);
-		}
+		console.log('Erreur Post:', error);
 	}
 }
 

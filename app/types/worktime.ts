@@ -79,3 +79,12 @@ export interface SelectedWorktime extends Worktime {
 	originalStartTime?: string;
 	formattedDuration?: string; // Durée formatée pour affichage
 }
+
+/**
+ * Interface pour les exceptions de récurrence
+ */
+export interface RecurrenceException {
+	id?: number;
+	pauseStart: string;
+	pauseEnd: string;
+}

@@ -51,7 +51,6 @@ export function useTimerForm({
 
 			const method = isEditing ? httpPut : httpPost;
 			const response = await method(endpoint, formData);
-			console.log('formData', formData);
 
 			if (response && !response.ok) throw new Error(await response.text());
 			if (response) return await response.json();
