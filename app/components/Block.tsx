@@ -39,7 +39,7 @@ export default function Block({
 	setWorktimes,
 	setSnackBar,
 	currentDate,
-	recurrenceExceptions,
+	recurrenceExceptions = [],
 }: Props) {
 	const colors = useThemeColors();
 	const convertTime = (time: string) => {
@@ -69,7 +69,8 @@ export default function Block({
 	const hasException =
 		recurrenceExceptions?.some((exception) => {
 			const worktimeIdNumber = Number(worktime.id);
-			const seriesIdsNumbers = exception.seriesIds.map((id) => Number(id));
+			const seriesIdsNumbers =
+				exception.seriesIds?.map((id) => Number(id)) || [];
 
 			// Ignorer les exceptions qui ne concernent pas cette série
 			if (!seriesIdsNumbers.includes(worktimeIdNumber)) {
@@ -81,12 +82,21 @@ export default function Block({
 				return false;
 			}
 
-			const exceptionStart = new Date(exception.pauseStart);
-			const exceptionEnd = new Date(exception.pauseEnd);
+			const exceptionStart = exception.pauseStart
+				? new Date(exception.pauseStart)
+				: null;
+			const exceptionEnd = exception.pauseEnd
+				? new Date(exception.pauseEnd)
+				: null;
 			const currentDateObj = new Date(currentDate);
 
 			// Vérifier si currentDate est dans la période d'exception
-			return currentDateObj >= exceptionStart && currentDateObj <= exceptionEnd;
+			return (
+				exceptionStart &&
+				exceptionEnd &&
+				currentDateObj >= exceptionStart &&
+				currentDateObj <= exceptionEnd
+			);
 		}) || false;
 
 	const stopWorktime = async () => {

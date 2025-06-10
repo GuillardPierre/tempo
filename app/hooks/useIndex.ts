@@ -15,9 +15,9 @@ export const useIndex = () => {
 	const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 	const [month, setMonth] = useState(new Date(date));
 	const [modalVisible, setModalVisible] = useState(false);
-	const [modalType, setModalType] = useState<'menu' | 'update' | 'delete'>(
-		'menu'
-	);
+	const [modalType, setModalType] = useState<
+		'menu' | 'update' | 'delete' | 'exception'
+	>('menu');
 	const [timerIsOpen, setTimerIsOpen] = useState(false);
 	const [calendarIsOpen, setCalendarIsOpen] = useState(false);
 	const [isConnected, setIsConnected] = useState<boolean | null>(null);
@@ -34,6 +34,8 @@ export const useIndex = () => {
 		WorktimeSeries[]
 	>([]);
 	const [formIsOpen, setFormIsOpen] = useState(false);
+	const [selectedException, setSelectedException] =
+		useState<RecurrenceException | null>(null);
 	const router = useRouter();
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
@@ -162,5 +164,7 @@ export const useIndex = () => {
 		setSnackBar,
 		formIsOpen,
 		setFormIsOpen,
+		selectedException,
+		setSelectedException,
 	};
 };

@@ -1,4 +1,10 @@
-import { StatusBar, StyleSheet, View } from 'react-native';
+import {
+	Pressable,
+	StatusBar,
+	StyleSheet,
+	Vibration,
+	View,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Redirect, useRouter } from 'expo-router';
 import React from 'react';
@@ -18,6 +24,8 @@ import BlockWrapper from '@/app/components/BlockWrapper';
 import ThemedText from '@/app/components/utils/ThemedText';
 import RoundButton from '@/app/components/utils/RoundButton';
 import WorktimeSelectAction from '@/app/components/WorktimeSelectAction';
+import BurgerMenuSvg from '../components/svg/burgerMenu';
+import PauseForm from '../forms/PauseForm';
 
 export default function Homepage() {
 	const colors = useThemeColors();
@@ -53,6 +61,8 @@ export default function Homepage() {
 		setSnackBar,
 		formIsOpen,
 		setFormIsOpen,
+		selectedException,
+		setSelectedException,
 	} = useIndex();
 
 	if (isConnected === null) {
@@ -73,6 +83,8 @@ export default function Homepage() {
 			return !prev;
 		});
 	}
+
+	console.log('recurrenceExceptions', recurrenceExceptions);
 
 	return (
 		<>
@@ -148,6 +160,54 @@ export default function Homepage() {
 						}}
 						flexGrow={true}
 					>
+						{}
+						{recurrenceExceptions
+							?.filter((exception) => {
+								const exceptionStart = new Date(exception.pauseStart);
+								const exceptionEnd = new Date(exception.pauseEnd);
+								const currentDate = new Date(date);
+								return (
+									currentDate >= exceptionStart && currentDate <= exceptionEnd
+								);
+							})
+							.map((exception) => (
+								<BlockWrapper
+									key={exception.id}
+									backgroundColor={colors.primaryLight}
+									style={{ marginBottom: 15 }}
+								>
+									<View
+										style={{
+											flexDirection: 'row',
+											justifyContent: 'space-between',
+											alignItems: 'center',
+										}}
+									>
+										<View>
+											<ThemedText variant='header2' color='primaryText'>
+												Vacances / pause en cours
+											</ThemedText>
+											<ThemedText variant='body' color='primaryText'>
+												Reposez-vous!
+											</ThemedText>
+										</View>
+										<Pressable
+											style={{
+												alignItems: 'flex-end',
+												marginLeft: 17,
+											}}
+											onPress={() => {
+												Vibration.vibrate(50);
+												setModalType('exception');
+												setModalVisible(true);
+												setSelectedException(exception);
+											}}
+										>
+											<BurgerMenuSvg />
+										</Pressable>
+									</View>
+								</BlockWrapper>
+							))}
 						{worktimes
 							.filter((worktime) => worktime.endTime !== null)
 							.map((worktime, index) => (
@@ -234,6 +294,16 @@ export default function Homepage() {
 							setCategories={setCategories}
 							setWorktimes={setWorktimes}
 							setSnackBar={setSnackBar}
+							date={date}
+						/>
+					)}
+					{modalType === 'exception' && (
+						<PauseForm
+							selectedException={selectedException}
+							setModalVisible={setModalVisible}
+							setSnackBar={setSnackBar}
+							setRecurrenceExceptions={setRecurrenceExceptions}
+							recurrenceExceptions={recurrenceExceptions}
 							date={date}
 						/>
 					)}

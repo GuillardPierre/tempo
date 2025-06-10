@@ -195,15 +195,16 @@ const styles = StyleSheet.create({
 		width: '100%',
 	},
 	buttonsContainer: {
-		flexDirection: 'column',
-		justifyContent: 'space-between',
+		flexDirection: 'row',
+		justifyContent: 'center',
 		gap: 10,
 		marginTop: 10,
-		width: '100%',
+		marginHorizontal: 'auto',
+		width: '50%',
 		alignItems: 'center',
 	},
 	actionButton: {
-		width: '80%',
+		width: '100%',
 		marginVertical: 5,
 	},
 	buttonBack: {
