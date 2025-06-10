@@ -40,8 +40,6 @@ export interface Worktime {
 		name: string;
 	};
 	recurrence?: string;
-	active: boolean;
-	seriesId: number | null;
 	ignoreExceptions?: boolean; // Uniquement pour les wortimeSeries
 }
 
@@ -88,4 +86,5 @@ export interface RecurrenceException {
 	id?: number;
 	pauseStart: string;
 	pauseEnd: string;
+	seriesIds: number[];
 }

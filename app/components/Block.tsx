@@ -4,7 +4,11 @@ import React from 'react';
 import ThemedText from './utils/ThemedText';
 import CustomChip from './utils/CustomChip';
 import BurgerMenuSvg from './svg/burgerMenu';
-import { Worktime } from '../types/worktime';
+import {
+	RecurrenceException,
+	Worktime,
+	WorktimeSeries,
+} from '../types/worktime';
 import StopSvg from './svg/stop';
 import { httpPut } from './utils/querySetup';
 import ENDPOINTS from './utils/ENDPOINT';
@@ -13,16 +17,17 @@ import BlockWrapper from './BlockWrapper';
 import { formatLocalDateTime } from './utils/utils';
 
 type Props = {
-	worktime: Worktime;
+	worktime: WorktimeSeries;
 	setModalType: (type: 'menu' | 'update') => void;
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: any) => void;
-	setUnfinishedWorktimes?: (worktimes: Worktime[]) => void;
+	setUnfinishedWorktimes?: (worktimes: WorktimeSeries[]) => void;
 	setWorktimes?: (
-		worktimes: Worktime[] | ((prev: Worktime[]) => Worktime[])
+		worktimes: WorktimeSeries[] | ((prev: WorktimeSeries[]) => WorktimeSeries[])
 	) => void;
 	setSnackBar?: (type: 'error' | 'info', messageText: string) => void;
 	currentDate: string;
+	recurrenceExceptions?: RecurrenceException[];
 };
 
 export default function Block({
@@ -34,6 +39,7 @@ export default function Block({
 	setWorktimes,
 	setSnackBar,
 	currentDate,
+	recurrenceExceptions,
 }: Props) {
 	const colors = useThemeColors();
 	const convertTime = (time: string) => {
@@ -60,6 +66,29 @@ export default function Block({
 			? colors.primaryLight
 			: colors.secondary;
 
+	const hasException =
+		recurrenceExceptions?.some((exception) => {
+			const worktimeIdNumber = Number(worktime.id);
+			const seriesIdsNumbers = exception.seriesIds.map((id) => Number(id));
+
+			// Ignorer les exceptions qui ne concernent pas cette série
+			if (!seriesIdsNumbers.includes(worktimeIdNumber)) {
+				return false;
+			}
+
+			// Ignorer si le worktime n'est pas récurrent ou si les exceptions sont ignorées
+			if (worktime.type !== 'RECURRING' || worktime.ignoreExceptions) {
+				return false;
+			}
+
+			const exceptionStart = new Date(exception.pauseStart);
+			const exceptionEnd = new Date(exception.pauseEnd);
+			const currentDateObj = new Date(currentDate);
+
+			// Vérifier si currentDate est dans la période d'exception
+			return currentDateObj >= exceptionStart && currentDateObj <= exceptionEnd;
+		}) || false;
+
 	const stopWorktime = async () => {
 		const newData = {
 			...worktime,
@@ -85,7 +114,7 @@ export default function Block({
 					.toISOString()
 					.split('T')[0];
 				if (worktimeDay === currentDate) {
-					setWorktimes((prevWorktimes: Worktime[]) => [
+					setWorktimes((prevWorktimes: WorktimeSeries[]) => [
 						...prevWorktimes.filter((wt) => wt.id !== data.id),
 						data,
 					]);
@@ -100,7 +129,7 @@ export default function Block({
 	};
 
 	return (
-		<BlockWrapper backgroundColor={categoryColor}>
+		<BlockWrapper backgroundColor={categoryColor} hasException={hasException}>
 			<View style={styles.timeContainer}>
 				<ThemedText>{convertTime(worktime.startTime)}</ThemedText>
 				<View style={styles.separator} />

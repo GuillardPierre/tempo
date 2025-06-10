@@ -2,7 +2,12 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { httpGet, checkAndRefreshToken } from '../components/utils/querySetup';
 import ENDPOINTS from '../components/utils/ENDPOINT';
-import { Category, RecurrenceException, Worktime } from '../types/worktime';
+import {
+	Category,
+	RecurrenceException,
+	Worktime,
+	WorktimeSeries,
+} from '../types/worktime';
 import { useRouter } from 'expo-router';
 import useSnackBar from '@/app/hooks/useSnackBar';
 
@@ -19,15 +24,15 @@ export const useIndex = () => {
 	const [selectedWorktime, setSelectedWorktime] = useState<Worktime | null>(
 		null
 	);
-	const [worktimes, setWorktimes] = useState<Worktime[]>([]);
+	const [worktimes, setWorktimes] = useState<WorktimeSeries[]>([]);
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [monthWorktimes, setMonthWorktimes] = useState<Worktime[]>([]);
 	const [recurrenceExceptions, setRecurrenceExceptions] = useState<
 		RecurrenceException[]
 	>([]);
-	const [unfinishedWorktimes, setUnfinishedWorktimes] = useState<Worktime[]>(
-		[]
-	);
+	const [unfinishedWorktimes, setUnfinishedWorktimes] = useState<
+		WorktimeSeries[]
+	>([]);
 	const [formIsOpen, setFormIsOpen] = useState(false);
 	const router = useRouter();
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();

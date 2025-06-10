@@ -10,6 +10,7 @@ type BlockWrapperProps = {
 	style?: StyleProp<ViewStyle>;
 	direction?: 'row' | 'column';
 	fullHeight?: boolean;
+	hasException?: boolean;
 };
 
 export default function BlockWrapper({
@@ -18,6 +19,7 @@ export default function BlockWrapper({
 	style,
 	direction = 'row',
 	fullHeight = false,
+	hasException = false,
 }: BlockWrapperProps) {
 	return (
 		<View
@@ -26,6 +28,7 @@ export default function BlockWrapper({
 				backgroundColor ? { backgroundColor } : {},
 				{ flexDirection: direction },
 				fullHeight ? { flex: 1 } : { height: 80, maxHeight: 80 },
+				hasException ? styles.exceptionFilter : {},
 				style,
 			]}
 		>
@@ -47,5 +50,9 @@ const styles = StyleSheet.create({
 		paddingBlock: 5,
 		paddingHorizontal: 10,
 		marginBlock: 5,
+	},
+	exceptionFilter: {
+		opacity: 0.5,
+		backgroundColor: '#3D348B',
 	},
 });

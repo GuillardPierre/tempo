@@ -158,6 +158,7 @@ export default function Homepage() {
 									setModalVisible={setModalVisible}
 									setSelectedWorktime={setSelectedWorktime}
 									currentDate={date}
+									recurrenceExceptions={recurrenceExceptions}
 								/>
 							))}
 						{worktimes.length === 0 && (
