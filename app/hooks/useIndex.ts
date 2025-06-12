@@ -11,19 +11,18 @@ import {
 import { useRouter } from 'expo-router';
 import useSnackBar from '@/app/hooks/useSnackBar';
 
+type ModalType = 'menu' | 'update' | 'exception';
+
 export const useIndex = () => {
 	const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 	const [month, setMonth] = useState(new Date(date));
 	const [modalVisible, setModalVisible] = useState(false);
-	const [modalType, setModalType] = useState<
-		'menu' | 'update' | 'delete' | 'exception'
-	>('menu');
+	const [modalType, setModalType] = useState<ModalType>('menu');
 	const [timerIsOpen, setTimerIsOpen] = useState(false);
 	const [calendarIsOpen, setCalendarIsOpen] = useState(false);
 	const [isConnected, setIsConnected] = useState<boolean | null>(null);
-	const [selectedWorktime, setSelectedWorktime] = useState<Worktime | null>(
-		null
-	);
+	const [selectedWorktime, setSelectedWorktime] =
+		useState<WorktimeSeries | null>(null);
 	const [worktimes, setWorktimes] = useState<WorktimeSeries[]>([]);
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [monthWorktimes, setMonthWorktimes] = useState<Worktime[]>([]);
@@ -41,10 +40,16 @@ export const useIndex = () => {
 
 	useEffect(() => {
 		checkConnection();
-		getCategrories();
-		getMonthWorktimes();
-		getRecurrenceExceptions();
 	}, []);
+
+	useEffect(() => {
+		if (isConnected) {
+			getCategrories();
+			getMonthWorktimes();
+			getRecurrenceExceptions();
+			getWorktimes();
+		}
+	}, [isConnected]);
 
 	useEffect(() => {
 		getMonthWorktimes();
@@ -61,20 +66,22 @@ export const useIndex = () => {
 
 	useEffect(() => {
 		async function verifyToken() {
-			const isValid = await checkAndRefreshToken();
-			if (!isValid) {
-				setSnackBar('error', 'Vous avez été déconnecté');
-				router.replace('/screens/auth/Login');
+			if (isConnected) {
+				const isValid = await checkAndRefreshToken();
+				if (!isValid) {
+					setSnackBar('error', 'Vous avez été déconnecté');
+					setIsConnected(false);
+					router.replace('/screens/auth/Login');
+				}
 			}
 		}
 		verifyToken();
-	}, []);
+	}, [isConnected]);
 
 	async function checkConnection() {
 		const value = await AsyncStorage.getItem('token');
 		if (value) {
 			setIsConnected(true);
-			getWorktimes();
 		} else {
 			setIsConnected(false);
 		}

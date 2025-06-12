@@ -26,8 +26,8 @@ export default function Index() {
 
 	// Rediriger vers la page appropriée
 	return isConnected ? (
-		<Redirect href={'/screens/Homepage'} />
+		<Redirect href='/screens/Homepage' />
 	) : (
-		<Redirect href={'/screens/auth/Login'} />
+		<Redirect href='/screens/auth/Login' />
 	);
 }

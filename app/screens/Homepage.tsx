@@ -1,30 +1,28 @@
-import {
-	Pressable,
-	StatusBar,
-	StyleSheet,
-	Vibration,
-	View,
-} from 'react-native';
+import { StatusBar, StyleSheet, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { Redirect, useRouter } from 'expo-router';
+import { Redirect } from 'expo-router';
 import React from 'react';
 import { useIndex } from '@/app/hooks/useIndex';
+import { useModal } from '@/app/hooks/useModal';
+import { useToggleViews } from '@/app/hooks/useToggleViews';
+import { useThemeColors } from '@/app/hooks/useThemeColors';
+import {
+	Worktime,
+	RecurrenceException,
+	SelectedWorktime,
+} from '@/app/types/worktime';
 import Header from '@/app/components/Header';
 import DateDisplay from '@/app/components/DateDisplay';
 import MainWrapper from '@/app/components/MainWrapper';
 import Calendar from '@/app/components/Calendar';
-import Block from '@/app/components/Block';
 import Footer from '@/app/components/Footer';
 import ModalMenu from '@/app/components/Modal';
 import Menu from '@/app/components/ModalComponents/Menu';
-import { useThemeColors } from '@/app/hooks/useThemeColors';
 import CustomSnackBar from '@/app/components/utils/CustomSnackBar';
 import UpdateDeleteModal from '@/app/components/ModalComponents/UpdateDeleteModal';
-import BlockWrapper from '@/app/components/BlockWrapper';
-import ThemedText from '@/app/components/utils/ThemedText';
-import RoundButton from '@/app/components/utils/RoundButton';
 import WorktimeSelectAction from '@/app/components/WorktimeSelectAction';
-import BurgerMenuSvg from '../components/svg/burgerMenu';
+import ExceptionsList from '@/app/components/ExceptionsList';
+import WorktimesList from '@/app/components/WorktimesList';
 import PauseForm from '../forms/PauseForm';
 
 export default function Homepage() {
@@ -39,14 +37,6 @@ export default function Homepage() {
 		setDate,
 		month,
 		setMonth,
-		modalVisible,
-		setModalVisible,
-		modalType,
-		setModalType,
-		timerIsOpen,
-		setTimerIsOpen,
-		calendarIsOpen,
-		setCalendarIsOpen,
 		isConnected,
 		setWorktimes,
 		setRecurrenceExceptions,
@@ -59,263 +49,185 @@ export default function Homepage() {
 		message,
 		setOpen,
 		setSnackBar,
-		formIsOpen,
-		setFormIsOpen,
 		selectedException,
 		setSelectedException,
 	} = useIndex();
 
-	if (isConnected === null) {
-		<Redirect href={'/screens/auth/Login'} />;
+	const {
+		modalVisible,
+		modalType,
+		openModal,
+		closeModal,
+		setModalType,
+		setModalVisible,
+	} = useModal();
+
+	const {
+		calendarIsOpen,
+		timerIsOpen,
+		formIsOpen,
+		setFormIsOpen,
+		toggleCalendar,
+		toggleTimer,
+	} = useToggleViews();
+
+	if (isConnected === false) {
+		return <Redirect href='/screens/auth/Login' />;
 	}
 
-	// Ajout des fonctions pour ouverture/fermeture exclusive
-	function toggleCalendar() {
-		setCalendarIsOpen((prev) => {
-			if (!prev) setTimerIsOpen(false);
-			return !prev;
-		});
-	}
+	const handleExceptionPress = (exception: RecurrenceException) => {
+		setSelectedException(exception);
+		openModal('exception');
+	};
 
-	function toggleTimer() {
-		setTimerIsOpen((prev) => {
-			if (!prev) setCalendarIsOpen(false);
-			return !prev;
-		});
-	}
+	const getSelectedWorktimeForUpdate = () => {
+		if (!selectedWorktime) return null;
 
-	console.log('recurrenceExceptions', recurrenceExceptions);
+		const selected: SelectedWorktime = {
+			...selectedWorktime,
+			recurrence: selectedWorktime.recurrence
+				? JSON.stringify(selectedWorktime.recurrence)
+				: '',
+			isRecurring: selectedWorktime.type === 'RECURRING',
+			startDate: selectedWorktime.startDate,
+			endDate: selectedWorktime.endDate,
+		};
+
+		return selected;
+	};
 
 	return (
-		<>
-			<SafeAreaView
-				style={[
-					styles.container,
-					{
-						backgroundColor: colors.primary,
-					},
-				]}
+		<SafeAreaView
+			style={[
+				styles.container,
+				{
+					backgroundColor: colors.primary,
+				},
+			]}
+		>
+			<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
+			<Header
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
+				setModalType={setModalType}
+			/>
+			<DateDisplay
+				date={date}
+				setDate={setDate}
+				setCalendarIsOpen={toggleCalendar}
+			/>
+			<View
+				style={{
+					flex: 1,
+					overflow: 'hidden',
+					maxHeight: '90%',
+				}}
 			>
-				<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
-				<Header
-					modalVisible={modalVisible}
-					setModalVisible={setModalVisible}
-					setModalType={setModalType}
-				/>
-				<DateDisplay
-					date={date}
-					setDate={setDate}
-					setCalendarIsOpen={toggleCalendar}
-				/>
-				<View
+				<MainWrapper
+					isOpen={calendarIsOpen}
+					direction='top'
+					maxHeight='50%'
+					style={{ marginBottom: 0 }}
+				>
+					<Calendar
+						date={date}
+						setDate={setDate}
+						monthWorktimes={monthWorktimes}
+						month={month}
+						setMonth={setMonth}
+						recurrenceExceptions={recurrenceExceptions}
+					/>
+				</MainWrapper>
+
+				<MainWrapper
+					fullHeight={!calendarIsOpen && !timerIsOpen}
 					style={{
-						flex: 1,
-						zIndex: 99999,
-						overflow: 'hidden',
-						maxHeight: '90%',
+						maxHeight: timerIsOpen
+							? formIsOpen
+								? '50%'
+								: '80%'
+							: calendarIsOpen
+							? '37%'
+							: 'auto',
+					}}
+					flexGrow={true}
+				>
+					<ExceptionsList
+						exceptions={recurrenceExceptions}
+						date={date}
+						onExceptionPress={handleExceptionPress}
+					/>
+					<WorktimesList
+						worktimes={worktimes}
+						currentDate={date}
+						recurrenceExceptions={recurrenceExceptions}
+						setModalType={setModalType}
+						setModalVisible={setModalVisible}
+						setSelectedWorktime={setSelectedWorktime}
+					/>
+				</MainWrapper>
+
+				<MainWrapper
+					isOpen={timerIsOpen}
+					direction='bottom'
+					maxHeight='40%'
+					style={{
+						paddingHorizontal: 30,
 					}}
 				>
-					<MainWrapper
-						isOpen={calendarIsOpen}
-						direction='top'
-						maxHeight='50%'
-						style={{ marginBottom: 0 }}
-					>
-						<Calendar
-							date={date}
-							setDate={setDate}
-							monthWorktimes={monthWorktimes}
-							month={month}
-							setMonth={setMonth}
-							recurrenceExceptions={recurrenceExceptions}
-						/>
-					</MainWrapper>
-					{unfinishedWorktimes.length > 0 && (
-						<MainWrapper height={110}>
-							{unfinishedWorktimes.map((worktime, index) => (
-								<Block
-									key={`${worktime.type}-${worktime.id}`}
-									worktime={worktime}
-									setModalType={setModalType}
-									setModalVisible={setModalVisible}
-									setSelectedWorktime={setSelectedWorktime}
-									setWorktimes={setWorktimes}
-									setUnfinishedWorktimes={setUnfinishedWorktimes}
-									setSnackBar={setSnackBar}
-									currentDate={date}
-								/>
-							))}
-						</MainWrapper>
-					)}
-					<MainWrapper
-						fullHeight={!calendarIsOpen && !timerIsOpen}
-						style={{
-							maxHeight: timerIsOpen
-								? formIsOpen
-									? '50%'
-									: '80%'
-								: calendarIsOpen
-								? '37%'
-								: 'auto',
-						}}
-						flexGrow={true}
-					>
-						{}
-						{recurrenceExceptions
-							?.filter((exception) => {
-								const exceptionStart = new Date(exception.pauseStart);
-								const exceptionEnd = new Date(exception.pauseEnd);
-								const currentDate = new Date(date);
-								return (
-									currentDate >= exceptionStart && currentDate <= exceptionEnd
-								);
-							})
-							.map((exception) => (
-								<BlockWrapper
-									key={exception.id}
-									backgroundColor={colors.primaryLight}
-									style={{ marginBottom: 15 }}
-								>
-									<View
-										style={{
-											flexDirection: 'row',
-											justifyContent: 'space-between',
-											alignItems: 'center',
-										}}
-									>
-										<View>
-											<ThemedText variant='header2' color='primaryText'>
-												Vacances / pause en cours
-											</ThemedText>
-											<ThemedText variant='body' color='primaryText'>
-												Reposez-vous!
-											</ThemedText>
-										</View>
-										<Pressable
-											style={{
-												alignItems: 'flex-end',
-												marginLeft: 17,
-											}}
-											onPress={() => {
-												Vibration.vibrate(50);
-												setModalType('exception');
-												setModalVisible(true);
-												setSelectedException(exception);
-											}}
-										>
-											<BurgerMenuSvg />
-										</Pressable>
-									</View>
-								</BlockWrapper>
-							))}
-						{worktimes
-							.filter((worktime) => worktime.endTime !== null)
-							.map((worktime, index) => (
-								<Block
-									key={`${worktime.type}-${worktime.id}`}
-									worktime={worktime}
-									setModalType={setModalType}
-									setModalVisible={setModalVisible}
-									setSelectedWorktime={setSelectedWorktime}
-									currentDate={date}
-									recurrenceExceptions={recurrenceExceptions}
-								/>
-							))}
-						{worktimes.length === 0 && (
-							<BlockWrapper backgroundColor={colors.primaryLight}>
-								<View style={{ flex: 1, justifyContent: 'center' }}>
-									<ThemedText variant='body' color='primaryText'>
-										Rien de prévu pour ce jour-ci !{' '}
-									</ThemedText>
-									<View
-										style={{
-											flexDirection: 'row',
-											alignItems: 'center',
-											flexWrap: 'wrap',
-										}}
-									>
-										<ThemedText variant='body' color='primaryText'>
-											Reposez-vous ou appuyez sur
-										</ThemedText>
-										<View style={{ marginHorizontal: 4 }}>
-											<RoundButton
-												onPress={() => {}}
-												svgSize={12}
-												type='add'
-												variant='secondary'
-												btnSize={25}
-											/>
-										</View>
-										<ThemedText variant='body' color='primaryText'>
-											pour enregistrer une activité
-										</ThemedText>
-									</View>
-								</View>
-							</BlockWrapper>
-						)}
-					</MainWrapper>
-					<MainWrapper
-						isOpen={timerIsOpen}
-						direction='bottom'
-						maxHeight='40%'
-						style={{
-							paddingHorizontal: 30,
-						}}
-					>
-						<WorktimeSelectAction
-							setSnackBar={setSnackBar}
-							setTimerIsOpen={toggleTimer}
-							setWorktimes={setWorktimes}
-							categories={categories}
-							setCategories={setCategories}
-							date={date}
-							setFormIsOpen={setFormIsOpen}
-							setRecurrenceExceptions={setRecurrenceExceptions}
-							recurrenceExceptions={recurrenceExceptions}
-						/>
-					</MainWrapper>
-				</View>
-				<Footer
-					setTimerIsOpen={toggleTimer}
-					timerIsOpen={timerIsOpen}
-					calendarIsOpen={calendarIsOpen}
-					setCalendarIsOpen={toggleCalendar}
-				/>
-				<ModalMenu
-					modalVisible={modalVisible}
-					setModalVisible={setModalVisible}
-				>
-					{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
-					{modalType === 'update' && (
-						<UpdateDeleteModal
-							selectedWorktime={selectedWorktime}
-							setModalVisible={setModalVisible}
-							categories={categories}
-							setCategories={setCategories}
-							setWorktimes={setWorktimes}
-							setSnackBar={setSnackBar}
-							date={date}
-						/>
-					)}
-					{modalType === 'exception' && (
-						<PauseForm
-							selectedException={selectedException}
-							setModalVisible={setModalVisible}
-							setSnackBar={setSnackBar}
-							setRecurrenceExceptions={setRecurrenceExceptions}
-							recurrenceExceptions={recurrenceExceptions}
-							date={date}
-						/>
-					)}
-				</ModalMenu>
-				<CustomSnackBar
-					color={color}
-					message={message}
-					open={open}
-					setOpen={setOpen}
-				/>
-			</SafeAreaView>
-		</>
+					<WorktimeSelectAction
+						setSnackBar={setSnackBar}
+						setTimerIsOpen={toggleTimer}
+						setWorktimes={setWorktimes}
+						categories={categories}
+						setCategories={setCategories}
+						date={date}
+						setFormIsOpen={setFormIsOpen}
+						setRecurrenceExceptions={setRecurrenceExceptions}
+						recurrenceExceptions={recurrenceExceptions}
+					/>
+				</MainWrapper>
+			</View>
+
+			<Footer
+				setTimerIsOpen={toggleTimer}
+				timerIsOpen={timerIsOpen}
+				calendarIsOpen={calendarIsOpen}
+				setCalendarIsOpen={toggleCalendar}
+			/>
+
+			<ModalMenu modalVisible={modalVisible} setModalVisible={setModalVisible}>
+				{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
+				{modalType === 'update' && (
+					<UpdateDeleteModal
+						selectedWorktime={getSelectedWorktimeForUpdate()}
+						setModalVisible={setModalVisible}
+						categories={categories}
+						setCategories={setCategories}
+						setWorktimes={setWorktimes}
+						setSnackBar={setSnackBar}
+						date={date}
+					/>
+				)}
+				{modalType === 'exception' && (
+					<PauseForm
+						selectedException={selectedException}
+						setModalVisible={setModalVisible}
+						setSnackBar={setSnackBar}
+						setRecurrenceExceptions={setRecurrenceExceptions}
+						recurrenceExceptions={recurrenceExceptions}
+						date={date}
+					/>
+				)}
+			</ModalMenu>
+
+			<CustomSnackBar
+				color={color}
+				message={message}
+				open={open}
+				setOpen={setOpen}
+			/>
+		</SafeAreaView>
 	);
 }
 

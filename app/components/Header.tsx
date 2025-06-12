@@ -4,11 +4,13 @@ import ThemedText from './utils/ThemedText';
 import SquareButton from './utils/SquareButton';
 import { router, usePathname } from 'expo-router';
 import ArrowBackSvg from './svg/arrowback';
+import type { ModalType } from '@/app/types/modal';
+import { Dispatch, SetStateAction } from 'react';
 
 type Props = {
 	modalVisible: boolean;
 	setModalVisible: (visible: boolean) => void;
-	setModalType: (type: 'menu' | 'update' | 'delete') => void;
+	setModalType: (type: ModalType) => void;
 };
 
 export default function Header({

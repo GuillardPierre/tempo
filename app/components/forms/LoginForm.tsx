@@ -35,8 +35,8 @@ export default function LoginForm({ setSnackBar }: Props) {
 				isLogin: true,
 			});
 
-			if (!response.ok) {
-				const errorMessage = await response.text();
+			if (!response?.ok) {
+				const errorMessage = await response?.text();
 				throw new Error(errorMessage || 'Échec de connexion');
 			}
 
@@ -54,7 +54,7 @@ export default function LoginForm({ setSnackBar }: Props) {
 			AsyncStorage.setItem('refreshToken', data.refreshToken || '');
 			setSnackBar('info', 'Connexion réussie !');
 			setTimeout(() => {
-				router.replace('/');
+				router.replace('/screens/Homepage');
 			}, 1500);
 		},
 		onError: (error) => {
@@ -127,7 +127,7 @@ const styles = StyleSheet.create({
 		borderRadius: 5,
 	},
 	button: {
-		width: '77%',
+		width: '72%',
 		backgroundColor: '#007BFF',
 		padding: 10,
 		borderRadius: 5,

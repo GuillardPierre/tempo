@@ -17,6 +17,8 @@ import CustomSnackBar from '../components/utils/CustomSnackBar';
 import useSnackBar from '../hooks/useSnackBar';
 import { router } from 'expo-router';
 import { deleteToken } from '../components/utils/utils';
+import { ModalType } from '@/app/types/modal';
+
 export default function Profile() {
 	const colors = useThemeColors();
 	const context = useContext(AuthContext);
@@ -27,9 +29,7 @@ export default function Profile() {
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
 	const [modalVisible, setModalVisible] = useState(false);
-	const [modalType, setModalType] = useState<'menu' | 'update' | 'delete'>(
-		'menu'
-	);
+	const [modalType, setModalType] = useState<ModalType>('menu');
 
 	const deleteAccount = async () => {
 		try {
@@ -99,7 +99,7 @@ export default function Profile() {
 						<ThemedText variant='header1' color='secondaryText'>
 							Êtes-vous sûr de vouloir supprimer votre compte ?
 						</ThemedText>
-						<BlockWrapper backgroundColor={'#056CF6'}>
+						<BlockWrapper style={{ minHeight: 70 }} backgroundColor={'#056CF6'}>
 							<ThemedText variant='body' color='primaryText'>
 								Si vous avez des retours, contactez moi sur
 								pguillard95@gmail.com
