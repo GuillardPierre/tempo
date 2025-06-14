@@ -5,7 +5,7 @@ import { useThemeColors } from '../hooks/useThemeColors';
 import Header from '../components/Header';
 import MainWrapper from '../components/MainWrapper';
 import ThemedText from '../components/utils/ThemedText';
-import { LineChart, PieChart, StackedBarChart } from 'react-native-chart-kit';
+import { LineChart, PieChart } from 'react-native-chart-kit';
 import BlockWrapper from '../components/BlockWrapper';
 import { SegmentedButtons } from 'react-native-paper';
 import { httpGet } from '../components/utils/querySetup';
@@ -15,6 +15,9 @@ import {
 	getCurrentMonthRange,
 	getCurrentSchoolYearRange,
 } from '../utils/dateRanges';
+import type { ModalType } from '../types/modal';
+import ModalMenu from '../components/Modal';
+import Menu from '../components/ModalComponents/Menu';
 
 const chartConfig = {
 	backgroundGradientFrom: '#1E2923',
@@ -25,7 +28,43 @@ const chartConfig = {
 	strokeWidth: 1, // optional, default 3
 	barPercentage: 0.5,
 	useShadowColorFromDataset: false, // optional
+	labelColor: (opacity = 1) => `black`,
+	propsForLabels: {
+		fontWeight: 'bold',
+	},
 };
+
+// Ajout de la fonction utilitaire pour filtrer les bords à zéro
+function filterEdgeZeros(lineChartData: any) {
+	if (
+		!lineChartData ||
+		!Array.isArray(lineChartData.labels) ||
+		!Array.isArray(lineChartData.datasets) ||
+		!Array.isArray(lineChartData.datasets[0]?.data)
+	) {
+		return lineChartData;
+	}
+
+	let { labels } = lineChartData;
+	let { data, ...restDataset } = lineChartData.datasets[0];
+
+	// Filtrage du début
+	if (data.length > 1 && data[0] === 0) {
+		data = data.slice(1);
+		labels = labels.slice(1);
+	}
+	// Filtrage de la fin
+	if (data.length > 1 && data[data.length - 1] === 0) {
+		data = data.slice(0, -1);
+		labels = labels.slice(0, -1);
+	}
+
+	return {
+		...lineChartData,
+		labels,
+		datasets: [{ ...restDataset, data }],
+	};
+}
 
 export default function Charts() {
 	const colors = useThemeColors();
@@ -33,6 +72,8 @@ export default function Charts() {
 	const [value, setValue] = useState<string>('week');
 	const [categoryTimeSpent, setCategoryTimeSpent] = useState<any>(null);
 	const [lineChartData, setLineChartData] = useState<any>(null);
+	const [modalVisible, setModalVisible] = useState<boolean>(false);
+	const [modalType, setModalType] = useState<ModalType>('menu');
 
 	const getCategoryTimeSpent = async (range: { from: string; to: string }) => {
 		const url = `${
@@ -86,17 +127,19 @@ export default function Charts() {
 					const dataInHours = data.total.data.map((v: number) =>
 						typeof v === 'number' && isFinite(v) ? v / 60 : v
 					);
-					setLineChartData({
-						labels: data.total.labels,
-						datasets: [
-							{
-								data: dataInHours,
-								color: (opacity = 0.5) => `#34495e`,
-								strokeWidth: 3,
-							},
-						],
-						// legend: ['Temps de travail total (heures)'],
-					});
+					setLineChartData(
+						filterEdgeZeros({
+							labels: data.total.labels,
+							datasets: [
+								{
+									data: dataInHours,
+									color: (opacity = 0.5) => `#34495e`,
+									strokeWidth: 3,
+								},
+							],
+							// legend: ['Temps de travail total (heures)'],
+						})
+					);
 				}
 			}
 		}
@@ -167,9 +210,9 @@ export default function Charts() {
 			>
 				<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
 				<Header
-					modalVisible={false}
-					setModalVisible={() => {}}
-					setModalType={() => {}}
+					modalVisible={modalVisible}
+					setModalVisible={setModalVisible}
+					setModalType={setModalType}
 				/>
 				<View style={{ flex: 1, zIndex: 99999, overflow: 'hidden' }}>
 					<MainWrapper style={styles.container}>
@@ -227,6 +270,55 @@ export default function Charts() {
 								center={[10, 0]}
 							/>
 						</BlockWrapper>
+						<BlockWrapper
+							direction='column'
+							fullHeight={true}
+							style={{ gap: 10 }}
+						>
+							<ThemedText variant='header2' color='secondaryText'>
+								Détail par catégorie
+							</ThemedText>
+							<View
+								style={{
+									flexDirection: 'row',
+									flexWrap: 'wrap',
+									justifyContent: 'space-between',
+									width: '100%',
+								}}
+							>
+								{safePieChartData.map((item: any, index: number) => {
+									const hours = (item.population / 60).toFixed(1);
+									return (
+										<View
+											key={index}
+											style={{
+												flexDirection: 'row',
+												alignItems: 'center',
+												width: '48%',
+												marginBottom: 8,
+											}}
+										>
+											<View
+												style={{
+													width: 14,
+													height: 14,
+													borderRadius: 6,
+													backgroundColor: item.color,
+													marginRight: 8,
+												}}
+											/>
+											<ThemedText
+												variant='body'
+												color='secondaryText'
+												style={{ flex: 1, fontSize: 13 }}
+											>
+												{item.name} = {hours}h
+											</ThemedText>
+										</View>
+									);
+								})}
+							</View>
+						</BlockWrapper>
 						<BlockWrapper direction='column' fullHeight={true}>
 							<View style={{ flexDirection: 'row', alignItems: 'center' }}>
 								<ThemedText variant='header2' color='secondaryText'>
@@ -238,12 +330,20 @@ export default function Charts() {
 							</View>
 							<LineChart
 								data={safeLineChartData}
-								width={screenWidth - 55}
+								width={screenWidth - 50}
 								height={255}
-								verticalLabelRotation={20}
+								verticalLabelRotation={35}
 								chartConfig={chartConfig}
+								style={{ paddingBottom: 10 }}
 								bezier
 							/>
+							{value === 'month' && (
+								<View style={{ alignItems: 'center', marginTop: 5 }}>
+									<ThemedText variant='body' color='secondaryText'>
+										Semaine par semaine
+									</ThemedText>
+								</View>
+							)}
 						</BlockWrapper>
 						{/* <BlockWrapper direction='column' fullHeight={true}>
 							<ThemedText variant='header2' color='secondaryText'>
@@ -261,6 +361,9 @@ export default function Charts() {
 					</MainWrapper>
 				</View>
 			</SafeAreaView>
+			<ModalMenu modalVisible={modalVisible} setModalVisible={setModalVisible}>
+				{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
+			</ModalMenu>
 		</>
 	);
 }

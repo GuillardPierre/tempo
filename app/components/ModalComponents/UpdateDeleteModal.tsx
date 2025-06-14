@@ -3,16 +3,12 @@ import { View, StyleSheet, Text } from 'react-native';
 import ThemedText from '../utils/ThemedText';
 import {
 	SelectedWorktime,
-	Worktime,
 	WorktimeSeries,
 } from '@/app/types/worktime';
 import TimerForm from '@/app/forms/timerForm';
 import ButtonMenu from '../ButtonMenu';
 import DeleteBlock from './DeleteBlock';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
-import { Button } from 'react-native-paper';
-import useSnackBar from '@/app/hooks/useSnackBar';
-import RoundButton from '../utils/RoundButton';
 
 type Props = {
 	setModalVisible: (visible: boolean) => void;

@@ -29,6 +29,7 @@ export default function Header({
 							backgroundColor: colors.secondary,
 							borderRadius: 100,
 							padding: 5,
+							marginRight: 10,
 						}}
 						onPress={() => router.back()}
 					>
@@ -36,7 +37,7 @@ export default function Header({
 					</Pressable>
 				)}
 				<ThemedText variant='header1' color='primaryText'>
-					⏳Tempos
+					Tempos
 				</ThemedText>
 			</View>
 			<SquareButton

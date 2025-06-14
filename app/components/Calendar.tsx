@@ -150,13 +150,14 @@ export default function Calendar({
 
 	// Marquer la date sélectionnée
 	if (markedDates[date]) {
-		markedDates[date] = {
-			...markedDates[date],
-			selected: true,
-		};
-	} else {
-		markedDates[date] = { selected: true };
-	}
+	markedDates[date] = {
+		...markedDates[date],
+		selected: true,
+		color: colors.primary,
+		textColor: colors.primaryText,
+		startingDay: true,
+		endingDay: true,
+	};
 
 	return (
 		<RNCalendar
