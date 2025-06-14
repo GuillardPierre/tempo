@@ -147,9 +147,7 @@ export default function Calendar({
 			current.setDate(current.getDate() + 1);
 		}
 	});
-
-	// Marquer la date sélectionnée
-	if (markedDates[date]) {
+	// Marquer la date sélectionnée - forcer la couleur rouge
 	markedDates[date] = {
 		...markedDates[date],
 		selected: true,
