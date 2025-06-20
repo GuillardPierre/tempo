@@ -17,7 +17,8 @@ type Props = {
 	disableScroll?: boolean;
 	height?: number;
 	fullHeight?: boolean;
-	maxHeight?: number | `${number}%`;
+	maxHeight?: number | `${number}%` | 'auto';
+	minHeight?: number | `${number}%` | 'auto';
 	style?: StyleProp<ViewStyle>;
 };
 
@@ -30,6 +31,7 @@ export default function MainWrapper({
 	height,
 	fullHeight = false,
 	maxHeight,
+	minHeight,
 	style,
 }: Props) {
 	const colors = useThemeColors();
@@ -93,6 +95,23 @@ export default function MainWrapper({
 			const percentage = parseInt(maxHeight, 10);
 			return (screenHeight * percentage) / 100;
 		}
+		if (maxHeight === 'auto') {
+			return undefined;
+		}
+		return undefined;
+	};
+
+	const getMinHeight = () => {
+		if (typeof minHeight === 'number') {
+			return minHeight;
+		}
+		if (typeof minHeight === 'string' && minHeight.endsWith('%')) {
+			const percentage = parseInt(minHeight, 10);
+			return (screenHeight * percentage) / 100;
+		}
+		if (minHeight === 'auto') {
+			return undefined;
+		}
 		return undefined;
 	};
 
@@ -105,6 +124,7 @@ export default function MainWrapper({
 			? { height: animatedHeight, maxHeight: animatedHeight }
 			: {}),
 		maxHeight: getMaxHeight(),
+		minHeight: getMinHeight(),
 		transform: [
 			{
 				translateY: animation.interpolate({

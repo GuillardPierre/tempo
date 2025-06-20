@@ -35,8 +35,9 @@ const chartConfig = {
 };
 
 // Ajout de la fonction utilitaire pour filtrer les bords à zéro
-function filterEdgeZeros(lineChartData: any) {
+function filterEdgeZeros(lineChartData: any, shouldFilter: boolean = true) {
 	if (
+		!shouldFilter ||
 		!lineChartData ||
 		!Array.isArray(lineChartData.labels) ||
 		!Array.isArray(lineChartData.datasets) ||
@@ -128,17 +129,20 @@ export default function Charts() {
 						typeof v === 'number' && isFinite(v) ? v / 60 : v
 					);
 					setLineChartData(
-						filterEdgeZeros({
-							labels: data.total.labels,
-							datasets: [
-								{
-									data: dataInHours,
-									color: (opacity = 0.5) => `#34495e`,
-									strokeWidth: 3,
-								},
-							],
-							// legend: ['Temps de travail total (heures)'],
-						})
+						filterEdgeZeros(
+							{
+								labels: data.total.labels,
+								datasets: [
+									{
+										data: dataInHours,
+										color: (opacity = 0.5) => `#34495e`,
+										strokeWidth: 3,
+									},
+								],
+								// legend: ['Temps de travail total (heures)'],
+							},
+							value === 'month'
+						) // Ne filtrer les zéros qu'en mode mois
 					);
 				}
 			}

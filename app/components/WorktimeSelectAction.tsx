@@ -45,7 +45,9 @@ export default function WorktimeSelectAction({
 	const [value, setValue] = useState<string>('');
 
 	useEffect(() => {
-		setFormIsOpen(value === 'addWorktime' || value === 'startTimer');
+		setFormIsOpen(
+			value === 'addWorktime' || value === 'startTimer' || value === 'addPause'
+		);
 	}, [value]);
 
 	return (
@@ -128,6 +130,7 @@ export default function WorktimeSelectAction({
 					date={date}
 					setRecurrenceExceptions={setRecurrenceExceptions}
 					recurrenceExceptions={recurrenceExceptions}
+					setModalVisible={setTimerIsOpen}
 				/>
 			)}
 		</View>

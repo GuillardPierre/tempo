@@ -23,6 +23,7 @@ import UpdateDeleteModal from '@/app/components/ModalComponents/UpdateDeleteModa
 import WorktimeSelectAction from '@/app/components/WorktimeSelectAction';
 import ExceptionsList from '@/app/components/ExceptionsList';
 import WorktimesList from '@/app/components/WorktimesList';
+import UnfinishedWorktimesList from '@/app/components/UnfinishedWorktimesList';
 import PauseForm from '../forms/PauseForm';
 
 export default function Homepage() {
@@ -70,6 +71,9 @@ export default function Homepage() {
 		toggleCalendar,
 		toggleTimer,
 	} = useToggleViews();
+
+	console.log('timerIsOpen', timerIsOpen);
+	console.log('formIsOpen', formIsOpen);
 
 	if (isConnected === false) {
 		return <Redirect href='/screens/auth/Login' />;
@@ -126,7 +130,7 @@ export default function Homepage() {
 				<MainWrapper
 					isOpen={calendarIsOpen}
 					direction='top'
-					maxHeight='50%'
+					maxHeight='42%'
 					style={{ marginBottom: 0 }}
 				>
 					<Calendar
@@ -138,13 +142,23 @@ export default function Homepage() {
 						recurrenceExceptions={recurrenceExceptions}
 					/>
 				</MainWrapper>
-
+				<UnfinishedWorktimesList
+					unfinishedWorktimes={unfinishedWorktimes}
+					currentDate={date}
+					recurrenceExceptions={recurrenceExceptions}
+					setModalType={setModalType}
+					setModalVisible={setModalVisible}
+					setSelectedWorktime={setSelectedWorktime}
+					setUnfinishedWorktimes={setUnfinishedWorktimes}
+					setWorktimes={setWorktimes}
+					setSnackBar={setSnackBar}
+				/>
 				<MainWrapper
 					fullHeight={!calendarIsOpen && !timerIsOpen}
 					style={{
 						maxHeight: timerIsOpen
 							? formIsOpen
-								? '50%'
+								? '47%'
 								: '80%'
 							: calendarIsOpen
 							? '37%'
@@ -170,7 +184,8 @@ export default function Homepage() {
 				<MainWrapper
 					isOpen={timerIsOpen}
 					direction='bottom'
-					maxHeight='40%'
+					maxHeight='35%'
+					minHeight={formIsOpen ? '35%' : 'auto'}
 					style={{
 						paddingHorizontal: 30,
 					}}
