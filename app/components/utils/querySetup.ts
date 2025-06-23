@@ -2,7 +2,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
 import ENDPOINTS from './ENDPOINT';
 
-let TOKEN: string | null = null;
+export let TOKEN: string | null = null;
 let REFRESH_TOKEN: string | null = null;
 // const EXPO_PUBLIC_BASE_URL = 'http://192.168.1.147:8080/';
 // const EXPO_PUBLIC_BASE_URL = 'http://92.184.121.157:8080/';
@@ -10,6 +10,12 @@ const EXPO_PUBLIC_BASE_URL = 'http://10.0.2.2:8080/';
 
 // Initialize token function
 const initToken = async () => {
+	TOKEN = await AsyncStorage.getItem('token');
+	return TOKEN;
+};
+
+// Fonction pour mettre à jour la variable globale TOKEN
+export const updateToken = async () => {
 	TOKEN = await AsyncStorage.getItem('token');
 	return TOKEN;
 };
@@ -58,7 +64,10 @@ export async function checkAndRefreshToken() {
 				const data = await response.json();
 				if (data.token) await AsyncStorage.setItem('token', data.token);
 				if (data.refreshToken)
-					await AsyncStorage.setItem('refreshToken', data.refreshToken);
+					await AsyncStorage.setItem(
+						'refreshToken',
+						data.refreshToken
+					);
 				TOKEN = data.token;
 				return true;
 			} else {

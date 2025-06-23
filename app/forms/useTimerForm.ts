@@ -19,7 +19,9 @@ export function useTimerForm({
 }: {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
 	setTimerIsOpen: (isOpen: boolean) => void;
-	setWorktimes?: (worktimes: any[] | ((prevWorktimes: any[]) => any[])) => void;
+	setWorktimes?: (
+		worktimes: any[] | ((prevWorktimes: any[]) => any[])
+	) => void;
 	setCategories?: (
 		categories: Category[] | ((prevCategories: Category[]) => Category[])
 	) => void;
@@ -33,7 +35,8 @@ export function useTimerForm({
 
 	useEffect(() => {
 		if (selectedWorktime?.recurrence) {
-			const byDayMatch = selectedWorktime.recurrence.match(/BYDAY=([^;]+)/);
+			const byDayMatch =
+				selectedWorktime.recurrence.match(/BYDAY=([^;]+)/);
 			if (byDayMatch) setSelectedDays(byDayMatch[1].split(','));
 		}
 	}, [selectedWorktime]);
@@ -52,7 +55,8 @@ export function useTimerForm({
 			const method = isEditing ? httpPut : httpPost;
 			const response = await method(endpoint, formData);
 
-			if (response && !response.ok) throw new Error(await response.text());
+			if (response && !response.ok)
+				throw new Error(await response.text());
 			if (response) return await response.json();
 		},
 		onSuccess: (data) => {
@@ -81,6 +85,7 @@ export function useTimerForm({
 				setCategories((prev) => [...prev, data.category]);
 		},
 		onError: (error: Error) => {
+			console.log('error', error.message);
 			setSnackBar('error', error.message || 'Erreur');
 		},
 	});
@@ -117,8 +122,10 @@ export function useTimerForm({
 	};
 
 	const daysAreDisplayed = () => {
-		if (selectedWorktime && selectedWorktime.type === 'SINGLE') return false;
-		if (selectedWorktime && selectedWorktime.type === 'RECURRING') return true;
+		if (selectedWorktime && selectedWorktime.type === 'SINGLE')
+			return false;
+		if (selectedWorktime && selectedWorktime.type === 'RECURRING')
+			return true;
 		if (!selectedWorktime) return true;
 	};
 

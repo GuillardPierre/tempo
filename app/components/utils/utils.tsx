@@ -1,4 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { updateToken } from './querySetup';
 
 export default async function IsConnected() {
 	const value = await AsyncStorage.getItem('token');
@@ -20,6 +21,7 @@ export function getToken() {
 export async function deleteToken() {
 	await AsyncStorage.removeItem('token');
 	await AsyncStorage.removeItem('refreshToken');
+	await updateToken();
 }
 
 export const formatDate = (dateString: string | undefined): string => {

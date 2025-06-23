@@ -6,7 +6,7 @@ import CustomTextInput from '@/app/forms/utils/CustomTextInput';
 import TextButton from '../utils/TextButton';
 import { router } from 'expo-router';
 import { useMutation } from '@tanstack/react-query';
-import { httpPost } from '../utils/querySetup';
+import { httpPost, updateToken } from '../utils/querySetup';
 import ENDPOINTS from '../utils/ENDPOINT';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
@@ -52,6 +52,7 @@ export default function LoginForm({ setSnackBar }: Props) {
 			dispatch({ type: 'SET_ID', payload: data.id });
 			AsyncStorage.setItem('token', data.token);
 			AsyncStorage.setItem('refreshToken', data.refreshToken || '');
+			updateToken();
 			setSnackBar('info', 'Connexion réussie !');
 			setTimeout(() => {
 				router.replace('/screens/Homepage');
@@ -88,7 +89,11 @@ export default function LoginForm({ setSnackBar }: Props) {
 							onChangeText={handleChange('email')}
 							onBlur={() => handleBlur('email')}
 							value={values.email}
-							error={touched.email && errors.email ? errors.email : undefined}
+							error={
+								touched.email && errors.email
+									? errors.email
+									: undefined
+							}
 						/>
 						<CustomTextInput
 							name='password'
@@ -106,7 +111,10 @@ export default function LoginForm({ setSnackBar }: Props) {
 						/>
 					</View>
 					<TextButton
-						style={[styles.button, { backgroundColor: colors.secondary }]}
+						style={[
+							styles.button,
+							{ backgroundColor: colors.secondary },
+						]}
 						onPress={handleSubmit}
 						text='Se connecter'
 						isPending={isPending}

@@ -27,11 +27,15 @@ export default function CreateCategoryButton({
 		string
 	>({
 		mutationFn: async (name: string) => {
-			const response = await httpPost(`${ENDPOINTS.category.create}`, { name });
+			const response = await httpPost(`${ENDPOINTS.category.create}`, {
+				name,
+			});
 
-			if (!response.ok) {
-				const errorMessage = await response.text();
-				throw new Error(errorMessage || 'Échec de la création de la catégorie');
+			if (!response?.ok) {
+				const errorMessage = await response?.text();
+				throw new Error(
+					errorMessage || 'Échec de la création de la catégorie'
+				);
 			}
 
 			const data = await response.json();
@@ -68,7 +72,9 @@ export default function CreateCategoryButton({
 			<View style={styles.buttonContent}>
 				<Ionicons name='add-circle-outline' size={18} color='#FFFFFF' />
 				<ThemedText style={styles.buttonText}>
-					{isPending ? 'Création...' : `Créer "${categoryName.trim()}"`}
+					{isPending
+						? 'Création...'
+						: `Créer "${categoryName.trim()}"`}
 				</ThemedText>
 			</View>
 		</TouchableOpacity>

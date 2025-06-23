@@ -25,6 +25,7 @@ import ExceptionsList from '@/app/components/ExceptionsList';
 import WorktimesList from '@/app/components/WorktimesList';
 import UnfinishedWorktimesList from '@/app/components/UnfinishedWorktimesList';
 import PauseForm from '../forms/PauseForm';
+import { TOKEN } from '@/app/components/utils/querySetup';
 
 export default function Homepage() {
 	const colors = useThemeColors();
@@ -109,7 +110,10 @@ export default function Homepage() {
 				},
 			]}
 		>
-			<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
+			<StatusBar
+				backgroundColor={colors.primary}
+				barStyle='light-content'
+			/>
 			<Header
 				modalVisible={modalVisible}
 				setModalVisible={setModalVisible}
@@ -211,8 +215,13 @@ export default function Homepage() {
 				setCalendarIsOpen={toggleCalendar}
 			/>
 
-			<ModalMenu modalVisible={modalVisible} setModalVisible={setModalVisible}>
-				{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
+			<ModalMenu
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
+			>
+				{modalType === 'menu' && (
+					<Menu setModalVisible={setModalVisible} />
+				)}
 				{modalType === 'update' && (
 					<UpdateDeleteModal
 						selectedWorktime={getSelectedWorktimeForUpdate()}
