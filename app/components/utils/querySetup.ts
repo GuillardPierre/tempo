@@ -4,7 +4,7 @@ import ENDPOINTS from './ENDPOINT';
 
 export let TOKEN: string | null = null;
 let REFRESH_TOKEN: string | null = null;
-// const EXPO_PUBLIC_BASE_URL = 'http://192.168.1.147:8080/';
+// const EXPO_PUBLIC_BASE_URL = 'http://10.85.4.181:8080/';
 // const EXPO_PUBLIC_BASE_URL = 'http://92.184.121.157:8080/';
 const EXPO_PUBLIC_BASE_URL = 'http://10.0.2.2:8080/';
 

@@ -8,6 +8,8 @@ import CalendarIcon from '../svg/calendar';
 import AddIcon from '../svg/addSvg';
 import CloseSvg from '../svg/close';
 import MinusIcon from '../svg/minus';
+import NextDateSvg from '../svg/nextDate';
+import PreviousDateSvg from '../svg/previousDate';
 
 const types = {
 	previous: PreviousIcon,
@@ -17,6 +19,8 @@ const types = {
 	add: AddIcon,
 	minus: MinusIcon,
 	close: CloseSvg,
+	previousDate: PreviousDateSvg,
+	nextDate: NextDateSvg,
 };
 
 type Props = {
@@ -46,7 +50,11 @@ export default function RoundButton({
 			<View
 				style={[
 					styles.button,
-					{ backgroundColor: colors[variant], width: btnSize, height: btnSize },
+					{
+						backgroundColor: colors[variant],
+						width: btnSize,
+						height: btnSize,
+					},
 				]}
 			>
 				<Icon width={svgSize} height={svgSize} />

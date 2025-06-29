@@ -25,7 +25,7 @@ export default function SquareButton({ type, onPress }: Props) {
 				onPress();
 			}}
 		>
-			<View style={[styles.button, { backgroundColor: colors.secondary }]}>
+			<View style={[styles.button, { backgroundColor: colors.primary }]}>
 				<Icon
 					width={type === 'close' ? 18 : 44}
 					height={type === 'close' ? 18 : 44}

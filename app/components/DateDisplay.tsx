@@ -20,9 +20,9 @@ export default function DateDisplay({
 	const { handlePrevious, handleNext } = useDateDisplay(date, setDate);
 
 	return (
-		<View style={[styles.dateDisplay, { backgroundColor: colors.secondary }]}>
+		<View style={[styles.dateDisplay, { backgroundColor: colors.primary }]}>
 			<RoundButton
-				type='previous'
+				type='previousDate'
 				variant='primary'
 				svgSize={15}
 				onPress={handlePrevious}
@@ -39,7 +39,7 @@ export default function DateDisplay({
 				</ThemedText>
 			</Pressable>
 			<RoundButton
-				type='next'
+				type='nextDate'
 				variant='primary'
 				svgSize={15}
 				onPress={handleNext}
@@ -54,11 +54,6 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		gap: 20,
-		paddingBlock: 10,
 		zIndex: 5,
-		marginInline: 10,
-		borderRadius: 16,
-		borderWidth: 2,
-		borderColor: '#7678ED',
 	},
 });

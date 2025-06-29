@@ -12,7 +12,6 @@ import {
 	SelectedWorktime,
 } from '@/app/types/worktime';
 import Header from '@/app/components/Header';
-import DateDisplay from '@/app/components/DateDisplay';
 import MainWrapper from '@/app/components/MainWrapper';
 import Calendar from '@/app/components/Calendar';
 import Footer from '@/app/components/Footer';
@@ -73,9 +72,6 @@ export default function Homepage() {
 		toggleTimer,
 	} = useToggleViews();
 
-	console.log('timerIsOpen', timerIsOpen);
-	console.log('formIsOpen', formIsOpen);
-
 	if (isConnected === false) {
 		return <Redirect href='/screens/auth/Login' />;
 	}
@@ -118,8 +114,6 @@ export default function Homepage() {
 				modalVisible={modalVisible}
 				setModalVisible={setModalVisible}
 				setModalType={setModalType}
-			/>
-			<DateDisplay
 				date={date}
 				setDate={setDate}
 				setCalendarIsOpen={toggleCalendar}
