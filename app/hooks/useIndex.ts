@@ -9,6 +9,7 @@ import {
 } from '../types/worktime';
 import { useRouter } from 'expo-router';
 import useSnackBar from '@/app/hooks/useSnackBar';
+
 export const useIndex = () => {
 	const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 	const [month, setMonth] = useState(new Date(date));
@@ -48,10 +49,17 @@ export const useIndex = () => {
 
 	useEffect(() => {
 		async function verifyToken() {
-			const isValid = await checkAndRefreshToken();
-			if (!isValid) {
-				setSnackBar('error', 'Vous avez été déconnecté');
-				router.replace('/screens/auth/Login');
+			try {
+				const isValid = await checkAndRefreshToken();
+				if (!isValid) {
+					setSnackBar('error', 'Vous avez été déconnecté');
+					router.replace('/screens/auth/Login');
+				}
+			} catch (error) {
+				console.error(
+					'Erreur lors de la vérification du token:',
+					error
+				);
 			}
 		}
 		verifyToken();
@@ -69,7 +77,7 @@ export const useIndex = () => {
 				}
 			}
 		} catch (error) {
-			console.log('erreur:', error);
+			console.error('Erreur getMonthWorktimes:', error);
 		}
 	};
 
@@ -81,7 +89,7 @@ export const useIndex = () => {
 				setWorktimes(data);
 			}
 		} catch (error) {
-			console.log('erreur:', error);
+			console.error('Erreur getWorktimes:', error);
 		}
 	};
 
@@ -93,7 +101,7 @@ export const useIndex = () => {
 				setCategories(data);
 			}
 		} catch (error) {
-			console.log('erreur:', error);
+			console.error('Erreur getCategrories:', error);
 		}
 	};
 
@@ -107,7 +115,7 @@ export const useIndex = () => {
 				setRecurrenceExceptions(data);
 			}
 		} catch (error) {
-			console.log('erreur:', error);
+			console.error('Erreur getRecurrenceExceptions:', error);
 		}
 	};
 
