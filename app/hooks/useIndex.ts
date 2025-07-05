@@ -1,4 +1,3 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useEffect, useState } from 'react';
 import { httpGet, checkAndRefreshToken } from '../components/utils/querySetup';
 import ENDPOINTS from '../components/utils/ENDPOINT';
@@ -10,17 +9,9 @@ import {
 } from '../types/worktime';
 import { useRouter } from 'expo-router';
 import useSnackBar from '@/app/hooks/useSnackBar';
-
-type ModalType = 'menu' | 'update' | 'exception';
-
 export const useIndex = () => {
 	const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
 	const [month, setMonth] = useState(new Date(date));
-	const [modalVisible, setModalVisible] = useState(false);
-	const [modalType, setModalType] = useState<ModalType>('menu');
-	const [timerIsOpen, setTimerIsOpen] = useState(false);
-	const [calendarIsOpen, setCalendarIsOpen] = useState(false);
-	const [isConnected, setIsConnected] = useState<boolean | null>(null);
 	const [selectedWorktime, setSelectedWorktime] =
 		useState<WorktimeSeries | null>(null);
 	const [worktimes, setWorktimes] = useState<WorktimeSeries[]>([]);
@@ -32,24 +23,17 @@ export const useIndex = () => {
 	const [unfinishedWorktimes, setUnfinishedWorktimes] = useState<
 		WorktimeSeries[]
 	>([]);
-	const [formIsOpen, setFormIsOpen] = useState(false);
 	const [selectedException, setSelectedException] =
 		useState<RecurrenceException | null>(null);
 	const router = useRouter();
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
 	useEffect(() => {
-		checkConnection();
+		getCategrories();
+		getMonthWorktimes();
+		getRecurrenceExceptions();
+		getWorktimes();
 	}, []);
-
-	useEffect(() => {
-		if (isConnected) {
-			getCategrories();
-			getMonthWorktimes();
-			getRecurrenceExceptions();
-			getWorktimes();
-		}
-	}, [isConnected]);
 
 	useEffect(() => {
 		getMonthWorktimes();
@@ -59,33 +43,19 @@ export const useIndex = () => {
 	}, [worktimes, month]);
 
 	useEffect(() => {
-		if (isConnected) {
-			getWorktimes();
-		}
+		getWorktimes();
 	}, [date]);
 
 	useEffect(() => {
 		async function verifyToken() {
-			if (isConnected) {
-				const isValid = await checkAndRefreshToken();
-				if (!isValid) {
-					setSnackBar('error', 'Vous avez été déconnecté');
-					setIsConnected(false);
-					router.replace('/screens/auth/Login');
-				}
+			const isValid = await checkAndRefreshToken();
+			if (!isValid) {
+				setSnackBar('error', 'Vous avez été déconnecté');
+				router.replace('/screens/auth/Login');
 			}
 		}
 		verifyToken();
-	}, [isConnected]);
-
-	async function checkConnection() {
-		const value = await AsyncStorage.getItem('token');
-		if (value) {
-			setIsConnected(true);
-		} else {
-			setIsConnected(false);
-		}
-	}
+	}, []);
 
 	const getMonthWorktimes = async () => {
 		try {
@@ -129,7 +99,9 @@ export const useIndex = () => {
 
 	const getRecurrenceExceptions = async () => {
 		try {
-			const rep = await httpGet(`${ENDPOINTS.recurrenceException.root}all`);
+			const rep = await httpGet(
+				`${ENDPOINTS.recurrenceException.root}all`
+			);
 			if (rep.ok) {
 				const data = await rep.json();
 				setRecurrenceExceptions(data);
@@ -149,15 +121,6 @@ export const useIndex = () => {
 		setDate,
 		month,
 		setMonth,
-		modalVisible,
-		setModalVisible,
-		modalType,
-		setModalType,
-		timerIsOpen,
-		setTimerIsOpen,
-		calendarIsOpen,
-		setCalendarIsOpen,
-		isConnected,
 		setWorktimes,
 		setRecurrenceExceptions,
 		setCategories,
@@ -169,8 +132,6 @@ export const useIndex = () => {
 		message,
 		setOpen,
 		setSnackBar,
-		formIsOpen,
-		setFormIsOpen,
 		selectedException,
 		setSelectedException,
 	};

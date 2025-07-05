@@ -25,7 +25,9 @@ interface CategoryData {
 interface Props {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
 	setTimerIsOpen: (isOpen: boolean) => void;
-	setWorktimes?: (worktimes: any[] | ((prevWorktimes: any[]) => any[])) => void;
+	setWorktimes?: (
+		worktimes: any[] | ((prevWorktimes: any[]) => any[])
+	) => void;
 	categories?: Category[];
 	setCategories?: (
 		categories: Category[] | ((prevCategories: Category[]) => Category[])
@@ -98,7 +100,8 @@ export default function TimerForm({
 
 	useEffect(() => {
 		if (selectedWorktime?.recurrence) {
-			const byDayMatch = selectedWorktime.recurrence.match(/BYDAY=([^;]+)/);
+			const byDayMatch =
+				selectedWorktime.recurrence.match(/BYDAY=([^;]+)/);
 			if (byDayMatch) setSelectedDays(byDayMatch[1].split(','));
 		}
 	}, [selectedWorktime]);
@@ -111,7 +114,9 @@ export default function TimerForm({
 				initialValues={{
 					...getInitialValues(),
 				}}
-				validationSchema={toFormikValidationSchema(createWorkTimeSchema())}
+				validationSchema={toFormikValidationSchema(
+					createWorkTimeSchema()
+				)}
 				onSubmit={(values) => {
 					submitWorktime({
 						...values,
@@ -142,7 +147,9 @@ export default function TimerForm({
 								}))}
 								setOpen={setOpen}
 								setValue={(callback) => {
-									const currentValue = callback(values.category.id);
+									const currentValue = callback(
+										values.category.id
+									);
 									return currentValue;
 								}}
 								onSelectItem={(item) => {
@@ -167,7 +174,10 @@ export default function TimerForm({
 								placeholder='Sélectionnez une catégorie'
 								style={[
 									styles.dropdown,
-									{ borderColor: colors.primary, width: '100%' },
+									{
+										borderColor: colors.primary,
+										width: '100%',
+									},
 								]}
 								dropDownContainerStyle={[
 									styles.dropdownContainer,
@@ -197,21 +207,30 @@ export default function TimerForm({
 									) : (
 										<BlockWrapper
 											style={{ maxHeight: 100 }}
-											backgroundColor={colors.primaryLight}
+											backgroundColor={
+												colors.primaryLight
+											}
 										>
 											<ThemedText>
-												Créez une catégorie en tapant dans la barre de recherche
+												Créez une catégorie en tapant
+												dans la barre de recherche
 											</ThemedText>
 										</BlockWrapper>
 									)
 								}
 							/>
 
-							{touched.category?.title && errors.category?.title && (
-								<Text style={[styles.errorText, { color: colors.primary }]}>
-									{errors.category.title}
-								</Text>
-							)}
+							{touched.category?.title &&
+								errors.category?.title && (
+									<Text
+										style={[
+											styles.errorText,
+											{ color: colors.primary },
+										]}
+									>
+										{errors.category.title}
+									</Text>
+								)}
 
 							<TimePickerInput
 								label={`${
@@ -255,8 +274,10 @@ export default function TimerForm({
 											action={() => {
 												Vibration.vibrate(50);
 												if (
-													values.startDate > new Date() ||
-													values.startTime > new Date()
+													values.startDate >
+														new Date() ||
+													values.startTime >
+														new Date()
 												) {
 													setSnackBar(
 														'error',
@@ -277,10 +298,16 @@ export default function TimerForm({
 												values.endTime
 													? values.endTime
 													: new Date(
-															date + 'T' + new Date().toTimeString().slice(0, 8)
+															date +
+																'T' +
+																new Date()
+																	.toTimeString()
+																	.slice(0, 8)
 													  )
 											}
-											onChange={(date) => setFieldValue('endTime', date)}
+											onChange={(date) =>
+												setFieldValue('endTime', date)
+											}
 										/>
 									</View>
 								)}
@@ -297,7 +324,7 @@ export default function TimerForm({
 										}}
 									>
 										<Text style={styles.recurrenceLabel}>
-											Répétition (non obligatoire) :
+											Répétition sur plusieurs jours :
 										</Text>
 										<Switch
 											value={isRecurring}
@@ -306,35 +333,60 @@ export default function TimerForm({
 										/>
 									</View>
 									{isRecurring && (
-										<View style={styles.recurrenceContainer}>
+										<View
+											style={styles.recurrenceContainer}
+										>
 											<ScrollView
 												style={styles.dayButtonsScroll}
-												contentContainerStyle={styles.dayButtonsContainer}
+												contentContainerStyle={
+													styles.dayButtonsContainer
+												}
 												horizontal
-												showsHorizontalScrollIndicator={false}
+												showsHorizontalScrollIndicator={
+													false
+												}
 											>
 												{weekdays.map((day) => (
 													<Pressable
 														key={day.value}
 														style={[
 															styles.dayButton,
-															selectedDays.includes(day.value) && {
-																backgroundColor: colors.secondary,
+															selectedDays.includes(
+																day.value
+															) && {
+																backgroundColor:
+																	colors.secondary,
 															},
 														]}
 														onPress={() => {
-															Vibration.vibrate(50);
-															setSelectedDays((prev) =>
-																prev.includes(day.value)
-																	? prev.filter((d) => d !== day.value)
-																	: [...prev, day.value]
+															Vibration.vibrate(
+																50
+															);
+															setSelectedDays(
+																(prev) =>
+																	prev.includes(
+																		day.value
+																	)
+																		? prev.filter(
+																				(
+																					d
+																				) =>
+																					d !==
+																					day.value
+																		  )
+																		: [
+																				...prev,
+																				day.value,
+																		  ]
 															);
 														}}
 													>
 														<Text
 															style={[
 																styles.dayButtonText,
-																selectedDays.includes(day.value) && {
+																selectedDays.includes(
+																	day.value
+																) && {
 																	color: 'white',
 																},
 															]}
@@ -349,29 +401,49 @@ export default function TimerForm({
 												label='Date de fin (non obligatoire):'
 												value={values.endDate}
 												onChange={(date) => {
-													setFieldValue('endDate', date);
+													setFieldValue(
+														'endDate',
+														date
+													);
 												}}
 												style={{ width: '100%' }}
 												mode='date'
 												display='calendar'
 											/>
 											<BlockWrapper>
-												<ThemedText variant='body' color='secondaryText'>
-													Vous voulez que vos temps de travail soient comptés
-													même en vacances ? Activez l'option ci-dessous.
+												<ThemedText
+													variant='body'
+													color='secondaryText'
+												>
+													Vous voulez que vos temps de
+													travail soient comptés même
+													en vacances ? Activez
+													l'option ci-dessous.
 												</ThemedText>
 											</BlockWrapper>
 											<View
-												style={{ flexDirection: 'row', alignItems: 'center' }}
+												style={{
+													flexDirection: 'row',
+													alignItems: 'center',
+												}}
 											>
 												<Switch
-													value={values.ignoreExceptions}
+													value={
+														values.ignoreExceptions
+													}
 													onValueChange={(value) => {
-														setFieldValue('ignoreExceptions', value);
+														setFieldValue(
+															'ignoreExceptions',
+															value
+														);
 													}}
 												/>
-												<ThemedText variant='body' color='secondaryText'>
-													Ignorer les exceptions de la série ?
+												<ThemedText
+													variant='body'
+													color='secondaryText'
+												>
+													Ignorer les périodes de
+													pause ?
 												</ThemedText>
 											</View>
 										</View>
@@ -383,7 +455,11 @@ export default function TimerForm({
 								<ButtonMenu
 									style={styles.submitButton}
 									type='round'
-									text={isEditing ? 'Mettre à jour' : "Enregistrer l'activité"}
+									text={
+										isEditing
+											? 'Mettre à jour'
+											: "Enregistrer l'activité"
+									}
 									action={() => {
 										Vibration.vibrate(50);
 										handleSubmit();

@@ -1,10 +1,10 @@
-import React, { useContext, useState } from 'react';
+import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar, StyleSheet } from 'react-native';
 import ThemedText from '../components/utils/ThemedText';
-import { AuthContext } from '../context/authContext';
+import { useAuth } from '../context/authContext';
 import ButtonMenu from '../components/ButtonMenu';
 import Header from '../components/Header';
 import ModalMenu from '../components/Modal';
@@ -21,10 +21,7 @@ import { ModalType } from '@/app/types/modal';
 
 export default function Profile() {
 	const colors = useThemeColors();
-	const context = useContext(AuthContext);
-	if (!context)
-		throw new Error('AuthContext must be used within an AuthProvider');
-	const { state } = context;
+	const { state, dispatch } = useAuth();
 	const { email, username, id } = state;
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
@@ -39,6 +36,7 @@ export default function Profile() {
 				throw new Error(error.message);
 			}
 			await deleteToken();
+			dispatch({ type: 'RESET' });
 			setSnackBar('info', 'Compte supprimé avec succès');
 			setTimeout(() => {
 				router.replace('/screens/auth/Login');
@@ -54,7 +52,10 @@ export default function Profile() {
 			<SafeAreaView
 				style={[styles.container, { backgroundColor: colors.primary }]}
 			>
-				<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
+				<StatusBar
+					backgroundColor={colors.primary}
+					barStyle='light-content'
+				/>
 				<Header
 					modalVisible={modalVisible}
 					setModalVisible={setModalVisible}
@@ -76,8 +77,8 @@ export default function Profile() {
 						</ThemedText>
 						<BlockWrapper backgroundColor={'#056CF6'}>
 							<ThemedText variant='body' color='primaryText'>
-								Cette application est un projet personnel, vos données ne sont
-								pas partagées / vendues.
+								Cette application est un projet personnel, vos
+								données ne sont pas partagées / vendues.
 							</ThemedText>
 						</BlockWrapper>
 						<ButtonMenu
@@ -92,14 +93,22 @@ export default function Profile() {
 					</View>
 				</MainWrapper>
 			</SafeAreaView>
-			<ModalMenu modalVisible={modalVisible} setModalVisible={setModalVisible}>
-				{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
+			<ModalMenu
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
+			>
+				{modalType === 'menu' && (
+					<Menu setModalVisible={setModalVisible} />
+				)}
 				{modalType === 'delete' && (
 					<View style={styles.deleteModalContainer}>
 						<ThemedText variant='header1' color='secondaryText'>
 							Êtes-vous sûr de vouloir supprimer votre compte ?
 						</ThemedText>
-						<BlockWrapper style={{ minHeight: 70 }} backgroundColor={'#056CF6'}>
+						<BlockWrapper
+							style={{ minHeight: 70 }}
+							backgroundColor={'#056CF6'}
+						>
 							<ThemedText variant='body' color='primaryText'>
 								Si vous avez des retours, contactez moi sur
 								pguillard95@gmail.com

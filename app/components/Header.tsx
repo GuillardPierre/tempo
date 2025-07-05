@@ -12,9 +12,9 @@ type Props = {
 	modalVisible: boolean;
 	setModalVisible: (visible: boolean) => void;
 	setModalType: (type: ModalType) => void;
-	date: string;
-	setDate: (date: string) => void;
-	setCalendarIsOpen: () => void;
+	date?: string;
+	setDate?: (date: string) => void;
+	setCalendarIsOpen?: () => void;
 };
 
 export default function Header({
@@ -53,13 +53,16 @@ export default function Header({
 					alignItems: 'center',
 				}}
 			>
-				{pathname === '/screens/Homepage' && (
-					<DateDisplay
-						date={date}
-						setDate={setDate}
-						setCalendarIsOpen={setCalendarIsOpen}
-					/>
-				)}
+				{pathname === '/screens/Homepage' &&
+					date &&
+					setDate &&
+					setCalendarIsOpen && (
+						<DateDisplay
+							date={date}
+							setDate={setDate}
+							setCalendarIsOpen={setCalendarIsOpen}
+						/>
+					)}
 			</View>
 			<SquareButton
 				type={modalVisible ? 'close' : 'menu'}

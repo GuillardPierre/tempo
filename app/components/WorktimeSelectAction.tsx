@@ -13,7 +13,9 @@ import PauseForm from '../forms/PauseForm';
 interface WorktimeSelectActionProps {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
 	setTimerIsOpen: () => void;
-	setWorktimes?: (worktimes: any[] | ((prevWorktimes: any[]) => any[])) => void;
+	setWorktimes?: (
+		worktimes: any[] | ((prevWorktimes: any[]) => any[])
+	) => void;
 	categories?: Category[];
 	setCategories?: (
 		categories: Category[] | ((prevCategories: Category[]) => Category[])
@@ -46,7 +48,9 @@ export default function WorktimeSelectAction({
 
 	useEffect(() => {
 		setFormIsOpen(
-			value === 'addWorktime' || value === 'startTimer' || value === 'addPause'
+			value === 'addWorktime' ||
+				value === 'startTimer' ||
+				value === 'addPause'
 		);
 	}, [value]);
 
@@ -93,7 +97,7 @@ export default function WorktimeSelectAction({
 					},
 					{
 						icon: () => <AddRoundSvg />,
-						label: 'Vacances',
+						label: 'Pause',
 						value: 'addPause',
 						checkedColor: colors.primaryText,
 						uncheckedColor: colors.secondaryText,

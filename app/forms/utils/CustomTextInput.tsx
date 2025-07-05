@@ -13,6 +13,7 @@ type Props = {
 	secureTextEntry?: boolean;
 	error?: string | false; // Message d'erreur
 	style?: StyleSheet.NamedStyles<any>;
+	autoCapitalize?: 'none' | 'sentences' | 'words' | 'characters';
 };
 
 export default function CustomTextInput({
@@ -25,13 +26,21 @@ export default function CustomTextInput({
 	secureTextEntry = false,
 	error,
 	style,
+	autoCapitalize,
 }: Props) {
 	const colors = useThemeColors();
+	const isEmailField =
+		name.toLowerCase().includes('email') ||
+		(placeholder && placeholder.toLowerCase().includes('email'));
+	const finalAutoCapitalize =
+		autoCapitalize || (isEmailField ? 'none' : 'sentences');
 
 	return (
 		<View style={[styles.container, style]}>
 			{label && (
-				<ThemedText style={[styles.label, { color: colors.primaryText }]}>
+				<ThemedText
+					style={[styles.label, { color: colors.primaryText }]}
+				>
 					{label}
 				</ThemedText>
 			)}
@@ -50,6 +59,7 @@ export default function CustomTextInput({
 				placeholder={placeholder}
 				placeholderTextColor={colors.primaryText}
 				secureTextEntry={secureTextEntry}
+				autoCapitalize={finalAutoCapitalize}
 			/>
 			{error && (
 				<ThemedText style={[styles.error, { color: 'red' }]}>

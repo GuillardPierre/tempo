@@ -19,8 +19,13 @@ export function getToken() {
 }
 
 export async function deleteToken() {
-	await AsyncStorage.removeItem('token');
-	await AsyncStorage.removeItem('refreshToken');
+	await AsyncStorage.multiRemove([
+		'token',
+		'refreshToken',
+		'email',
+		'username',
+		'id',
+	]);
 	await updateToken();
 }
 

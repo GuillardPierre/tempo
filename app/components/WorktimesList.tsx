@@ -62,7 +62,7 @@ const WorktimesList = ({
 	}
 
 	return (
-		<>
+		<View style={{ marginTop: 'auto' }}>
 			{worktimes
 				.filter((worktime) => worktime.endTime !== null)
 				.map((worktime) => (
@@ -76,7 +76,7 @@ const WorktimesList = ({
 						setSelectedWorktime={setSelectedWorktime}
 					/>
 				))}
-		</>
+		</View>
 	);
 };
 

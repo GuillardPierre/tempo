@@ -18,6 +18,7 @@ import {
 import type { ModalType } from '../types/modal';
 import ModalMenu from '../components/Modal';
 import Menu from '../components/ModalComponents/Menu';
+import ProtectedRoute from '../components/utils/ProtectedRoute';
 
 const chartConfig = {
 	backgroundGradientFrom: '#1E2923',
@@ -76,7 +77,10 @@ export default function Charts() {
 	const [modalVisible, setModalVisible] = useState<boolean>(false);
 	const [modalType, setModalType] = useState<ModalType>('menu');
 
-	const getCategoryTimeSpent = async (range: { from: string; to: string }) => {
+	const getCategoryTimeSpent = async (range: {
+		from: string;
+		to: string;
+	}) => {
 		const url = `${
 			ENDPOINTS.charts.root
 		}?type=${value}&from=${encodeURIComponent(
@@ -89,7 +93,11 @@ export default function Charts() {
 				setLineChartData({
 					labels: ['Chargement'],
 					datasets: [
-						{ data: [0], color: (opacity = 0.5) => `#34495e`, strokeWidth: 3 },
+						{
+							data: [0],
+							color: (opacity = 0.5) => `#34495e`,
+							strokeWidth: 3,
+						},
 					],
 					// legend: ['Temps de travail total'],
 				});
@@ -109,13 +117,15 @@ export default function Charts() {
 					];
 					const legendFontColor = '#7F7F7F';
 					const legendFontSize = 15;
-					const pieData = data.categories.map((entry: any, idx: number) => ({
-						name: entry.name || `Catégorie ${idx + 1}`,
-						population: Number(entry.duration) || 0,
-						color: chartColors[idx % chartColors.length],
-						legendFontColor,
-						legendFontSize,
-					}));
+					const pieData = data.categories.map(
+						(entry: any, idx: number) => ({
+							name: entry.name || `Catégorie ${idx + 1}`,
+							population: Number(entry.duration) || 0,
+							color: chartColors[idx % chartColors.length],
+							legendFontColor,
+							legendFontSize,
+						})
+					);
 					setCategoryTimeSpent(pieData);
 				}
 				// Pour le LineChart (total)
@@ -196,179 +206,212 @@ export default function Charts() {
 		? categoryTimeSpent.map((item: any) => ({
 				...item,
 				population:
-					typeof item.population === 'number' && isFinite(item.population)
+					typeof item.population === 'number' &&
+					isFinite(item.population)
 						? item.population
 						: 0,
 		  }))
 		: [];
 
 	return (
-		<>
-			<SafeAreaView
-				style={[
-					styles.container,
-					{
-						backgroundColor: colors.primary,
-					},
-				]}
-			>
-				<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
-				<Header
-					modalVisible={modalVisible}
-					setModalVisible={setModalVisible}
-					setModalType={setModalType}
-				/>
-				<View style={{ flex: 1, zIndex: 99999, overflow: 'hidden' }}>
-					<MainWrapper style={styles.container}>
-						<ThemedText variant='header1' color='secondaryText'>
-							Statistiques
-						</ThemedText>
-						<SegmentedButtons
-							value={value}
-							onValueChange={setValue}
-							density='regular'
-							theme={{
-								colors: {
-									secondaryContainer: colors.primaryLight,
-								},
-							}}
-							style={{
-								borderWidth: 3,
-								borderColor: '#3D348B',
-								borderRadius: 30,
-								backgroundColor: colors.background,
-							}}
-							buttons={[
-								{
-									label: 'Semaine',
-									value: 'week',
-									checkedColor: colors.primaryText,
-									uncheckedColor: colors.secondaryText,
-								},
-								{
-									label: 'Mois',
-									value: 'month',
-									checkedColor: colors.primaryText,
-									uncheckedColor: colors.secondaryText,
-								},
-								{
-									label: 'Année',
-									value: 'year',
-									checkedColor: colors.primaryText,
-									uncheckedColor: colors.secondaryText,
-								},
-							]}
-						/>
-						<BlockWrapper direction='column' fullHeight={true}>
-							<ThemedText variant='header2' color='secondaryText'>
-								Répartition globale
+		<ProtectedRoute>
+			<>
+				<SafeAreaView
+					style={[
+						styles.container,
+						{
+							backgroundColor: colors.primary,
+						},
+					]}
+				>
+					<StatusBar
+						backgroundColor={colors.primary}
+						barStyle='light-content'
+					/>
+					<Header
+						modalVisible={modalVisible}
+						setModalVisible={setModalVisible}
+						setModalType={setModalType}
+					/>
+					<View
+						style={{ flex: 1, zIndex: 99999, overflow: 'hidden' }}
+					>
+						<MainWrapper style={styles.container}>
+							<ThemedText variant='header1' color='secondaryText'>
+								Statistiques
 							</ThemedText>
-							<PieChart
-								data={safePieChartData}
-								width={screenWidth - 40}
-								height={245}
-								chartConfig={chartConfig}
-								accessor={'population'}
-								backgroundColor={'transparent'}
-								paddingLeft={'5'}
-								center={[10, 0]}
-							/>
-						</BlockWrapper>
-						<BlockWrapper
-							direction='column'
-							fullHeight={true}
-							style={{ gap: 10 }}
-						>
-							<ThemedText variant='header2' color='secondaryText'>
-								Détail par catégorie
-							</ThemedText>
-							<View
-								style={{
-									flexDirection: 'row',
-									flexWrap: 'wrap',
-									justifyContent: 'space-between',
-									width: '100%',
+							<SegmentedButtons
+								value={value}
+								onValueChange={setValue}
+								density='regular'
+								theme={{
+									colors: {
+										secondaryContainer: colors.primaryLight,
+									},
 								}}
-							>
-								{safePieChartData.map((item: any, index: number) => {
-									const hours = (item.population / 60).toFixed(1);
-									return (
-										<View
-											key={index}
-											style={{
-												flexDirection: 'row',
-												alignItems: 'center',
-												width: '48%',
-												marginBottom: 8,
-											}}
-										>
-											<View
-												style={{
-													width: 14,
-													height: 14,
-													borderRadius: 6,
-													backgroundColor: item.color,
-													marginRight: 8,
-												}}
-											/>
-											<ThemedText
-												variant='body'
-												color='secondaryText'
-												style={{ flex: 1, fontSize: 13 }}
-											>
-												{item.name} = {hours}h
-											</ThemedText>
-										</View>
-									);
-								})}
-							</View>
-						</BlockWrapper>
-						<BlockWrapper direction='column' fullHeight={true}>
-							<View style={{ flexDirection: 'row', alignItems: 'center' }}>
-								<ThemedText variant='header2' color='secondaryText'>
-									Temps de travail{' '}
-								</ThemedText>
-								<ThemedText variant='body' color='secondaryText'>
-									(en heures)
-								</ThemedText>
-							</View>
-							<LineChart
-								data={safeLineChartData}
-								width={screenWidth - 50}
-								height={255}
-								verticalLabelRotation={35}
-								chartConfig={chartConfig}
-								style={{ paddingBottom: 10 }}
-								bezier
+								style={{
+									borderWidth: 3,
+									borderColor: '#3D348B',
+									borderRadius: 30,
+									backgroundColor: colors.background,
+								}}
+								buttons={[
+									{
+										label: 'Semaine',
+										value: 'week',
+										checkedColor: colors.primaryText,
+										uncheckedColor: colors.secondaryText,
+									},
+									{
+										label: 'Mois',
+										value: 'month',
+										checkedColor: colors.primaryText,
+										uncheckedColor: colors.secondaryText,
+									},
+									{
+										label: 'Année',
+										value: 'year',
+										checkedColor: colors.primaryText,
+										uncheckedColor: colors.secondaryText,
+									},
+								]}
 							/>
-							{value === 'month' && (
-								<View style={{ alignItems: 'center', marginTop: 5 }}>
-									<ThemedText variant='body' color='secondaryText'>
-										Semaine par semaine
+							<BlockWrapper direction='column' fullHeight={true}>
+								<ThemedText
+									variant='header2'
+									color='secondaryText'
+								>
+									Répartition globale
+								</ThemedText>
+								<PieChart
+									data={safePieChartData}
+									width={screenWidth - 40}
+									height={245}
+									chartConfig={chartConfig}
+									accessor={'population'}
+									backgroundColor={'transparent'}
+									paddingLeft={'5'}
+									center={[10, 0]}
+								/>
+							</BlockWrapper>
+							<BlockWrapper
+								direction='column'
+								fullHeight={true}
+								style={{ gap: 10 }}
+							>
+								<ThemedText
+									variant='header2'
+									color='secondaryText'
+								>
+									Détail par catégorie
+								</ThemedText>
+								<View
+									style={{
+										flexDirection: 'row',
+										flexWrap: 'wrap',
+										justifyContent: 'space-between',
+										width: '100%',
+									}}
+								>
+									{safePieChartData.map(
+										(item: any, index: number) => {
+											const hours = (
+												item.population / 60
+											).toFixed(1);
+											return (
+												<View
+													key={index}
+													style={{
+														flexDirection: 'row',
+														alignItems: 'center',
+														width: '48%',
+														marginBottom: 8,
+													}}
+												>
+													<View
+														style={{
+															width: 14,
+															height: 14,
+															borderRadius: 6,
+															backgroundColor:
+																item.color,
+															marginRight: 8,
+														}}
+													/>
+													<ThemedText
+														variant='body'
+														color='secondaryText'
+														style={{
+															flex: 1,
+															fontSize: 13,
+														}}
+													>
+														{item.name} = {hours}h
+													</ThemedText>
+												</View>
+											);
+										}
+									)}
+								</View>
+							</BlockWrapper>
+							<BlockWrapper direction='column' fullHeight={true}>
+								<View
+									style={{
+										flexDirection: 'row',
+										alignItems: 'center',
+									}}
+								>
+									<ThemedText
+										variant='header2'
+										color='secondaryText'
+									>
+										Temps de travail{' '}
+									</ThemedText>
+									<ThemedText
+										variant='body'
+										color='secondaryText'
+									>
+										(en heures)
 									</ThemedText>
 								</View>
-							)}
-						</BlockWrapper>
-						{/* <BlockWrapper direction='column' fullHeight={true}>
-							<ThemedText variant='header2' color='secondaryText'>
-								Estimation à l'année
-							</ThemedText>
-							<StackedBarChart
-								style={{ ...graphStyle, overflow: 'hidden' as 'hidden' }}
-								data={data3}
-								width={screenWidth - 55}
-								height={220}
-								chartConfig={chartConfig}
-								hideLegend={false}
-							/>
-						</BlockWrapper> */}
-					</MainWrapper>
-				</View>
-			</SafeAreaView>
-			<ModalMenu modalVisible={modalVisible} setModalVisible={setModalVisible}>
-				{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
-			</ModalMenu>
-		</>
+								<LineChart
+									data={safeLineChartData}
+									width={screenWidth - 50}
+									height={255}
+									verticalLabelRotation={35}
+									chartConfig={chartConfig}
+									style={{ paddingBottom: 10 }}
+									bezier
+								/>
+								{value === 'month' && (
+									<View
+										style={{
+											alignItems: 'center',
+											marginTop: 5,
+										}}
+									>
+										<ThemedText
+											variant='body'
+											color='secondaryText'
+										>
+											Semaine par semaine
+										</ThemedText>
+									</View>
+								)}
+							</BlockWrapper>
+						</MainWrapper>
+					</View>
+				</SafeAreaView>
+				<ModalMenu
+					modalVisible={modalVisible}
+					setModalVisible={setModalVisible}
+				>
+					{modalType === 'menu' && (
+						<Menu setModalVisible={setModalVisible} />
+					)}
+				</ModalMenu>
+			</>
+		</ProtectedRoute>
 	);
 }
 

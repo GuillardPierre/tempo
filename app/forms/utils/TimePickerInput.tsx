@@ -11,7 +11,7 @@ type Props = {
 	onChange: (date: Date) => void;
 	style?: StyleProp<ViewStyle>;
 	mode?: 'time' | 'date';
-	display?: 'spinner' | 'calendar';
+	display?: 'default' | 'calendar';
 };
 
 export default function TimePickerInput({
@@ -20,7 +20,7 @@ export default function TimePickerInput({
 	onChange,
 	style,
 	mode = 'time',
-	display = 'spinner',
+	display = 'default',
 }: Props) {
 	const [show, setShow] = useState(false);
 	const colors = useThemeColors();
@@ -55,7 +55,9 @@ export default function TimePickerInput({
 	return (
 		<View style={[styles.container, style]}>
 			{label && (
-				<ThemedText style={[styles.label, { color: colors.secondaryText }]}>
+				<ThemedText
+					style={[styles.label, { color: colors.secondaryText }]}
+				>
 					{label}
 				</ThemedText>
 			)}

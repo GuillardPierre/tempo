@@ -34,6 +34,17 @@ export const AuthReducer = (
 			return { ...state, token: action.payload };
 		case 'SET_ID':
 			return { ...state, id: action.payload };
+		case 'RESET':
+			return initialAuthState;
+		case 'SET_USER_DATA':
+			return {
+				...state,
+				isConnected: true,
+				id: action.payload.id,
+				email: action.payload.email,
+				username: action.payload.username,
+				token: action.payload.token,
+			};
 		default:
 			return state;
 	}

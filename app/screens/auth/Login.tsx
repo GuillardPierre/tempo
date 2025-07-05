@@ -7,7 +7,13 @@ import { useThemeColors } from '@/app/hooks/useThemeColors';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
 import { useEffect } from 'react';
-import { SafeAreaView, StatusBar, StyleSheet } from 'react-native';
+import {
+	SafeAreaView,
+	StatusBar,
+	StyleSheet,
+	KeyboardAvoidingView,
+	Platform,
+} from 'react-native';
 
 export default function Login() {
 	const colors = useThemeColors();
@@ -30,24 +36,36 @@ export default function Login() {
 				},
 			]}
 		>
-			<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
-			<ThemedText variant='header1' color='primaryText'>
-				Bienvenue sur Tempos
-			</ThemedText>
-
-			<ThemedText style={styles.header} variant='body' color='primaryText'>
-				Gérez votre temps efficacement avec un suivi statistique tout au long de
-				l'année
-			</ThemedText>
-			<LoginForm setSnackBar={setSnackBar} />
-
-			<TextButton
-				style={styles.button}
-				onPress={() => {
-					router.push('/screens/auth/Signup');
-				}}
-				text='Pas encore de compte ?'
+			<StatusBar
+				backgroundColor={colors.primary}
+				barStyle='light-content'
 			/>
+			<KeyboardAvoidingView
+				behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+				style={styles.keyboardAvoidingView}
+			>
+				<ThemedText variant='header1' color='primaryText'>
+					Bienvenue sur Tempos
+				</ThemedText>
+
+				<ThemedText
+					style={styles.header}
+					variant='body'
+					color='primaryText'
+				>
+					Gérez votre temps efficacement avec un suivi statistique
+					tout au long de l'année
+				</ThemedText>
+				<LoginForm setSnackBar={setSnackBar} />
+
+				<TextButton
+					style={styles.button}
+					onPress={() => {
+						router.push('/screens/auth/Signup');
+					}}
+					text='Pas encore de compte ?'
+				/>
+			</KeyboardAvoidingView>
 			<CustomSnackBar
 				color={color}
 				message={message}
@@ -60,6 +78,9 @@ export default function Login() {
 
 const styles = StyleSheet.create({
 	container: {
+		flex: 1,
+	},
+	keyboardAvoidingView: {
 		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',

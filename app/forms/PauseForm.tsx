@@ -61,7 +61,10 @@ export default function PauseForm({
 	const handleSubmit = async (values: any) => {
 		// Vérifier les chevauchements
 		if (checkOverlap(values.pauseStart, values.pauseEnd)) {
-			setSnackBar?.('error', 'Cette période chevauche une pause existante');
+			setSnackBar?.(
+				'error',
+				'Cette période chevauche une pause existante'
+			);
 			return;
 		}
 
@@ -78,13 +81,17 @@ export default function PauseForm({
 
 				setSnackBar?.(
 					'info',
-					isEditing ? 'Pause modifiée avec succès' : 'Pause ajoutée avec succès'
+					isEditing
+						? 'Pause modifiée avec succès'
+						: 'Pause ajoutée avec succès'
 				);
 
 				if (setRecurrenceExceptions) {
 					setRecurrenceExceptions((prev) =>
 						isEditing
-							? prev?.map((exc) => (exc.id === data.id ? data : exc))
+							? prev?.map((exc) =>
+									exc.id === data.id ? data : exc
+							  )
 							: [...prev, data]
 					);
 				}
@@ -134,9 +141,9 @@ export default function PauseForm({
 			{!isEditing && (
 				<BlockWrapper style={{ height: 100, maxHeight: 100 }}>
 					<ThemedText variant='body' color='secondaryText'>
-						Les périodes de pause permettent de ne pas compter les temps de
-						travail durant celle-ci (sauf si vous avez coché "inclure dans les
-						périodes de vacances").
+						Les périodes de pause permettent de ne pas compter les
+						temps de travail durant celle-ci (sauf si vous avez
+						coché "ignorer les périodes de pause").
 					</ThemedText>
 				</BlockWrapper>
 			)}
@@ -150,7 +157,9 @@ export default function PauseForm({
 						: new Date(date + 'T00:00:00'),
 					seriesIds: selectedException?.seriesIds || [],
 				}}
-				validationSchema={toFormikValidationSchema(recurrenceExceptionSchema())}
+				validationSchema={toFormikValidationSchema(
+					recurrenceExceptionSchema()
+				)}
 				onSubmit={handleSubmit}
 			>
 				{({ setFieldValue, values, handleSubmit, errors, touched }) => (
@@ -161,14 +170,18 @@ export default function PauseForm({
 								display='calendar'
 								label='Date de début'
 								value={values.pauseStart}
-								onChange={(date) => setFieldValue('pauseStart', date)}
+								onChange={(date) =>
+									setFieldValue('pauseStart', date)
+								}
 							/>
 							<TimePickerInput
 								mode='date'
 								display='calendar'
 								label='Date de fin'
 								value={values.pauseEnd}
-								onChange={(date) => setFieldValue('pauseEnd', date)}
+								onChange={(date) =>
+									setFieldValue('pauseEnd', date)
+								}
 							/>
 						</View>
 						<View

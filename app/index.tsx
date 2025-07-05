@@ -1,24 +1,21 @@
 import { Redirect } from 'expo-router';
-import IsConnected from './components/utils/utils';
-import { useState, useEffect } from 'react';
 import { ActivityIndicator, View } from 'react-native';
+import { useAuth } from './context/authContext';
 
 export default function Index() {
-	const [isConnected, setIsConnected] = useState<boolean | null>(null);
+	const { state, isInitialized } = useAuth();
+	const { isConnected } = state;
 
-	useEffect(() => {
-		async function checkConnection() {
-			const connected = await IsConnected();
-			setIsConnected(connected);
-		}
-
-		checkConnection();
-	}, []);
-
-	// Afficher un indicateur de chargement pendant la vérification
-	if (isConnected === null) {
+	// Afficher un indicateur de chargement pendant l'initialisation
+	if (!isInitialized) {
 		return (
-			<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+			<View
+				style={{
+					flex: 1,
+					justifyContent: 'center',
+					alignItems: 'center',
+				}}
+			>
 				<ActivityIndicator size='large' color='#7B32F5' />
 			</View>
 		);

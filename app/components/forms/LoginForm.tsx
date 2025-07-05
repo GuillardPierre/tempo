@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import { StyleSheet, View } from 'react-native';
 import { Formik } from 'formik';
@@ -11,7 +11,7 @@ import ENDPOINTS from '../utils/ENDPOINT';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { loginSchema, LoginFormData } from '@/app/schema/login';
-import { AuthContext } from '@/app/context/authContext';
+import { useAuth } from '@/app/context/authContext';
 
 type Props = {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
@@ -19,10 +19,7 @@ type Props = {
 
 export default function LoginForm({ setSnackBar }: Props) {
 	const colors = useThemeColors();
-	const context = useContext(AuthContext);
-	if (!context)
-		throw new Error('AuthContext must be used within an AuthProvider');
-	const { dispatch } = context;
+	const { dispatch } = useAuth();
 
 	const { mutate: submitLogin, isPending } = useMutation<
 		any,
@@ -51,7 +48,11 @@ export default function LoginForm({ setSnackBar }: Props) {
 			dispatch({ type: 'SET_USERNAME', payload: data.username });
 			dispatch({ type: 'SET_ID', payload: data.id });
 			AsyncStorage.setItem('token', data.token);
+			AsyncStorage.setItem('email', data.email);
+			AsyncStorage.setItem('username', data.username);
+			AsyncStorage.setItem('id', data.id.toString());
 			AsyncStorage.setItem('refreshToken', data.refreshToken || '');
+
 			updateToken();
 			setSnackBar('info', 'Connexion réussie !');
 			setTimeout(() => {

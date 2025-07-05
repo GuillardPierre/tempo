@@ -41,7 +41,9 @@ export default function CategoryForm({
 							setModalVisible(false);
 							setCategories((categories) =>
 								categories.map((c) =>
-									c.id === category.id ? { ...c, name: values.name } : c
+									c.id === category.id
+										? { ...c, name: values.name }
+										: c
 								)
 							);
 						} else {
@@ -52,7 +54,13 @@ export default function CategoryForm({
 						}
 					}}
 				>
-					{({ values, setFieldValue, handleSubmit, errors, touched }) => (
+					{({
+						values,
+						setFieldValue,
+						handleSubmit,
+						errors,
+						touched,
+					}) => (
 						<>
 							<View style={styles.formContainer}>
 								<TextInput
@@ -64,12 +72,17 @@ export default function CategoryForm({
 										},
 									]}
 									value={values.name}
-									onChangeText={(text) => setFieldValue('name', text)}
+									onChangeText={(text) =>
+										setFieldValue('name', text)
+									}
 								/>
-								<BlockWrapper backgroundColor={colors.error}>
+								<BlockWrapper
+									backgroundColor={colors.error}
+									style={{ minHeight: 60 }}
+								>
 									<ThemedText>
-										Attention toutes les entrées de cette catégorie seront
-										modifiées.
+										Attention toutes les entrées de cette
+										catégorie seront modifiées.
 									</ThemedText>
 								</BlockWrapper>
 								<View style={styles.buttonsContainer}>
@@ -82,7 +95,9 @@ export default function CategoryForm({
 									/>
 									<ButtonMenu
 										type='round'
-										style={{ backgroundColor: colors.error }}
+										style={{
+											backgroundColor: colors.error,
+										}}
 										text='Modifier'
 										action={() => handleSubmit()}
 									/>
