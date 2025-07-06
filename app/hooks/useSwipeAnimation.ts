@@ -1,17 +1,22 @@
 import { useRef, useCallback } from 'react';
 import { Animated, Dimensions, PanResponder } from 'react-native';
+import { WorktimeSeries, WorktimeByDay } from '../types/worktime';
 
 const { width: screenWidth } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 100;
 
 interface UseSwipeAnimationProps {
 	setDate: (date: string) => void;
-	currentDateRef: React.MutableRefObject<string>;
+	currentDateRef: React.RefObject<string>;
+	setWorktimesByDay: (
+		worktimes: WorktimeByDay | ((prev: WorktimeByDay) => WorktimeByDay)
+	) => void;
 }
 
 export const useSwipeAnimation = ({
 	setDate,
 	currentDateRef,
+	setWorktimesByDay,
 }: UseSwipeAnimationProps) => {
 	const swipeTranslateX = useRef(new Animated.Value(0)).current;
 	const isAnimating = useRef(false);
@@ -27,13 +32,22 @@ export const useSwipeAnimation = ({
 			currentDate.setDate(currentDate.getDate() + 1);
 			const newDate = currentDate.toISOString().split('T')[0];
 
+			// Mise à jour immédiate des worktimes pour fluidifier la transition
+			// On garde les données de tomorrow temporairement pour éviter un flash vide
+			setWorktimesByDay((prev) => ({
+				yesterday: prev.today,
+				today: prev.tomorrow,
+				tomorrow: prev.tomorrow, // Garde temporairement les mêmes données
+			}));
+
+			// Petit délai pour laisser l'animation se terminer avant de changer la date
 			setTimeout(() => {
 				setDate(newDate);
-			}, 0);
+			}, 150);
 		} catch (error) {
 			console.error('Erreur dans handleSwipeNext:', error);
 		}
-	}, [setDate, currentDateRef]);
+	}, [setDate, currentDateRef, setWorktimesByDay]);
 
 	const handleSwipePrevious = useCallback(() => {
 		try {
@@ -46,13 +60,22 @@ export const useSwipeAnimation = ({
 			currentDate.setDate(currentDate.getDate() - 1);
 			const newDate = currentDate.toISOString().split('T')[0];
 
+			// Mise à jour immédiate des worktimes pour fluidifier la transition
+			// On garde les données de yesterday temporairement pour éviter un flash vide
+			setWorktimesByDay((prev) => ({
+				yesterday: prev.yesterday, // Garde temporairement les mêmes données
+				today: prev.yesterday,
+				tomorrow: prev.today,
+			}));
+
+			// Petit délai pour laisser l'animation se terminer avant de changer la date
 			setTimeout(() => {
 				setDate(newDate);
-			}, 0);
+			}, 150);
 		} catch (error) {
 			console.error('Erreur dans handleSwipePrevious:', error);
 		}
-	}, [setDate, currentDateRef]);
+	}, [setDate, currentDateRef, setWorktimesByDay]);
 
 	const handleSwipe = useCallback(
 		(direction: 'next' | 'previous') => {

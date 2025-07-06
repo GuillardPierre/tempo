@@ -134,7 +134,15 @@ export default function TimerForm({
 			>
 				{({ setFieldValue, values, handleSubmit, errors, touched }) => {
 					return (
-						<View style={styles.container}>
+						<View
+							style={[
+								styles.container,
+								{
+									paddingVertical:
+										mode === 'activity' ? 0 : 10,
+								},
+							]}
+						>
 							<DropDownPicker
 								open={open}
 								value={values.category.id}

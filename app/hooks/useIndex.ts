@@ -6,6 +6,7 @@ import {
 	RecurrenceException,
 	Worktime,
 	WorktimeSeries,
+	WorktimeByDay,
 } from '../types/worktime';
 import { useRouter } from 'expo-router';
 import useSnackBar from '@/app/hooks/useSnackBar';
@@ -15,7 +16,11 @@ export const useIndex = () => {
 	const [month, setMonth] = useState(new Date(date));
 	const [selectedWorktime, setSelectedWorktime] =
 		useState<WorktimeSeries | null>(null);
-	const [worktimes, setWorktimes] = useState<WorktimeSeries[]>([]);
+	const [worktimesByDay, setWorktimesByDay] = useState<WorktimeByDay>({
+		yesterday: [],
+		today: [],
+		tomorrow: [],
+	});
 	const [categories, setCategories] = useState<Category[]>([]);
 	const [monthWorktimes, setMonthWorktimes] = useState<Worktime[]>([]);
 	const [recurrenceExceptions, setRecurrenceExceptions] = useState<
@@ -29,6 +34,22 @@ export const useIndex = () => {
 	const router = useRouter();
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
+	// Computed property pour accéder facilement aux worktimes du jour
+	const worktimes = worktimesByDay.today;
+
+	// Fonction wrapper pour maintenir la compatibilité avec les composants existants
+	const setWorktimes = (
+		updater:
+			| WorktimeSeries[]
+			| ((prev: WorktimeSeries[]) => WorktimeSeries[])
+	) => {
+		setWorktimesByDay((prev) => ({
+			...prev,
+			today:
+				typeof updater === 'function' ? updater(prev.today) : updater,
+		}));
+	};
+
 	useEffect(() => {
 		getCategrories();
 		getMonthWorktimes();
@@ -38,10 +59,16 @@ export const useIndex = () => {
 
 	useEffect(() => {
 		getMonthWorktimes();
+		// Mise à jour des worktimes non terminés basée sur tous les worktimes
+		const allWorktimes = [
+			...worktimesByDay.yesterday,
+			...worktimesByDay.today,
+			...worktimesByDay.tomorrow,
+		];
 		setUnfinishedWorktimes(
-			worktimes.filter((worktime) => worktime.endTime === null)
+			allWorktimes.filter((worktime) => worktime.endTime === null)
 		);
-	}, [worktimes, month]);
+	}, [worktimesByDay, month]);
 
 	useEffect(() => {
 		getWorktimes();
@@ -86,7 +113,8 @@ export const useIndex = () => {
 			const rep = await httpGet(`${ENDPOINTS.schedule.day}${date}`);
 			if (rep.ok) {
 				const data = await rep.json();
-				setWorktimes(data);
+				console.log('data', data);
+				setWorktimesByDay(data);
 			}
 		} catch (error) {
 			console.error('Erreur getWorktimes:', error);
@@ -121,6 +149,7 @@ export const useIndex = () => {
 
 	return {
 		worktimes,
+		worktimesByDay,
 		monthWorktimes,
 		recurrenceExceptions,
 		unfinishedWorktimes,
@@ -130,6 +159,7 @@ export const useIndex = () => {
 		month,
 		setMonth,
 		setWorktimes,
+		setWorktimesByDay,
 		setRecurrenceExceptions,
 		setCategories,
 		selectedWorktime,

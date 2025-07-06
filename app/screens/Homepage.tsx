@@ -6,11 +6,7 @@ import { useModal } from '@/app/hooks/useModal';
 import { useToggleViews } from '@/app/hooks/useToggleViews';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import { useSwipeAnimation } from '@/app/hooks/useSwipeAnimation';
-import {
-	Worktime,
-	RecurrenceException,
-	SelectedWorktime,
-} from '@/app/types/worktime';
+import { RecurrenceException, SelectedWorktime } from '@/app/types/worktime';
 import Header from '@/app/components/Header';
 import MainWrapper from '@/app/components/MainWrapper';
 import Calendar from '@/app/components/Calendar';
@@ -31,6 +27,7 @@ export default function Homepage() {
 
 	const {
 		worktimes,
+		worktimesByDay,
 		monthWorktimes,
 		recurrenceExceptions,
 		unfinishedWorktimes,
@@ -40,6 +37,7 @@ export default function Homepage() {
 		month,
 		setMonth,
 		setWorktimes,
+		setWorktimesByDay,
 		setRecurrenceExceptions,
 		setCategories,
 		selectedWorktime,
@@ -65,7 +63,6 @@ export default function Homepage() {
 		modalVisible,
 		modalType,
 		openModal,
-		closeModal,
 		setModalType,
 		setModalVisible,
 	} = useModal();
@@ -103,6 +100,7 @@ export default function Homepage() {
 	const { swipeAnimatedStyle, panResponder } = useSwipeAnimation({
 		setDate,
 		currentDateRef,
+		setWorktimesByDay,
 	});
 
 	return (
@@ -128,84 +126,168 @@ export default function Homepage() {
 					setCalendarIsOpen={toggleCalendar}
 				/>
 				<Animated.View
-					style={swipeAnimatedStyle}
+					style={[
+						swipeAnimatedStyle,
+						{ position: 'relative', flex: 1 },
+					]}
 					{...panResponder.panHandlers}
 				>
 					<View
 						style={{
-							flex: 1,
-							overflow: 'hidden',
-							maxHeight: '100%',
+							display: 'flex',
+							flexDirection: 'row',
+							width: '100%',
+							height: '100%',
+							transform: [{ translateX: '-97%' }],
 						}}
 					>
-						<UnfinishedWorktimesList
-							unfinishedWorktimes={unfinishedWorktimes}
-							currentDate={date}
-							recurrenceExceptions={recurrenceExceptions}
-							setModalType={setModalType}
-							setModalVisible={setModalVisible}
-							setSelectedWorktime={setSelectedWorktime}
-							setUnfinishedWorktimes={setUnfinishedWorktimes}
-							setWorktimes={setWorktimes}
-							setSnackBar={setSnackBar}
-						/>
+						{/* Bloc gauche */}
 						<MainWrapper
-							fullHeight={!calendarIsOpen && !timerIsOpen}
-							flexGrow={true}
+							style={{
+								width: '97%',
+								height: '98.5%',
+								backgroundColor: colors.background,
+								marginInline: 0,
+							}}
 						>
-							<ExceptionsList
-								exceptions={recurrenceExceptions}
-								date={date}
-								onExceptionPress={handleExceptionPress}
-							/>
-							<WorktimesList
-								worktimes={worktimes}
+							<View
+								style={{
+									flex: 1,
+									justifyContent: 'flex-start',
+									alignItems: 'flex-start',
+								}}
+							>
+								<WorktimesList
+									worktimes={worktimesByDay.yesterday}
+									currentDate={date}
+									recurrenceExceptions={recurrenceExceptions}
+									setModalType={setModalType}
+									setModalVisible={setModalVisible}
+									setSelectedWorktime={setSelectedWorktime}
+								/>
+							</View>
+						</MainWrapper>
+
+						{/* Bloc central - contenu principal */}
+						<View
+							style={{
+								width: '100%',
+								height: '100%',
+								maxHeight: timerIsOpen
+									? formIsOpen
+										? '49%'
+										: '84%'
+									: calendarIsOpen
+									? '47%'
+									: 'auto',
+							}}
+						>
+							<UnfinishedWorktimesList
+								unfinishedWorktimes={unfinishedWorktimes}
 								currentDate={date}
 								recurrenceExceptions={recurrenceExceptions}
 								setModalType={setModalType}
 								setModalVisible={setModalVisible}
 								setSelectedWorktime={setSelectedWorktime}
+								setUnfinishedWorktimes={setUnfinishedWorktimes}
+								setWorktimes={setWorktimes}
+								setSnackBar={setSnackBar}
 							/>
-						</MainWrapper>
+							<MainWrapper
+								fullHeight={!calendarIsOpen && !timerIsOpen}
+								flexGrow={true}
+							>
+								<ExceptionsList
+									exceptions={recurrenceExceptions}
+									date={date}
+									onExceptionPress={handleExceptionPress}
+								/>
+								<WorktimesList
+									worktimes={worktimes}
+									currentDate={date}
+									recurrenceExceptions={recurrenceExceptions}
+									setModalType={setModalType}
+									setModalVisible={setModalVisible}
+									setSelectedWorktime={setSelectedWorktime}
+								/>
+							</MainWrapper>
+						</View>
 
+						{/* Bloc droit */}
 						<MainWrapper
-							isOpen={timerIsOpen}
-							direction='bottom'
-							maxHeight='35%'
-							minHeight={formIsOpen ? '35%' : 'auto'}
 							style={{
-								paddingHorizontal: 30,
+								width: '97%',
+								height: '98.5%',
+								backgroundColor: colors.background,
+								marginInline: 0,
 							}}
 						>
-							<WorktimeSelectAction
-								setSnackBar={setSnackBar}
-								setTimerIsOpen={toggleTimer}
-								setWorktimes={setWorktimes}
-								categories={categories}
-								setCategories={setCategories}
-								date={date}
-								setFormIsOpen={setFormIsOpen}
-								setRecurrenceExceptions={
-									setRecurrenceExceptions
-								}
-								recurrenceExceptions={recurrenceExceptions}
-							/>
-						</MainWrapper>
-						<MainWrapper
-							isOpen={calendarIsOpen}
-							direction='bottom'
-							maxHeight='42%'
-						>
-							<Calendar
-								date={date}
-								setDate={setDate}
-								monthWorktimes={monthWorktimes}
-								month={month}
-								setMonth={setMonth}
-								recurrenceExceptions={recurrenceExceptions}
-							/>
+							<View
+								style={{
+									flex: 1,
+									justifyContent: 'flex-start',
+									alignItems: 'flex-start',
+								}}
+							>
+								<WorktimesList
+									worktimes={worktimesByDay.tomorrow}
+									currentDate={date}
+									recurrenceExceptions={recurrenceExceptions}
+									setModalType={setModalType}
+									setModalVisible={setModalVisible}
+									setSelectedWorktime={setSelectedWorktime}
+								/>
+							</View>
 						</MainWrapper>
 					</View>
+
+					<MainWrapper
+						isOpen={timerIsOpen}
+						direction='bottom'
+						maxHeight='35%'
+						minHeight={formIsOpen ? '38%' : 'auto'}
+						style={{
+							paddingHorizontal: 30,
+							position: 'absolute',
+							bottom: 0,
+							left: 0,
+							right: 0,
+							zIndex: 10,
+						}}
+					>
+						<WorktimeSelectAction
+							setSnackBar={setSnackBar}
+							setTimerIsOpen={toggleTimer}
+							setWorktimes={setWorktimes}
+							categories={categories}
+							setCategories={setCategories}
+							date={date}
+							setFormIsOpen={setFormIsOpen}
+							setRecurrenceExceptions={setRecurrenceExceptions}
+							recurrenceExceptions={recurrenceExceptions}
+						/>
+					</MainWrapper>
+					<MainWrapper
+						isOpen={calendarIsOpen}
+						direction='bottom'
+						maxHeight='42%'
+						style={{
+							position: 'absolute',
+							bottom: 0,
+							left: 0,
+							right: 0,
+							zIndex: 10,
+						}}
+					>
+						<Calendar
+							date={date}
+							setDate={setDate}
+							monthWorktimes={monthWorktimes}
+							month={month}
+							setMonth={setMonth}
+							recurrenceExceptions={recurrenceExceptions}
+						/>
+					</MainWrapper>
 				</Animated.View>
 
 				<Footer

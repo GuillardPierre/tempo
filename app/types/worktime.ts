@@ -88,3 +88,12 @@ export interface RecurrenceException {
 	pauseEnd: string;
 	seriesIds: number[];
 }
+
+/**
+ * Interface pour organiser les worktimes par jour
+ */
+export interface WorktimeByDay {
+	yesterday: WorktimeSeries[];
+	today: WorktimeSeries[];
+	tomorrow: WorktimeSeries[];
+}
