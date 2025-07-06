@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { View } from 'react-native';
+import { Vibration, View } from 'react-native';
 import ThemedText from './utils/ThemedText';
 import { SegmentedButtons } from 'react-native-paper';
 import { useThemeColors } from '../hooks/useThemeColors';
@@ -67,7 +67,10 @@ export default function WorktimeSelectAction({
 			)}
 			<SegmentedButtons
 				value={value}
-				onValueChange={setValue}
+				onValueChange={(newValue) => {
+					Vibration.vibrate(50);
+					setValue(newValue);
+				}}
 				density='regular'
 				theme={{
 					colors: {

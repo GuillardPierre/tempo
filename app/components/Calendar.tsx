@@ -104,7 +104,10 @@ export default function Calendar({
 				markedDates[d] = {
 					...markedDates[d],
 					marked: true,
-					dotColor: wt.type === 'SINGLE' ? colors.secondary : colors.primary,
+					dotColor:
+						wt.type === 'SINGLE'
+							? colors.secondary
+							: colors.primary,
 				};
 			});
 		}

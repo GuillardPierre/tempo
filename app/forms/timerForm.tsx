@@ -17,11 +17,6 @@ import { Switch } from 'react-native-paper';
 
 type TimerFormMode = 'chrono' | 'activity';
 
-interface CategoryData {
-	id: string | null;
-	title: string;
-}
-
 interface Props {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
 	setTimerIsOpen: (isOpen: boolean) => void;
@@ -126,7 +121,9 @@ export default function TimerForm({
 								? formatLocalDateTime(values.endTime)
 								: undefined,
 						recurrence:
-							mode === 'activity' && selectedDays.length
+							mode === 'activity' &&
+							isRecurring &&
+							selectedDays.length > 0
 								? `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`
 								: undefined,
 						endDate: values.endDate
@@ -153,6 +150,7 @@ export default function TimerForm({
 									return currentValue;
 								}}
 								onSelectItem={(item) => {
+									Vibration.vibrate(50);
 									if (item && item.value) {
 										const value = item.value.toString();
 										const category = categories.find(
@@ -240,6 +238,7 @@ export default function TimerForm({
 								} :`}
 								value={values.startDate}
 								onChange={(date) => {
+									Vibration.vibrate(50);
 									setFieldValue('startDate', date);
 								}}
 								style={{ width: '100%' }}
@@ -253,6 +252,7 @@ export default function TimerForm({
 										label='Heure début:'
 										value={values.startTime}
 										onChange={(date) => {
+											Vibration.vibrate(50);
 											setFieldValue('startTime', date);
 											values.endTime &&
 												date > values.endTime &&
@@ -305,9 +305,10 @@ export default function TimerForm({
 																	.slice(0, 8)
 													  )
 											}
-											onChange={(date) =>
-												setFieldValue('endTime', date)
-											}
+											onChange={(date) => {
+												Vibration.vibrate(50);
+												setFieldValue('endTime', date);
+											}}
 										/>
 									</View>
 								)}
@@ -398,9 +399,10 @@ export default function TimerForm({
 											</ScrollView>
 
 											<TimePickerInput
-												label='Date de fin (non obligatoire):'
+												label='Date de fin (exclusive, non obligatoire):'
 												value={values.endDate}
 												onChange={(date) => {
+													Vibration.vibrate(50);
 													setFieldValue(
 														'endDate',
 														date
@@ -432,6 +434,7 @@ export default function TimerForm({
 														values.ignoreExceptions
 													}
 													onValueChange={(value) => {
+														Vibration.vibrate(50);
 														setFieldValue(
 															'ignoreExceptions',
 															value

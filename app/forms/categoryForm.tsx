@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, StyleSheet, TextInput, View } from 'react-native';
+import { StyleSheet, TextInput, Vibration, View } from 'react-native';
 import { Category } from '../types/worktime';
 import ThemedText from '../components/utils/ThemedText';
 import { Formik } from 'formik';
@@ -90,6 +90,7 @@ export default function CategoryForm({
 										type='round'
 										text='Annuler'
 										action={() => {
+											Vibration.vibrate(50);
 											setModalVisible(false);
 										}}
 									/>
@@ -99,7 +100,10 @@ export default function CategoryForm({
 											backgroundColor: colors.error,
 										}}
 										text='Modifier'
-										action={() => handleSubmit()}
+										action={() => {
+											Vibration.vibrate(50);
+											handleSubmit();
+										}}
 									/>
 								</View>
 							</View>

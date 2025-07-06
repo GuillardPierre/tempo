@@ -41,7 +41,6 @@ export default function LoginForm({ setSnackBar }: Props) {
 			return data;
 		},
 		onSuccess: (data) => {
-			console.log('Connexion réussie', data);
 			dispatch({ type: 'SET_IS_CONNECTED', payload: true });
 			dispatch({ type: 'SET_TOKEN', payload: data.token });
 			dispatch({ type: 'SET_EMAIL', payload: data.email });

@@ -100,7 +100,6 @@ export default function Homepage() {
 		return selected;
 	};
 
-	// Hook custom pour l'animation de swipe
 	const { swipeAnimatedStyle, panResponder } = useSwipeAnimation({
 		setDate,
 		currentDateRef,

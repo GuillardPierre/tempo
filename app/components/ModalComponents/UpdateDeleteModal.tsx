@@ -1,10 +1,7 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import { View, StyleSheet, Text, Vibration } from 'react-native';
 import ThemedText from '../utils/ThemedText';
-import {
-	SelectedWorktime,
-	WorktimeSeries,
-} from '@/app/types/worktime';
+import { SelectedWorktime, WorktimeSeries } from '@/app/types/worktime';
 import TimerForm from '@/app/forms/timerForm';
 import ButtonMenu from '../ButtonMenu';
 import DeleteBlock from './DeleteBlock';
@@ -16,7 +13,9 @@ type Props = {
 	categories: any[];
 	setCategories: (categories: any[] | ((prev: any[]) => any[])) => void;
 	setWorktimes: (
-		worktimes: WorktimeSeries[] | ((prev: WorktimeSeries[]) => WorktimeSeries[])
+		worktimes:
+			| WorktimeSeries[]
+			| ((prev: WorktimeSeries[]) => WorktimeSeries[])
 	) => void;
 	setSnackBar: (type: 'error' | 'info', messageText: string) => void;
 	date: string;
@@ -85,14 +84,23 @@ export default function UpdateDeleteModal({
 					<View style={styles.buttonsContainer}>
 						<ButtonMenu
 							type='round'
-							action={() => setMode('edit')}
+							action={() => {
+								Vibration.vibrate(50);
+								setMode('edit');
+							}}
 							style={styles.actionButton}
 							text='Modifier'
 						/>
 						<ButtonMenu
 							type='round'
-							action={() => setMode('delete')}
-							style={[styles.actionButton, { backgroundColor: colors.error }]}
+							action={() => {
+								Vibration.vibrate(50);
+								setMode('delete');
+							}}
+							style={[
+								styles.actionButton,
+								{ backgroundColor: colors.error },
+							]}
 							text='Supprimer'
 						/>
 					</View>
@@ -130,7 +138,10 @@ export default function UpdateDeleteModal({
 						<ButtonMenu
 							type='round'
 							text='Annuler'
-							action={() => setMode('view')}
+							action={() => {
+								Vibration.vibrate(50);
+								setMode('view');
+							}}
 						/>
 					</View>
 				</View>

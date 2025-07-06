@@ -54,7 +54,6 @@ export function useTimerForm({
 
 			const method = isEditing ? httpPut : httpPost;
 			const response = await method(endpoint, formData);
-
 			if (response && !response.ok)
 				throw new Error(await response.text());
 			if (response) return await response.json();
@@ -69,7 +68,19 @@ export function useTimerForm({
 					: 'Temps enregistré'
 			);
 			setTimerIsOpen(false);
-			if (setWorktimes) {
+
+			const shouldAddToFeed = (() => {
+				if (!data.recurrence) {
+					return data.startTime?.split('T')[0] === date;
+				}
+				if (data.recurrence && data.startDate) {
+					const startDateOnly = data.startDate?.split('T')[0];
+					return startDateOnly === date;
+				}
+				return false;
+			})();
+
+			if (setWorktimes && shouldAddToFeed) {
 				if (isEditing && data.id) {
 					setWorktimes((prev) =>
 						prev.map((wt) => (wt.id === data.id ? data : wt))
@@ -96,6 +107,16 @@ export function useTimerForm({
 	};
 
 	const getInitialValues = () => {
+		// Créer une date locale pour éviter les problèmes de timezone
+		const createLocalDate = (
+			dateString: string,
+			timeString: string = '00:00:00'
+		) => {
+			const [year, month, day] = dateString.split('-').map(Number);
+			const [hours, minutes, seconds] = timeString.split(':').map(Number);
+			return new Date(year, month - 1, day, hours, minutes, seconds);
+		};
+
 		const initialValues = {
 			category: selectedWorktime
 				? {
@@ -105,14 +126,14 @@ export function useTimerForm({
 				: { id: null, title: '' },
 			startTime: selectedWorktime?.startTime
 				? new Date(selectedWorktime.startTime)
-				: new Date(date + 'T' + new Date().toTimeString().slice(0, 8)),
+				: createLocalDate(date, new Date().toTimeString().slice(0, 8)),
 			endTime: selectedWorktime?.endTime
 				? new Date(selectedWorktime.endTime)
 				: undefined,
 			recurrence: undefined as CreateRecurrenceRule | undefined,
 			startDate: selectedWorktime?.startDate
 				? new Date(selectedWorktime.startDate)
-				: new Date(date + 'T00:00:00'),
+				: createLocalDate(date),
 			endDate: selectedWorktime?.endDate
 				? new Date(selectedWorktime.endDate)
 				: undefined,
@@ -126,7 +147,8 @@ export function useTimerForm({
 			return false;
 		if (selectedWorktime && selectedWorktime.type === 'RECURRING')
 			return true;
-		if (!selectedWorktime) return true;
+		// Par défaut, afficher les jours pour les nouvelles activités
+		return true;
 	};
 
 	return {

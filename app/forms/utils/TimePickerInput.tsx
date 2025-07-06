@@ -34,22 +34,36 @@ export default function TimePickerInput({
 					? new Date(event.nativeEvent.timestamp)
 					: undefined);
 			if (dateToUse) {
-				onChange(dateToUse);
+				if (mode === 'date') {
+					// Créer une date locale en utilisant les méthodes UTC pour éviter les décalages
+					const year = dateToUse.getFullYear();
+					const month = dateToUse.getMonth();
+					const day = dateToUse.getDate();
+
+					// Créer une date en utilisant UTC pour éviter les conversions de timezone
+					const utcDate = new Date(
+						Date.UTC(year, month, day, 0, 0, 0)
+					);
+					onChange(utcDate);
+				} else {
+					onChange(dateToUse);
+				}
 			}
 		}
-		// Si annulé, ne rien faire
 	};
 
 	const formatTime = (date: Date) => {
+		// Pour les heures, utiliser les méthodes locales
 		const hours = String(date.getHours()).padStart(2, '0');
 		const minutes = String(date.getMinutes()).padStart(2, '0');
 		return `${hours}:${minutes}`;
 	};
 
 	const formatDate = (date: Date) => {
-		const day = String(date.getDate()).padStart(2, '0');
-		const month = String(date.getMonth() + 1).padStart(2, '0');
-		const year = date.getFullYear();
+		// Pour les dates, utiliser les méthodes UTC pour l'affichage
+		const day = String(date.getUTCDate()).padStart(2, '0');
+		const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+		const year = date.getUTCFullYear();
 		return `${day}/${month}/${year}`;
 	};
 	return (

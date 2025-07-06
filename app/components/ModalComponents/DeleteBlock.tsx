@@ -12,7 +12,9 @@ import { useThemeColors } from '@/app/hooks/useThemeColors';
 type Props = {
 	setModalVisible: (visible: boolean) => void;
 	setWorktimes: (
-		worktimes: WorktimeSeries[] | ((prev: WorktimeSeries[]) => WorktimeSeries[])
+		worktimes:
+			| WorktimeSeries[]
+			| ((prev: WorktimeSeries[]) => WorktimeSeries[])
 	) => void;
 	selectedWorktime: SelectedWorktime | null;
 	onDeleteSuccess?: () => void;
@@ -32,6 +34,7 @@ export default function DeleteBlock({
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const handleDelete = async () => {
+		Vibration.vibrate(50);
 		if (!selectedWorktime?.id) {
 			console.error('No worktime selected for deletion');
 			if (setSnackBar) setSnackBar('error', 'Aucune entrée sélectionnée');
@@ -45,7 +48,9 @@ export default function DeleteBlock({
 				: ENDPOINTS.woktimeSeries.root;
 
 		try {
-			const response = await httpDelete(`${endpoint}${selectedWorktime.id}`);
+			const response = await httpDelete(
+				`${endpoint}${selectedWorktime.id}`
+			);
 
 			if (!response.ok) {
 				if (setSnackBar)
@@ -58,7 +63,9 @@ export default function DeleteBlock({
 
 			Vibration.vibrate(50);
 			setWorktimes((prevWorktimes) =>
-				prevWorktimes.filter((worktime) => worktime.id !== selectedWorktime.id)
+				prevWorktimes.filter(
+					(worktime) => worktime.id !== selectedWorktime.id
+				)
 			);
 			if (setSnackBar) setSnackBar('info', 'Suppression réussie');
 			if (onDeleteSuccess) {
@@ -92,13 +99,17 @@ export default function DeleteBlock({
 			{selectedWorktime && (
 				<View style={styles.workTimeInfoContainer}>
 					<ThemedText variant='body' color='secondaryText'>
-						{`Catégorie: ${selectedWorktime.categoryName || 'Non spécifiée'}`}
+						{`Catégorie: ${
+							selectedWorktime.categoryName || 'Non spécifiée'
+						}`}
 					</ThemedText>
 					<ThemedText variant='body' color='secondaryText'>
 						{`Du: ${
-							formatDateWihtoutTime(selectedWorktime.startDate) || '00:00'
+							formatDateWihtoutTime(selectedWorktime.startDate) ||
+							'00:00'
 						} au: ${
-							formatDateWihtoutTime(selectedWorktime.endDate) || 'pas de fin'
+							formatDateWihtoutTime(selectedWorktime.endDate) ||
+							'pas de fin'
 						}`}
 					</ThemedText>
 				</View>
