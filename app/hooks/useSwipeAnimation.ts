@@ -4,6 +4,8 @@ import { WorktimeSeries, WorktimeByDay } from '../types/worktime';
 
 const { width: screenWidth } = Dimensions.get('window');
 const SWIPE_THRESHOLD = 100;
+const HORIZONTAL_MOVEMENT_THRESHOLD = 20; // Seuil minimum pour détecter un mouvement horizontal
+const VERTICAL_MOVEMENT_THRESHOLD = 30; // Seuil pour détecter un mouvement vertical
 
 interface UseSwipeAnimationProps {
 	setDate: (date: string) => void;
@@ -20,6 +22,22 @@ export const useSwipeAnimation = ({
 }: UseSwipeAnimationProps) => {
 	const swipeTranslateX = useRef(new Animated.Value(0)).current;
 	const isAnimating = useRef(false);
+	const isScrollingVertically = useRef(false);
+
+	// Fonction pour détecter si l'utilisateur est en train de scroller verticalement
+	const checkVerticalScroll = (dx: number, dy: number) => {
+		const isVertical =
+			Math.abs(dy) > VERTICAL_MOVEMENT_THRESHOLD &&
+			Math.abs(dy) > Math.abs(dx) * 1.2;
+		if (isVertical) {
+			isScrollingVertically.current = true;
+			// Reset après un délai
+			setTimeout(() => {
+				isScrollingVertically.current = false;
+			}, 500);
+		}
+		return isVertical;
+	};
 
 	const handleSwipeNext = useCallback(() => {
 		try {
@@ -94,13 +112,44 @@ export const useSwipeAnimation = ({
 				return !isAnimating.current;
 			},
 			onMoveShouldSetPanResponder: (evt, gestureState) => {
+				const { dx, dy } = gestureState;
+
+				// Vérifier si l'utilisateur est en train de scroller verticalement
+				if (checkVerticalScroll(dx, dy)) {
+					return false;
+				}
+
+				// Si on était en train de scroller verticalement, ne pas interférer
+				if (isScrollingVertically.current) {
+					return false;
+				}
+
+				const isHorizontalMovement =
+					Math.abs(dx) > HORIZONTAL_MOVEMENT_THRESHOLD;
+				const isVerticalMovement =
+					Math.abs(dy) > VERTICAL_MOVEMENT_THRESHOLD;
+
 				return (
 					!isAnimating.current &&
-					Math.abs(gestureState.dx) > Math.abs(gestureState.dy) &&
-					Math.abs(gestureState.dx) > 10
+					isHorizontalMovement &&
+					Math.abs(dx) > Math.abs(dy) * 1.5 && // Le mouvement horizontal doit être significativement plus important
+					!isVerticalMovement // Pas de mouvement vertical significatif
 				);
 			},
 			onPanResponderMove: (evt, gestureState) => {
+				const { dx, dy } = gestureState;
+
+				// Si l'utilisateur commence à scroller verticalement pendant le swipe horizontal
+				if (
+					Math.abs(dy) > VERTICAL_MOVEMENT_THRESHOLD &&
+					Math.abs(dy) > Math.abs(dx) * 1.2
+				) {
+					isScrollingVertically.current = true;
+					// Annuler le swipe horizontal
+					swipeTranslateX.setValue(0);
+					return;
+				}
+
 				swipeTranslateX.setValue(gestureState.dx);
 			},
 			onPanResponderRelease: (evt, gestureState) => {
@@ -109,9 +158,13 @@ export const useSwipeAnimation = ({
 					if (Math.abs(dx) > SWIPE_THRESHOLD) {
 						const direction = dx > 0 ? 'previous' : 'next';
 						isAnimating.current = true;
+						const variation = direction === 'next' ? 11 : -11;
 
 						Animated.timing(swipeTranslateX, {
-							toValue: dx > 0 ? screenWidth : -screenWidth,
+							toValue:
+								dx > 0
+									? screenWidth + variation
+									: -screenWidth + variation,
 							duration: 300,
 							useNativeDriver: true,
 						}).start(() => {

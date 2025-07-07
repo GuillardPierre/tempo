@@ -138,13 +138,13 @@ export default function Homepage() {
 							flexDirection: 'row',
 							width: '100%',
 							height: '100%',
-							transform: [{ translateX: '-97%' }],
+							transform: [{ translateX: '-95%' }],
 						}}
 					>
 						{/* Bloc gauche */}
 						<MainWrapper
 							style={{
-								width: '97%',
+								width: '95%',
 								height: '98.5%',
 								backgroundColor: colors.background,
 								marginInline: 0,
@@ -216,7 +216,7 @@ export default function Homepage() {
 						{/* Bloc droit */}
 						<MainWrapper
 							style={{
-								width: '97%',
+								width: '95%',
 								height: '98.5%',
 								backgroundColor: colors.background,
 								marginInline: 0,
