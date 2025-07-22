@@ -84,6 +84,5 @@ const styles = StyleSheet.create({
 		width: '100%',
 		paddingHorizontal: 16,
 		paddingVertical: 8,
-		zIndex: 5,
 	},
 });

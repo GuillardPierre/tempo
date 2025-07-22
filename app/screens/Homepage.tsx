@@ -1,4 +1,10 @@
-import { StatusBar, StyleSheet, View, Animated } from 'react-native';
+import {
+	StatusBar,
+	StyleSheet,
+	View,
+	Animated,
+	Dimensions,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import React, { useRef, useEffect } from 'react';
 import { useIndex } from '@/app/hooks/useIndex';
@@ -23,7 +29,10 @@ import PauseForm from '../forms/PauseForm';
 import ProtectedRoute from '@/app/components/utils/ProtectedRoute';
 
 export default function Homepage() {
-	const colors = useThemeColors();
+	const colors = useThemeColors() || {
+		primary: '#3D348B',
+		background: '#FFFFFF',
+	};
 
 	const {
 		worktimes,
@@ -103,6 +112,8 @@ export default function Homepage() {
 		setWorktimesByDay,
 	});
 
+	const screenWidth = Dimensions.get('window').width;
+
 	return (
 		<ProtectedRoute>
 			<SafeAreaView
@@ -125,29 +136,31 @@ export default function Homepage() {
 					setDate={setDate}
 					setCalendarIsOpen={toggleCalendar}
 				/>
-				<Animated.View
-					style={[
-						swipeAnimatedStyle,
-						{ position: 'relative', flex: 1 },
-					]}
-					{...panResponder.panHandlers}
-				>
-					<View
-						style={{
-							display: 'flex',
-							flexDirection: 'row',
-							width: '100%',
-							height: '100%',
-							transform: [{ translateX: '-95%' }],
-						}}
+				<View style={[{ position: 'relative', flex: 1 }]}>
+					{/* Zone de swipe gauche */}
+
+					<Animated.View
+						style={[
+							{
+								flexDirection: 'row',
+								width: screenWidth * 3,
+								height: '100%',
+								position: 'absolute',
+								left: -screenWidth + 20,
+							},
+							swipeAnimatedStyle,
+						]}
+						{...panResponder.panHandlers}
 					>
 						{/* Bloc gauche */}
 						<MainWrapper
 							style={{
-								width: '95%',
-								height: '98.5%',
+								width: '31.7%',
+								height: '99%',
 								backgroundColor: colors.background,
 								marginInline: 0,
+								marginBlock: 0,
+								marginTop: 6,
 							}}
 						>
 							<View
@@ -171,14 +184,14 @@ export default function Homepage() {
 						{/* Bloc central - contenu principal */}
 						<View
 							style={{
-								width: '100%',
+								width: '33.33%',
 								height: '100%',
 								maxHeight: timerIsOpen
 									? formIsOpen
 										? '49%'
-										: '84%'
+										: '83%'
 									: calendarIsOpen
-									? '47%'
+									? '46%'
 									: 'auto',
 							}}
 						>
@@ -194,8 +207,9 @@ export default function Homepage() {
 								setSnackBar={setSnackBar}
 							/>
 							<MainWrapper
-								fullHeight={!calendarIsOpen && !timerIsOpen}
-								flexGrow={true}
+								style={{
+									height: '100%',
+								}}
 							>
 								<ExceptionsList
 									exceptions={recurrenceExceptions}
@@ -216,10 +230,12 @@ export default function Homepage() {
 						{/* Bloc droit */}
 						<MainWrapper
 							style={{
-								width: '95%',
-								height: '98.5%',
+								width: '31.7%',
+								height: '99%',
 								backgroundColor: colors.background,
 								marginInline: 0,
+								marginBlock: 0,
+								marginTop: 6,
 							}}
 						>
 							<View
@@ -239,7 +255,7 @@ export default function Homepage() {
 								/>
 							</View>
 						</MainWrapper>
-					</View>
+					</Animated.View>
 
 					<MainWrapper
 						isOpen={timerIsOpen}
@@ -252,7 +268,6 @@ export default function Homepage() {
 							bottom: 0,
 							left: 0,
 							right: 0,
-							zIndex: 10,
 						}}
 					>
 						<WorktimeSelectAction
@@ -276,7 +291,6 @@ export default function Homepage() {
 							bottom: 0,
 							left: 0,
 							right: 0,
-							zIndex: 10,
 						}}
 					>
 						<Calendar
@@ -288,7 +302,7 @@ export default function Homepage() {
 							recurrenceExceptions={recurrenceExceptions}
 						/>
 					</MainWrapper>
-				</Animated.View>
+				</View>
 
 				<Footer
 					setTimerIsOpen={toggleTimer}

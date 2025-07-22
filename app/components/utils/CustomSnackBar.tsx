@@ -47,10 +47,9 @@ export default function CustomSnackBar({
 const styles = StyleSheet.create({
 	wrapper: {
 		position: 'absolute',
-		top: 50, // Positionnement en haut de l'écran avec une marge
+		top: 50,
 		left: 0,
 		right: 0,
-		zIndex: 1000,
 	},
 	snackbar: {
 		width: '90%',

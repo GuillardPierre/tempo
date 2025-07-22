@@ -69,7 +69,6 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		paddingHorizontal: 50,
 		paddingVertical: 10,
-		zIndex: 5,
 		overflow: 'hidden',
 	},
 });

@@ -165,7 +165,6 @@ const styles = StyleSheet.create({
 		borderStyle: 'solid',
 		borderWidth: 2,
 		borderColor: '#7678ED',
-		zIndex: 1,
 		overflow: 'hidden',
 	},
 	flexContainer: {

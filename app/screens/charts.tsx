@@ -233,9 +233,7 @@ export default function Charts() {
 						setModalVisible={setModalVisible}
 						setModalType={setModalType}
 					/>
-					<View
-						style={{ flex: 1, zIndex: 99999, overflow: 'hidden' }}
-					>
+					<View style={{ flex: 1, overflow: 'hidden' }}>
 						<MainWrapper style={styles.container}>
 							<ThemedText variant='header1' color='secondaryText'>
 								Statistiques

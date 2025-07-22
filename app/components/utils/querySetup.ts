@@ -1,12 +1,12 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { jwtDecode } from 'jwt-decode';
 import ENDPOINTS from './ENDPOINT';
+import { Platform } from 'react-native';
 
 export let TOKEN: string | null = null;
 let REFRESH_TOKEN: string | null = null;
-// const EXPO_PUBLIC_BASE_URL = 'http://10.85.4.181:8080/';
-const EXPO_PUBLIC_BASE_URL = 'http://192.168.1.147:8080/';
-// const EXPO_PUBLIC_BASE_URL = 'http://10.0.2.2:8080/';
+
+const EXPO_PUBLIC_BASE_URL = 'http://192.168.1.168:8080/';
 
 // Initialize token function
 const initToken = async () => {

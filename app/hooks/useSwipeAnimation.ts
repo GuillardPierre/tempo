@@ -24,6 +24,16 @@ export const useSwipeAnimation = ({
 	const isAnimating = useRef(false);
 	const isScrollingVertically = useRef(false);
 
+	// Calculer les zones du bloc central
+	// Le bloc central fait 33.33% de largeur et est au centre
+	const centralBlockStart = screenWidth * 0.317; // 31.7% pour le bloc gauche
+	const centralBlockEnd = screenWidth * 0.683; // 31.7% + 33.33%
+
+	// Fonction pour vérifier si le touch est dans le bloc central
+	const isTouchInCentralBlock = (pageX: number) => {
+		return pageX >= centralBlockStart && pageX <= centralBlockEnd;
+	};
+
 	// Fonction pour détecter si l'utilisateur est en train de scroller verticalement
 	const checkVerticalScroll = (dx: number, dy: number) => {
 		const isVertical =
@@ -108,11 +118,21 @@ export const useSwipeAnimation = ({
 
 	const panResponder = useRef(
 		PanResponder.create({
-			onStartShouldSetPanResponder: () => {
+			onStartShouldSetPanResponder: (evt) => {
+				// Si on est dans le bloc central, ne pas intercepter le touch
+				if (isTouchInCentralBlock(evt.nativeEvent.pageX)) {
+					return false;
+				}
 				return !isAnimating.current;
 			},
 			onMoveShouldSetPanResponder: (evt, gestureState) => {
 				const { dx, dy } = gestureState;
+				const { pageX } = evt.nativeEvent;
+
+				// Si on est dans le bloc central, privilégier le scroll vertical
+				if (isTouchInCentralBlock(pageX)) {
+					return false;
+				}
 
 				// Vérifier si l'utilisateur est en train de scroller verticalement
 				if (checkVerticalScroll(dx, dy)) {

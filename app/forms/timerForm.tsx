@@ -104,7 +104,7 @@ export default function TimerForm({
 	const [isRecurring, setIsRecurring] = useState(false);
 
 	return (
-		<View style={{ zIndex: 9999 }}>
+		<View>
 			<Formik
 				initialValues={{
 					...getInitialValues(),
@@ -194,7 +194,6 @@ export default function TimerForm({
 								]}
 								listMode='MODAL'
 								modalAnimationType='slide'
-								zIndex={10000}
 								modalContentContainerStyle={[
 									styles.modalContentContainer,
 									{

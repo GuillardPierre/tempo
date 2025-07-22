@@ -23,7 +23,9 @@ type Props = {
 	setSelectedWorktime: (worktime: any) => void;
 	setUnfinishedWorktimes?: (worktimes: WorktimeSeries[]) => void;
 	setWorktimes?: (
-		worktimes: WorktimeSeries[] | ((prev: WorktimeSeries[]) => WorktimeSeries[])
+		worktimes:
+			| WorktimeSeries[]
+			| ((prev: WorktimeSeries[]) => WorktimeSeries[])
 	) => void;
 	setSnackBar?: (type: 'error' | 'info', messageText: string) => void;
 	currentDate: string;
@@ -139,7 +141,10 @@ export default function Block({
 	};
 
 	return (
-		<BlockWrapper backgroundColor={categoryColor} hasException={hasException}>
+		<BlockWrapper
+			backgroundColor={categoryColor}
+			hasException={hasException}
+		>
 			<View style={styles.timeContainer}>
 				<ThemedText>{convertTime(worktime.startTime)}</ThemedText>
 				<View style={styles.separator} />
@@ -147,7 +152,11 @@ export default function Block({
 					{worktime.endTime ? convertTime(worktime.endTime) : '-'}
 				</ThemedText>
 			</View>
-			<ThemedText style={styles.mainText} variant='header2' color='primaryText'>
+			<ThemedText
+				style={styles.mainText}
+				variant='header2'
+				color='primaryText'
+			>
 				{categoryName} {!worktime.endTime ? '- En cours...' : ''}
 			</ThemedText>
 			<>

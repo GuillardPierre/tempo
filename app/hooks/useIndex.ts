@@ -43,11 +43,14 @@ export const useIndex = () => {
 			| WorktimeSeries[]
 			| ((prev: WorktimeSeries[]) => WorktimeSeries[])
 	) => {
-		setWorktimesByDay((prev) => ({
-			...prev,
-			today:
-				typeof updater === 'function' ? updater(prev.today) : updater,
-		}));
+		setWorktimesByDay((prev) => {
+			const newToday =
+				typeof updater === 'function' ? updater(prev.today) : updater;
+			return {
+				...prev,
+				today: newToday,
+			};
+		});
 	};
 
 	useEffect(() => {
@@ -60,14 +63,16 @@ export const useIndex = () => {
 	useEffect(() => {
 		getMonthWorktimes();
 		// Mise à jour des worktimes non terminés basée sur tous les worktimes
-		const allWorktimes = [
-			...worktimesByDay.yesterday,
-			...worktimesByDay.today,
-			...worktimesByDay.tomorrow,
-		];
-		setUnfinishedWorktimes(
-			allWorktimes.filter((worktime) => worktime.endTime === null)
-		);
+		if (worktimesByDay) {
+			const allWorktimes = [
+				...(worktimesByDay.yesterday || []),
+				...(worktimesByDay.today || []),
+				...(worktimesByDay.tomorrow || []),
+			];
+			setUnfinishedWorktimes(
+				allWorktimes.filter((worktime) => worktime.endTime === null)
+			);
+		}
 	}, [worktimesByDay, month]);
 
 	useEffect(() => {
@@ -108,15 +113,36 @@ export const useIndex = () => {
 		}
 	};
 
+	console.log('worktimes', worktimes);
+
 	const getWorktimes = async () => {
 		try {
 			const rep = await httpGet(`${ENDPOINTS.schedule.day}${date}`);
 			if (rep.ok) {
 				const data = await rep.json();
-				setWorktimesByDay(data);
+				console.log('data', data);
+				setWorktimesByDay(
+					data || {
+						yesterday: [],
+						today: [],
+						tomorrow: [],
+					}
+				);
+			} else {
+				console.error('Erreur getWorktimes: réponse non ok');
+				setWorktimesByDay({
+					yesterday: [],
+					today: [],
+					tomorrow: [],
+				});
 			}
 		} catch (error) {
 			console.error('Erreur getWorktimes:', error);
+			setWorktimesByDay({
+				yesterday: [],
+				today: [],
+				tomorrow: [],
+			});
 		}
 	};
 

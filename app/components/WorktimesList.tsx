@@ -26,7 +26,7 @@ const WorktimesList = ({
 }: WorktimesListProps) => {
 	const colors = useThemeColors();
 
-	if (worktimes.length === 0) {
+	if (!worktimes || worktimes.length === 0) {
 		return (
 			<BlockWrapper backgroundColor={colors.primaryLight}>
 				<View style={{ flex: 1, justifyContent: 'center' }}>
@@ -62,7 +62,11 @@ const WorktimesList = ({
 	}
 
 	return (
-		<View style={{ marginTop: 'auto' }}>
+		<View
+			style={{
+				flex: 1,
+			}}
+		>
 			{worktimes
 				.filter((worktime) => worktime.endTime !== null)
 				.map((worktime) => (
