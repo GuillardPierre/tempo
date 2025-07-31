@@ -113,8 +113,6 @@ export const useIndex = () => {
 		}
 	};
 
-	console.log('worktimes', worktimes);
-
 	const getWorktimes = async () => {
 		try {
 			const rep = await httpGet(`${ENDPOINTS.schedule.day}${date}`);

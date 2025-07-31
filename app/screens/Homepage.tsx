@@ -160,7 +160,7 @@ export default function Homepage() {
 								backgroundColor: colors.background,
 								marginInline: 0,
 								marginBlock: 0,
-								marginTop: 6,
+								marginTop: 6.5,
 							}}
 						>
 							<View
@@ -185,14 +185,14 @@ export default function Homepage() {
 						<View
 							style={{
 								width: '33.33%',
-								height: '100%',
+								height: '99%',
 								maxHeight: timerIsOpen
 									? formIsOpen
-										? '49%'
+										? '48%'
 										: '83%'
 									: calendarIsOpen
 									? '46%'
-									: 'auto',
+									: '100%',
 							}}
 						>
 							<UnfinishedWorktimesList
@@ -235,7 +235,7 @@ export default function Homepage() {
 								backgroundColor: colors.background,
 								marginInline: 0,
 								marginBlock: 0,
-								marginTop: 6,
+								marginTop: 4,
 							}}
 						>
 							<View

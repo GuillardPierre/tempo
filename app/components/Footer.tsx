@@ -33,7 +33,12 @@ export default function Footer({
 	});
 
 	return (
-		<View style={[styles.container, { backgroundColor: colors.primary }]}>
+		<View
+			style={[
+				styles.container,
+				{ backgroundColor: colors.primary, overflow: 'hidden' },
+			]}
+		>
 			<RoundButton
 				type='stats'
 				variant='secondary'

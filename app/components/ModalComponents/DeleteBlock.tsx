@@ -3,11 +3,11 @@ import ThemedText from '../utils/ThemedText';
 import { SelectedWorktime, WorktimeSeries } from '@/app/types/worktime';
 import { useState } from 'react';
 import ENDPOINTS from '../utils/ENDPOINT';
-import { formatDateWihtoutTime } from '../utils/utils';
 import { Button } from 'react-native-paper';
 import { httpDelete } from '../utils/querySetup';
 import ButtonMenu from '../ButtonMenu';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
+import { useDateFormatter } from '@/app/hooks/useDateFormatter';
 
 type Props = {
 	setModalVisible: (visible: boolean) => void;
@@ -31,6 +31,7 @@ export default function DeleteBlock({
 	setSnackBar,
 }: Props) {
 	const colors = useThemeColors();
+	const { formatDateRange } = useDateFormatter();
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const handleDelete = async () => {
@@ -60,7 +61,6 @@ export default function DeleteBlock({
 					);
 				throw new Error(`Error: ${response.status}`);
 			}
-
 			Vibration.vibrate(50);
 			setWorktimes((prevWorktimes) =>
 				prevWorktimes.filter(
@@ -90,6 +90,8 @@ export default function DeleteBlock({
 		}
 	};
 
+	console.log('selectedWorktime', selectedWorktime);
+
 	return (
 		<View style={styles.container}>
 			<ThemedText variant='header2' color='secondaryText'>
@@ -104,13 +106,11 @@ export default function DeleteBlock({
 						}`}
 					</ThemedText>
 					<ThemedText variant='body' color='secondaryText'>
-						{`Du: ${
-							formatDateWihtoutTime(selectedWorktime.startDate) ||
-							'00:00'
-						} au: ${
-							formatDateWihtoutTime(selectedWorktime.endDate) ||
-							'pas de fin'
-						}`}
+						{formatDateRange(
+							selectedWorktime.start,
+							selectedWorktime.end,
+							selectedWorktime.type
+						)}
 					</ThemedText>
 				</View>
 			)}

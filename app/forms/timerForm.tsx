@@ -115,10 +115,10 @@ export default function TimerForm({
 				onSubmit={(values) => {
 					submitWorktime({
 						...values,
-						startTime: formatLocalDateTime(values.startTime),
-						endTime:
-							mode === 'activity' && values.endTime
-								? formatLocalDateTime(values.endTime)
+						start: formatLocalDateTime(values.start),
+						end:
+							mode === 'activity' && values.end
+								? formatLocalDateTime(values.end)
 								: undefined,
 						recurrence:
 							mode === 'activity' &&
@@ -126,9 +126,6 @@ export default function TimerForm({
 							selectedDays.length > 0
 								? `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`
 								: undefined,
-						endDate: values.endDate
-							? formatLocalDateTime(values.endDate)
-							: undefined,
 					});
 				}}
 			>
@@ -243,10 +240,10 @@ export default function TimerForm({
 										? 'Date de début'
 										: "Date de l'activité"
 								} :`}
-								value={values.startDate}
+								value={values.start}
 								onChange={(date) => {
 									Vibration.vibrate(50);
-									setFieldValue('startDate', date);
+									setFieldValue('start', date);
 								}}
 								style={{ width: '100%' }}
 								mode='date'
@@ -257,13 +254,13 @@ export default function TimerForm({
 								<View style={styles.timePickerContainer}>
 									<TimePickerInput
 										label='Heure début:'
-										value={values.startTime}
+										value={values.start}
 										onChange={(date) => {
 											Vibration.vibrate(50);
-											setFieldValue('startTime', date);
-											values.endTime &&
-												date > values.endTime &&
-												setFieldValue('endTime', date);
+											setFieldValue('start', date);
+											values.end &&
+												date > values.end &&
+												setFieldValue('end', date);
 										}}
 									/>
 									{mode === 'chrono' && (
@@ -280,12 +277,7 @@ export default function TimerForm({
 											text='Lancer Chronomètre'
 											action={() => {
 												Vibration.vibrate(50);
-												if (
-													values.startDate >
-														new Date() ||
-													values.startTime >
-														new Date()
-												) {
+												if (values.start > new Date()) {
 													setSnackBar(
 														'error',
 														'Vous ne pouvez pas démarrer un chronomètre dans le futur. Veuillez choisir une date/heure valide.'
@@ -302,8 +294,8 @@ export default function TimerForm({
 										<TimePickerInput
 											label='Heure fin:'
 											value={
-												values.endTime
-													? values.endTime
+												values.end
+													? values.end
 													: new Date(
 															date +
 																'T' +
@@ -314,7 +306,7 @@ export default function TimerForm({
 											}
 											onChange={(date) => {
 												Vibration.vibrate(50);
-												setFieldValue('endTime', date);
+												setFieldValue('end', date);
 											}}
 										/>
 									</View>
@@ -407,13 +399,10 @@ export default function TimerForm({
 
 											<TimePickerInput
 												label='Date de fin (exclusive, non obligatoire):'
-												value={values.endDate}
+												value={values.end}
 												onChange={(date) => {
 													Vibration.vibrate(50);
-													setFieldValue(
-														'endDate',
-														date
-													);
+													setFieldValue('end', date);
 												}}
 												style={{ width: '100%' }}
 												mode='date'
