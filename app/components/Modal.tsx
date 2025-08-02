@@ -2,6 +2,7 @@ import { StyleSheet, View, ScrollView } from 'react-native';
 import { Portal, Modal } from 'react-native-paper';
 import { useThemeColors } from '../hooks/useThemeColors';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { AuthProvider } from '../context/authContext';
 
 const modalQueryClient = new QueryClient();
 
@@ -28,18 +29,22 @@ export default function ModalMenu({
 				contentContainerStyle={styles.modalContainer}
 			>
 				<QueryClientProvider client={modalQueryClient}>
-					{disableScroll ? (
-						<View style={styles.modalContent}>{children}</View>
-					) : (
-						<ScrollView
-							style={styles.scrollContainer}
-							contentContainerStyle={styles.scrollContent}
-							keyboardShouldPersistTaps='handled'
-							removeClippedSubviews={true}
-						>
+					<AuthProvider>
+						{disableScroll ? (
 							<View style={styles.modalContent}>{children}</View>
-						</ScrollView>
-					)}
+						) : (
+							<ScrollView
+								style={styles.scrollContainer}
+								contentContainerStyle={styles.scrollContent}
+								keyboardShouldPersistTaps='handled'
+								removeClippedSubviews={true}
+							>
+								<View style={styles.modalContent}>
+									{children}
+								</View>
+							</ScrollView>
+						)}
+					</AuthProvider>
 				</QueryClientProvider>
 			</Modal>
 		</Portal>

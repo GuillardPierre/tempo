@@ -70,8 +70,8 @@ export default function UpdateDeleteModal({
 						</ThemedText>
 						<ThemedText variant='body' color='secondaryText'>
 							{formatDateRange(
-								selectedWorktime?.start,
-								selectedWorktime?.end,
+								selectedWorktime?.startHour,
+								selectedWorktime?.endHour,
 								selectedWorktime?.type
 							)}
 						</ThemedText>

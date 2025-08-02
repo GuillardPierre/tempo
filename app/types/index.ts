@@ -1,9 +1,10 @@
 export interface WorktimeSeries {
 	id: string;
 	type: string;
-	startTime: string;
-	endTime: string | null;
+	startHour: string;
+	endHour: string | null;
 	startDate: string;
+	endDate: string | null;
 	recurrence: string;
 	categoryName: string;
 	duration: number;

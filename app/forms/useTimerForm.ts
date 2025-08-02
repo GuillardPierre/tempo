@@ -124,13 +124,19 @@ export function useTimerForm({
 						title: selectedWorktime.categoryName || '',
 				  }
 				: { id: null, title: '' },
-			start: selectedWorktime?.start
-				? new Date(selectedWorktime.start)
+			startHour: selectedWorktime?.startHour
+				? new Date(selectedWorktime.startHour)
 				: createLocalDate(date, new Date().toTimeString().slice(0, 8)),
-			end: selectedWorktime?.end
-				? new Date(selectedWorktime.end)
+			endHour: selectedWorktime?.endHour
+				? new Date(selectedWorktime.endHour)
 				: undefined,
 			recurrence: undefined as CreateRecurrenceRule | undefined,
+			startDate: selectedWorktime?.startDate
+				? new Date(selectedWorktime.startDate)
+				: createLocalDate(date),
+			endDate: selectedWorktime?.endDate
+				? new Date(selectedWorktime.endDate)
+				: undefined,
 			ignoreExceptions: selectedWorktime?.ignoreExceptions ? true : false,
 		};
 		return initialValues;

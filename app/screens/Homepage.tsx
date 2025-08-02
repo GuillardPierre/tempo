@@ -35,7 +35,6 @@ export default function Homepage() {
 	};
 
 	const {
-		worktimes,
 		worktimesByDay,
 		monthWorktimes,
 		recurrenceExceptions,
@@ -157,6 +156,13 @@ export default function Homepage() {
 							style={{
 								width: '31.7%',
 								height: '99%',
+								maxHeight: timerIsOpen
+									? formIsOpen
+										? '48%'
+										: '83%'
+									: calendarIsOpen
+									? '46%'
+									: '100%',
 								backgroundColor: colors.background,
 								marginInline: 0,
 								marginBlock: 0,
@@ -217,7 +223,7 @@ export default function Homepage() {
 									onExceptionPress={handleExceptionPress}
 								/>
 								<WorktimesList
-									worktimes={worktimes}
+									worktimes={worktimesByDay.today}
 									currentDate={date}
 									recurrenceExceptions={recurrenceExceptions}
 									setModalType={setModalType}
@@ -232,6 +238,13 @@ export default function Homepage() {
 							style={{
 								width: '31.7%',
 								height: '99%',
+								maxHeight: timerIsOpen
+									? formIsOpen
+										? '48%'
+										: '83%'
+									: calendarIsOpen
+									? '46%'
+									: '100%',
 								backgroundColor: colors.background,
 								marginInline: 0,
 								marginBlock: 0,

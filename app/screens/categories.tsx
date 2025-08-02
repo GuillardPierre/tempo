@@ -33,13 +33,18 @@ export default function Categories() {
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
 	const deleteCategory = async (category: Category) => {
-		const rep = await httpDelete(`${ENDPOINTS.category.root}${category.id}`);
+		const rep = await httpDelete(
+			`${ENDPOINTS.category.root}${category.id}`
+		);
 		if (rep.ok) {
 			setSnackBar('info', 'Catégorie supprimée');
 			setCategories(categories.filter((c) => c.id !== category.id));
 			setModalVisible(false);
 		} else {
-			setSnackBar('error', 'Erreur lors de la suppression de la catégorie');
+			setSnackBar(
+				'error',
+				'Erreur lors de la suppression de la catégorie'
+			);
 		}
 	};
 
@@ -69,7 +74,10 @@ export default function Categories() {
 	return (
 		<>
 			<SafeAreaView style={{ backgroundColor: colors.primary, flex: 1 }}>
-				<StatusBar backgroundColor={colors.primary} barStyle='light-content' />
+				<StatusBar
+					backgroundColor={colors.primary}
+					barStyle='light-content'
+				/>
 				<Header
 					modalVisible={modalVisible}
 					setModalVisible={setModalVisible}
@@ -82,8 +90,8 @@ export default function Categories() {
 					{categories.length === 0 && (
 						<BlockWrapper backgroundColor={colors.primaryLight}>
 							<ThemedText>
-								Aucune catégorie encore créée. Retournez sur la page précédente
-								pour en créer une.
+								Aucune catégorie encore créée. Retournez sur la
+								page précédente pour en créer une.
 							</ThemedText>
 						</BlockWrapper>
 					)}
@@ -94,10 +102,18 @@ export default function Categories() {
 						>
 							<ThemedText>{category.name}</ThemedText>
 							<View style={styles.icons}>
-								<Pressable onPress={(e) => handleButton(category, 'delete')}>
+								<Pressable
+									onPress={(e) =>
+										handleButton(category, 'delete')
+									}
+								>
 									<TrashSvg />
 								</Pressable>
-								<Pressable onPress={(e) => handleButton(category, 'update')}>
+								<Pressable
+									onPress={(e) =>
+										handleButton(category, 'update')
+									}
+								>
 									<BurgerMenuSvg />
 								</Pressable>
 							</View>
@@ -111,8 +127,13 @@ export default function Categories() {
 					setOpen={setOpen}
 				/>
 			</SafeAreaView>
-			<ModalMenu modalVisible={modalVisible} setModalVisible={setModalVisible}>
-				{modalType === 'menu' && <Menu setModalVisible={setModalVisible} />}
+			<ModalMenu
+				modalVisible={modalVisible}
+				setModalVisible={setModalVisible}
+			>
+				{modalType === 'menu' && (
+					<Menu setModalVisible={setModalVisible} />
+				)}
 				{modalType === 'update' && selectedCategory && (
 					<CategoryForm
 						category={selectedCategory}
@@ -128,8 +149,8 @@ export default function Categories() {
 						</ThemedText>
 						<BlockWrapper backgroundColor={colors.error}>
 							<ThemedText color='primaryText'>
-								Attention toutes les entrées de cette catégorie seront
-								supprimées.
+								Attention toutes les entrées de cette catégorie
+								seront supprimées.
 							</ThemedText>
 						</BlockWrapper>
 						<View style={styles.buttonsContainer}>
