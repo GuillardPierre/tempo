@@ -68,7 +68,7 @@ const WorktimesList = ({
 			}}
 		>
 			{worktimes
-				.filter((worktime) => worktime.endTime !== null)
+				.filter((worktime) => worktime.endHour !== null)
 				.map((worktime) => (
 					<Block
 						key={`${worktime.type}-${worktime.id}`}

@@ -35,7 +35,6 @@ export default function Homepage() {
 	};
 
 	const {
-		worktimes,
 		worktimesByDay,
 		monthWorktimes,
 		recurrenceExceptions,
@@ -157,10 +156,17 @@ export default function Homepage() {
 							style={{
 								width: '31.7%',
 								height: '99%',
+								maxHeight: timerIsOpen
+									? formIsOpen
+										? '48%'
+										: '83%'
+									: calendarIsOpen
+									? '46%'
+									: '100%',
 								backgroundColor: colors.background,
 								marginInline: 0,
 								marginBlock: 0,
-								marginTop: 6,
+								marginTop: 6.5,
 							}}
 						>
 							<View
@@ -185,14 +191,14 @@ export default function Homepage() {
 						<View
 							style={{
 								width: '33.33%',
-								height: '100%',
+								height: '99%',
 								maxHeight: timerIsOpen
 									? formIsOpen
-										? '49%'
+										? '48%'
 										: '83%'
 									: calendarIsOpen
 									? '46%'
-									: 'auto',
+									: '100%',
 							}}
 						>
 							<UnfinishedWorktimesList
@@ -217,7 +223,7 @@ export default function Homepage() {
 									onExceptionPress={handleExceptionPress}
 								/>
 								<WorktimesList
-									worktimes={worktimes}
+									worktimes={worktimesByDay.today}
 									currentDate={date}
 									recurrenceExceptions={recurrenceExceptions}
 									setModalType={setModalType}
@@ -232,10 +238,17 @@ export default function Homepage() {
 							style={{
 								width: '31.7%',
 								height: '99%',
+								maxHeight: timerIsOpen
+									? formIsOpen
+										? '48%'
+										: '83%'
+									: calendarIsOpen
+									? '46%'
+									: '100%',
 								backgroundColor: colors.background,
 								marginInline: 0,
 								marginBlock: 0,
-								marginTop: 6,
+								marginTop: 4,
 							}}
 						>
 							<View

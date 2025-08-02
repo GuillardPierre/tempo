@@ -30,8 +30,8 @@ export type WorktimeType = 'SINGLE' | 'RECURRING';
 export interface Worktime {
 	id?: number;
 	categoryName: string;
-	startTime: string;
-	endTime: string;
+	startHour: string;
+	endHour: string;
 	duration: number;
 	type: WorktimeType;
 	categoryId: number | null;
@@ -51,8 +51,8 @@ export interface CreateWorktimePayload {
 		id: string | null;
 		name: string;
 	};
-	startTime: Date | string;
-	endTime: Date | string;
+	startHour: Date | string;
+	endHour: Date | string;
 	recurrence?: CreateRecurrenceRule;
 	startDate?: Date | string;
 }

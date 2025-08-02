@@ -6,6 +6,8 @@ import TimerForm from '@/app/forms/timerForm';
 import ButtonMenu from '../ButtonMenu';
 import DeleteBlock from './DeleteBlock';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
+import { useDateFormatter } from '@/app/hooks/useDateFormatter';
+import { formatDateRange } from '@/app/utils/dateFormatters';
 
 type Props = {
 	setModalVisible: (visible: boolean) => void;
@@ -31,22 +33,12 @@ export default function UpdateDeleteModal({
 	date,
 }: Props) {
 	const colors = useThemeColors();
+	const { formatDateTime } = useDateFormatter();
 	const [mode, setMode] = useState<'view' | 'edit' | 'delete'>('view');
 	const [snackBarMessage, setSnackBarMessage] = useState<{
 		type: 'error' | 'info';
 		message: string;
 	} | null>(null);
-
-	const formatDate = (dateString: string | undefined): string => {
-		if (!dateString) return '';
-		const date = new Date(dateString);
-		const hours = date.getHours().toString().padStart(2, '0');
-		const minutes = date.getMinutes().toString().padStart(2, '0');
-		const day = date.getDate().toString().padStart(2, '0');
-		const month = (date.getMonth() + 1).toString().padStart(2, '0');
-		const year = date.getFullYear();
-		return `${hours}:${minutes} ${day}-${month}-${year}`;
-	};
 
 	const handleUpdateSuccess = () => {
 		setSnackBarMessage({
@@ -69,18 +61,21 @@ export default function UpdateDeleteModal({
 		<View style={styles.container}>
 			{mode === 'view' && (
 				<View style={styles.viewContainer}>
-					<View style={styles.header}>
-						<ThemedText
-							variant='body'
-							color='secondaryText'
-							style={{ textAlign: 'center' }}
-						>
-							{`${selectedWorktime?.categoryName} - ${formatDate(
-								selectedWorktime?.startTime
-							)}`}
+					<View style={styles.workTimeInfoContainer}>
+						<ThemedText variant='body' color='secondaryText'>
+							{`Catégorie: ${
+								selectedWorktime?.categoryName ||
+								'Non spécifiée'
+							}`}
+						</ThemedText>
+						<ThemedText variant='body' color='secondaryText'>
+							{formatDateRange(
+								selectedWorktime?.startHour,
+								selectedWorktime?.endHour,
+								selectedWorktime?.type
+							)}
 						</ThemedText>
 					</View>
-
 					<View style={styles.buttonsContainer}>
 						<ButtonMenu
 							type='round'
@@ -227,5 +222,11 @@ const styles = StyleSheet.create({
 		padding: 10,
 		borderRadius: 5,
 		alignItems: 'center',
+	},
+	workTimeInfoContainer: {
+		marginVertical: 15,
+		padding: 10,
+		backgroundColor: '#f5f5f5',
+		borderRadius: 8,
 	},
 });

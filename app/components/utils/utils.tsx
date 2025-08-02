@@ -46,21 +46,6 @@ export const formatDate = (dateString: string | undefined): string => {
 	return `${hours}:${minutes} ${day}-${month}-${year}`;
 };
 
-export const formatDateWihtoutTime = (
-	dateString: string | undefined
-): string => {
-	if (!dateString) return '';
-
-	const date = new Date(dateString);
-
-	// Get day, month, and year with leading zeros where needed
-	const day = date.getDate().toString().padStart(2, '0');
-	const month = (date.getMonth() + 1).toString().padStart(2, '0'); // Month is 0-indexed
-	const year = date.getFullYear();
-
-	return `${day}-${month}-${year}`;
-};
-
 export function formatLocalDateTime(date: Date) {
 	const pad = (n: number) => n.toString().padStart(2, '0');
 	return (

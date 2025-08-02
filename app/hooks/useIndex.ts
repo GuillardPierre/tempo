@@ -34,9 +34,6 @@ export const useIndex = () => {
 	const router = useRouter();
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
-	// Computed property pour accéder facilement aux worktimes du jour
-	const worktimes = worktimesByDay.today;
-
 	// Fonction wrapper pour maintenir la compatibilité avec les composants existants
 	const setWorktimes = (
 		updater:
@@ -70,7 +67,7 @@ export const useIndex = () => {
 				...(worktimesByDay.tomorrow || []),
 			];
 			setUnfinishedWorktimes(
-				allWorktimes.filter((worktime) => worktime.endTime === null)
+				allWorktimes.filter((worktime) => worktime.endHour === null)
 			);
 		}
 	}, [worktimesByDay, month]);
@@ -112,8 +109,6 @@ export const useIndex = () => {
 			console.error('Erreur getMonthWorktimes:', error);
 		}
 	};
-
-	console.log('worktimes', worktimes);
 
 	const getWorktimes = async () => {
 		try {
@@ -173,7 +168,6 @@ export const useIndex = () => {
 	};
 
 	return {
-		worktimes,
 		worktimesByDay,
 		monthWorktimes,
 		recurrenceExceptions,

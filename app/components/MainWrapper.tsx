@@ -48,7 +48,7 @@ export default function MainWrapper({
 			const animations = [
 				Animated.timing(animation, {
 					toValue: 1,
-					duration: 300,
+					duration: 100,
 					useNativeDriver: false,
 				}),
 			];
@@ -56,7 +56,7 @@ export default function MainWrapper({
 				animations.push(
 					Animated.timing(animatedHeight, {
 						toValue: height,
-						duration: 300,
+						duration: 100,
 						useNativeDriver: false,
 					})
 				);
@@ -66,7 +66,7 @@ export default function MainWrapper({
 			const animations = [
 				Animated.timing(animation, {
 					toValue: 0,
-					duration: 300,
+					duration: 100,
 					useNativeDriver: false,
 				}),
 			];
@@ -74,7 +74,7 @@ export default function MainWrapper({
 				animations.push(
 					Animated.timing(animatedHeight, {
 						toValue: 0,
-						duration: 300,
+						duration: 100,
 						useNativeDriver: false,
 					})
 				);
@@ -129,7 +129,7 @@ export default function MainWrapper({
 			{
 				translateY: animation.interpolate({
 					inputRange: [0, 1],
-					outputRange: direction === 'bottom' ? [300, 0] : [-300, 0],
+					outputRange: direction === 'bottom' ? [50, 0] : [-300, 0],
 				}),
 			},
 		],

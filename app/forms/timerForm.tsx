@@ -115,20 +115,16 @@ export default function TimerForm({
 				onSubmit={(values) => {
 					submitWorktime({
 						...values,
-						startTime: formatLocalDateTime(values.startTime),
-						endTime:
-							mode === 'activity' && values.endTime
-								? formatLocalDateTime(values.endTime)
-								: undefined,
+						startHour: formatLocalDateTime(values.startHour),
+						endHour: values.endHour
+							? formatLocalDateTime(values.endHour)
+							: null,
 						recurrence:
 							mode === 'activity' &&
 							isRecurring &&
 							selectedDays.length > 0
 								? `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`
 								: undefined,
-						endDate: values.endDate
-							? formatLocalDateTime(values.endDate)
-							: undefined,
 					});
 				}}
 			>
@@ -257,13 +253,13 @@ export default function TimerForm({
 								<View style={styles.timePickerContainer}>
 									<TimePickerInput
 										label='Heure début:'
-										value={values.startTime}
+										value={values.startHour}
 										onChange={(date) => {
 											Vibration.vibrate(50);
-											setFieldValue('startTime', date);
-											values.endTime &&
-												date > values.endTime &&
-												setFieldValue('endTime', date);
+											setFieldValue('startHour', date);
+											values.startHour &&
+												date > values.startHour &&
+												setFieldValue('endHour', date);
 										}}
 									/>
 									{mode === 'chrono' && (
@@ -281,10 +277,8 @@ export default function TimerForm({
 											action={() => {
 												Vibration.vibrate(50);
 												if (
-													values.startDate >
-														new Date() ||
-													values.startTime >
-														new Date()
+													values.startHour >
+													new Date()
 												) {
 													setSnackBar(
 														'error',
@@ -302,8 +296,8 @@ export default function TimerForm({
 										<TimePickerInput
 											label='Heure fin:'
 											value={
-												values.endTime
-													? values.endTime
+												values.endHour
+													? values.endHour
 													: new Date(
 															date +
 																'T' +
@@ -314,7 +308,7 @@ export default function TimerForm({
 											}
 											onChange={(date) => {
 												Vibration.vibrate(50);
-												setFieldValue('endTime', date);
+												setFieldValue('endHour', date);
 											}}
 										/>
 									</View>

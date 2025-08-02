@@ -58,7 +58,7 @@ export default function Calendar({
 		const to = new Date(year, month + 1, 0, 23, 59, 59);
 
 		if (wt.type === 'SINGLE') {
-			const d = new Date(wt.startTime);
+			const d = new Date(wt.startHour);
 			if (d >= from && d <= to) {
 				return [d.toISOString().slice(0, 10)];
 			}
@@ -66,10 +66,10 @@ export default function Calendar({
 		}
 
 		if (wt.recurrence && typeof wt.recurrence === 'string') {
-			const endDate = (wt as any).endDate;
+			const endDate = (wt as any).end;
 			const rrule = getRRuleFromRecurrence(
 				wt.recurrence,
-				wt.startTime,
+				wt.startHour,
 				endDate,
 				to
 			);

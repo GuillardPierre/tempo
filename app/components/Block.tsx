@@ -105,12 +105,12 @@ export default function Block({
 		const newData = {
 			...worktime,
 			isActive: false,
-			endTime: new Date(),
+			endHour: new Date(),
 			category: { id: worktime.categoryId, title: worktime.categoryName },
 		};
 		const formattedData = {
 			...newData,
-			endTime: formatLocalDateTime(new Date()),
+			endHour: formatLocalDateTime(new Date()),
 		};
 		const rep = await httpPut(
 			`${ENDPOINTS.worktime.root}${worktime.id}`,
@@ -122,7 +122,7 @@ export default function Block({
 				setUnfinishedWorktimes([]);
 			}
 			if (setWorktimes) {
-				const worktimeDay = new Date(data.startTime)
+				const worktimeDay = new Date(data.start)
 					.toISOString()
 					.split('T')[0];
 				if (worktimeDay === currentDate) {
@@ -146,10 +146,10 @@ export default function Block({
 			hasException={hasException}
 		>
 			<View style={styles.timeContainer}>
-				<ThemedText>{convertTime(worktime.startTime)}</ThemedText>
+				<ThemedText>{convertTime(worktime.startHour)}</ThemedText>
 				<View style={styles.separator} />
 				<ThemedText>
-					{worktime.endTime ? convertTime(worktime.endTime) : '-'}
+					{worktime.endHour ? convertTime(worktime.endHour) : '-'}
 				</ThemedText>
 			</View>
 			<ThemedText
@@ -157,17 +157,17 @@ export default function Block({
 				variant='header2'
 				color='primaryText'
 			>
-				{categoryName} {!worktime.endTime ? '- En cours...' : ''}
+				{categoryName} {!worktime.endHour ? '- En cours...' : ''}
 			</ThemedText>
 			<>
 				<CustomChip>
 					{typeof worktime.duration === 'number' ? (
 						convertDuration(worktime.duration)
 					) : (
-						<Chronometre startTime={worktime.startTime} />
+						<Chronometre startTime={worktime.startHour} />
 					)}
 				</CustomChip>
-				{worktime.endTime !== null ? (
+				{worktime.endHour !== null ? (
 					<Pressable
 						onPress={() => {
 							Vibration.vibrate(50);

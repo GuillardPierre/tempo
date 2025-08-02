@@ -61,7 +61,7 @@ export function useTimerForm({
 		onSuccess: (data) => {
 			setSnackBar(
 				'info',
-				!data.endTime
+				!data.end
 					? 'Temps de travail commencé. Bon travail !'
 					: isEditing
 					? 'Activité modifiée'
@@ -71,10 +71,10 @@ export function useTimerForm({
 
 			const shouldAddToFeed = (() => {
 				if (!data.recurrence) {
-					return data.startTime?.split('T')[0] === date;
+					return data.start?.split('T')[0] === date;
 				}
-				if (data.recurrence && data.startDate) {
-					const startDateOnly = data.startDate?.split('T')[0];
+				if (data.recurrence && data.start) {
+					const startDateOnly = data.start?.split('T')[0];
 					return startDateOnly === date;
 				}
 				return false;
@@ -85,7 +85,7 @@ export function useTimerForm({
 					setWorktimes((prev) =>
 						prev.map((wt) => (wt.id === data.id ? data : wt))
 					);
-				} else if (!data.endTime) {
+				} else if (!data.end) {
 					data.type = 'CHRONO';
 					setWorktimes((prev) => [...prev, data]);
 				} else {
@@ -124,11 +124,11 @@ export function useTimerForm({
 						title: selectedWorktime.categoryName || '',
 				  }
 				: { id: null, title: '' },
-			startTime: selectedWorktime?.startTime
-				? new Date(selectedWorktime.startTime)
+			startHour: selectedWorktime?.startHour
+				? new Date(selectedWorktime.startHour)
 				: createLocalDate(date, new Date().toTimeString().slice(0, 8)),
-			endTime: selectedWorktime?.endTime
-				? new Date(selectedWorktime.endTime)
+			endHour: selectedWorktime?.endHour
+				? new Date(selectedWorktime.endHour)
 				: undefined,
 			recurrence: undefined as CreateRecurrenceRule | undefined,
 			startDate: selectedWorktime?.startDate

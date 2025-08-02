@@ -7,8 +7,8 @@ export const createWorkTimeSchema = () => {
 				id: z.string().nullable(),
 				title: z.string().min(1, 'Une catégorie est requise'),
 			}),
-			startTime: z.date(),
-			endTime: z.date().nullish(),
+			startHour: z.date(),
+			endHour: z.date().nullish(),
 			recurrence: z
 				.object({
 					freq: z.string(),
@@ -18,14 +18,14 @@ export const createWorkTimeSchema = () => {
 		})
 		.refine(
 			(data) => {
-				if (data.endTime) {
-					return data.endTime > data.startTime;
+				if (data.endHour) {
+					return data.endHour > data.startHour;
 				}
 				return true;
 			},
 			{
 				message: "L'heure de fin doit être après l'heure de début",
-				path: ['endTime'],
+				path: ['endHour'],
 			}
 		);
 };
