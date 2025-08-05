@@ -67,7 +67,9 @@ export const useIndex = () => {
 				...(worktimesByDay.tomorrow || []),
 			];
 			setUnfinishedWorktimes(
-				allWorktimes.filter((worktime) => worktime.endHour === null)
+				worktimesByDay.today.filter(
+					(worktime) => worktime.endHour === null
+				)
 			);
 		}
 	}, [worktimesByDay, month]);

@@ -119,6 +119,12 @@ export default function TimerForm({
 						endHour: values.endHour
 							? formatLocalDateTime(values.endHour)
 							: null,
+						startDate: values.startDate
+							? formatLocalDateTime(values.startDate)
+							: null,
+						endDate: values.endDate
+							? formatLocalDateTime(values.endDate)
+							: null,
 						recurrence:
 							mode === 'activity' &&
 							isRecurring &&

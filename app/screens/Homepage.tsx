@@ -60,7 +60,6 @@ export default function Homepage() {
 		setSelectedException,
 	} = useIndex();
 
-	// Initialiser currentDateRef avec la valeur actuelle de date
 	const currentDateRef = useRef<string>(date);
 
 	useEffect(() => {
@@ -201,22 +200,24 @@ export default function Homepage() {
 									: '100%',
 							}}
 						>
-							<UnfinishedWorktimesList
-								unfinishedWorktimes={unfinishedWorktimes}
-								currentDate={date}
-								recurrenceExceptions={recurrenceExceptions}
-								setModalType={setModalType}
-								setModalVisible={setModalVisible}
-								setSelectedWorktime={setSelectedWorktime}
-								setUnfinishedWorktimes={setUnfinishedWorktimes}
-								setWorktimes={setWorktimes}
-								setSnackBar={setSnackBar}
-							/>
 							<MainWrapper
 								style={{
 									height: '100%',
 								}}
 							>
+								<UnfinishedWorktimesList
+									unfinishedWorktimes={unfinishedWorktimes}
+									currentDate={date}
+									recurrenceExceptions={recurrenceExceptions}
+									setModalType={setModalType}
+									setModalVisible={setModalVisible}
+									setSelectedWorktime={setSelectedWorktime}
+									setUnfinishedWorktimes={
+										setUnfinishedWorktimes
+									}
+									setWorktimes={setWorktimes}
+									setSnackBar={setSnackBar}
+								/>
 								<ExceptionsList
 									exceptions={recurrenceExceptions}
 									date={date}

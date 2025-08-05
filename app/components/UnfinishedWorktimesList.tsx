@@ -12,7 +12,9 @@ interface UnfinishedWorktimesListProps {
 	setSelectedWorktime: (worktime: WorktimeSeries) => void;
 	setUnfinishedWorktimes: (worktimes: WorktimeSeries[]) => void;
 	setWorktimes: (
-		worktimes: WorktimeSeries[] | ((prev: WorktimeSeries[]) => WorktimeSeries[])
+		worktimes:
+			| WorktimeSeries[]
+			| ((prev: WorktimeSeries[]) => WorktimeSeries[])
 	) => void;
 	setSnackBar: (type: 'error' | 'info', messageText: string) => void;
 }
@@ -32,11 +34,12 @@ export default function UnfinishedWorktimesList({
 		return null;
 	}
 
+	console.log('unfinishedWorktimes', unfinishedWorktimes);
 	return (
-		<MainWrapper height={108}>
+		<>
 			{unfinishedWorktimes.map((worktime) => (
 				<Block
-					key={worktime.id}
+					key={`${worktime.id}-chrono`}
 					worktime={worktime}
 					setModalType={setModalType}
 					setModalVisible={setModalVisible}
@@ -48,6 +51,6 @@ export default function UnfinishedWorktimesList({
 					recurrenceExceptions={recurrenceExceptions}
 				/>
 			))}
-		</MainWrapper>
+		</>
 	);
 }

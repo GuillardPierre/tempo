@@ -61,7 +61,7 @@ export function useTimerForm({
 		onSuccess: (data) => {
 			setSnackBar(
 				'info',
-				!data.end
+				!data.endHour
 					? 'Temps de travail commencé. Bon travail !'
 					: isEditing
 					? 'Activité modifiée'
@@ -71,11 +71,39 @@ export function useTimerForm({
 
 			const shouldAddToFeed = (() => {
 				if (!data.recurrence) {
-					return data.start?.split('T')[0] === date;
+					// Pour les worktime simples, vérifier si startHour correspond au jour actuel
+					return data.startHour?.split('T')[0] === date;
 				}
-				if (data.recurrence && data.start) {
-					const startDateOnly = data.start?.split('T')[0];
-					return startDateOnly === date;
+
+				if (data.recurrence && data.startDate) {
+					// Pour les séries récurrentes
+					const startDateOnly = data.startDate?.split('T')[0];
+					const endDateOnly = data.endDate?.split('T')[0];
+					const currentDate = date;
+					const isAfterStart = currentDate >= startDateOnly;
+					const isBeforeEnd =
+						!endDateOnly || currentDate <= endDateOnly;
+
+					if (isAfterStart && isBeforeEnd) {
+						const byDayMatch =
+							data.recurrence.match(/BYDAY=([^;]+)/);
+						if (byDayMatch) {
+							const recurrenceDays = byDayMatch[1].split(',');
+							const dateObj = new Date(currentDate + 'T00:00:00');
+							const dayOfWeek = dateObj.getDay();
+							const dayToByDay = [
+								'SU',
+								'MO',
+								'TU',
+								'WE',
+								'TH',
+								'FR',
+								'SA',
+							];
+							const currentDayByDay = dayToByDay[dayOfWeek];
+							return recurrenceDays.includes(currentDayByDay);
+						}
+					}
 				}
 				return false;
 			})();
@@ -85,7 +113,7 @@ export function useTimerForm({
 					setWorktimes((prev) =>
 						prev.map((wt) => (wt.id === data.id ? data : wt))
 					);
-				} else if (!data.end) {
+				} else if (!data.endHour) {
 					data.type = 'CHRONO';
 					setWorktimes((prev) => [...prev, data]);
 				} else {
@@ -114,7 +142,16 @@ export function useTimerForm({
 		) => {
 			const [year, month, day] = dateString.split('-').map(Number);
 			const [hours, minutes, seconds] = timeString.split(':').map(Number);
-			return new Date(year, month - 1, day, hours, minutes, seconds);
+			const date = new Date(
+				year,
+				month - 1,
+				day,
+				hours,
+				minutes,
+				seconds
+			);
+			console.log('date', date);
+			return date;
 		};
 
 		const initialValues = {
@@ -126,7 +163,7 @@ export function useTimerForm({
 				: { id: null, title: '' },
 			startHour: selectedWorktime?.startHour
 				? new Date(selectedWorktime.startHour)
-				: createLocalDate(date, new Date().toTimeString().slice(0, 8)),
+				: new Date(),
 			endHour: selectedWorktime?.endHour
 				? new Date(selectedWorktime.endHour)
 				: undefined,
