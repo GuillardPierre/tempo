@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { StyleSheet } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
 import { Snackbar } from 'react-native-paper';
 
 type Props = {
@@ -37,9 +37,10 @@ export default function CustomSnackBar({
 			action={{
 				label: 'OK',
 				onPress: closeSnackBar,
+				labelStyle: { color: '#FFFFFF' },
 			}}
 		>
-			{message}
+			<Text style={{ color: '#FFFFFF' }}>{message}</Text>
 		</Snackbar>
 	);
 }
