@@ -150,7 +150,6 @@ export function useTimerForm({
 				minutes,
 				seconds
 			);
-			console.log('date', date);
 			return date;
 		};
 
@@ -166,7 +165,7 @@ export function useTimerForm({
 				: new Date(),
 			endHour: selectedWorktime?.endHour
 				? new Date(selectedWorktime.endHour)
-				: undefined,
+				: new Date(),
 			recurrence: undefined as CreateRecurrenceRule | undefined,
 			startDate: selectedWorktime?.startDate
 				? new Date(selectedWorktime.startDate)

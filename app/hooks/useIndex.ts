@@ -117,7 +117,6 @@ export const useIndex = () => {
 			const rep = await httpGet(`${ENDPOINTS.schedule.day}${date}`);
 			if (rep.ok) {
 				const data = await rep.json();
-				console.log('data', data);
 				setWorktimesByDay(
 					data || {
 						yesterday: [],
