@@ -1,4 +1,4 @@
-import { Vibration, View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Vibration, View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
 import React, { useEffect, useState } from 'react';
 import ButtonMenu from '../components/ButtonMenu';
 import TimePickerInput from './utils/TimePickerInput';
@@ -14,6 +14,7 @@ import { useTimerForm } from './useTimerForm';
 import BlockWrapper from '../components/BlockWrapper';
 import ThemedText from '../components/utils/ThemedText';
 import { Switch } from 'react-native-paper';
+import { formatRecurrenceRule, parseRecurrenceRule } from '../utils/recurrence';
 
 type TimerFormMode = 'chrono' | 'activity';
 
@@ -95,13 +96,16 @@ export default function TimerForm({
 
 	useEffect(() => {
 		if (selectedWorktime?.recurrence) {
-			const byDayMatch =
-				selectedWorktime.recurrence.match(/BYDAY=([^;]+)/);
-			if (byDayMatch) setSelectedDays(byDayMatch[1].split(','));
+			const parsedDays = parseRecurrenceRule(selectedWorktime.recurrence);
+			setSelectedDays(parsedDays);
 		}
 	}, [selectedWorktime]);
 
-	const [isRecurring, setIsRecurring] = useState(false);
+	const [isRecurring, setIsRecurring] = useState(
+		selectedWorktime?.recurrence ? true : false
+	);
+
+	const screenWidth = Dimensions.get('window').width;
 
 	return (
 		<View>
@@ -129,7 +133,7 @@ export default function TimerForm({
 							mode === 'activity' &&
 							isRecurring &&
 							selectedDays.length > 0
-								? `FREQ=WEEKLY;BYDAY=${selectedDays.join(',')}`
+								? formatRecurrenceRule(selectedDays)
 								: undefined,
 					});
 				}}
@@ -142,6 +146,7 @@ export default function TimerForm({
 								{
 									paddingVertical:
 										mode === 'activity' ? 0 : 10,
+									width: screenWidth - 100,
 								},
 							]}
 						>
@@ -406,7 +411,7 @@ export default function TimerForm({
 											</ScrollView>
 
 											<TimePickerInput
-												label='Date de fin (exclusive, non obligatoire):'
+												label='Date de fin (non obligatoire):'
 												value={values.endDate}
 												onChange={(date) => {
 													Vibration.vibrate(50);
@@ -419,7 +424,7 @@ export default function TimerForm({
 												mode='date'
 												display='calendar'
 											/>
-											<BlockWrapper>
+											<BlockWrapper style={{minHeight: 80}}>
 												<ThemedText
 													variant='body'
 													color='secondaryText'
@@ -434,6 +439,7 @@ export default function TimerForm({
 												style={{
 													flexDirection: 'row',
 													alignItems: 'center',
+													marginBottom: isEditing ? 60: 0
 												}}
 											>
 												<Switch
@@ -540,6 +546,8 @@ const styles = StyleSheet.create({
 		borderRadius: 16,
 		backgroundColor: '#f7f7f7',
 		paddingVertical: 6,
+		minHeight: 70,
+		marginBottom: 10,
 	},
 	dayButtonsContainer: {
 		flexDirection: 'row',

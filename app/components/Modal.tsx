@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
 	scrollContainer: {
 		width: '100%',
 		flexGrow: 0,
-		overflow: 'visible',
+		overflow: 'hidden',
 	},
 	scrollContent: {
 		flexGrow: 1,

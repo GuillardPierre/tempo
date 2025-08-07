@@ -7,6 +7,7 @@ import {
 	SelectedWorktime,
 	CreateRecurrenceRule,
 } from '../types/worktime';
+import { parseRecurrenceRule } from '../utils/recurrence';
 
 export function useTimerForm({
 	setSnackBar,
@@ -28,16 +29,15 @@ export function useTimerForm({
 	selectedWorktime?: SelectedWorktime | null;
 	isEditing?: boolean;
 	date: string;
-}) {
+}) {	
 	const [selectedDays, setSelectedDays] = useState<string[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchText, setSearchText] = useState('');
 
 	useEffect(() => {
 		if (selectedWorktime?.recurrence) {
-			const byDayMatch =
-				selectedWorktime.recurrence.match(/BYDAY=([^;]+)/);
-			if (byDayMatch) setSelectedDays(byDayMatch[1].split(','));
+			const parsedDays = parseRecurrenceRule(selectedWorktime.recurrence);
+			setSelectedDays(parsedDays);
 		}
 	}, [selectedWorktime]);
 
@@ -136,22 +136,12 @@ export function useTimerForm({
 
 	const getInitialValues = () => {
 		// Créer une date locale pour éviter les problèmes de timezone
-		const createLocalDate = (
-			dateString: string,
-			timeString: string = '00:00:00'
-		) => {
+		const createUtcDate = (dateString: string, timeString: string = '00:00:00') => {
 			const [year, month, day] = dateString.split('-').map(Number);
 			const [hours, minutes, seconds] = timeString.split(':').map(Number);
-			const date = new Date(
-				year,
-				month - 1,
-				day,
-				hours,
-				minutes,
-				seconds
-			);
-			return date;
-		};
+			return new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds));
+		  };
+		  
 
 		const initialValues = {
 			category: selectedWorktime
@@ -162,14 +152,36 @@ export function useTimerForm({
 				: { id: null, title: '' },
 			startHour: selectedWorktime?.startHour
 				? new Date(selectedWorktime.startHour)
-				: new Date(),
+				: (() => {
+					const [year, month, day] = date.split('-').map(Number);
+					const now = new Date();
+					return new Date(
+						year,
+						month - 1,
+						day,
+						now.getHours(),
+						now.getMinutes(),
+						now.getSeconds()
+					);
+				})(),
 			endHour: selectedWorktime?.endHour
 				? new Date(selectedWorktime.endHour)
-				: new Date(),
+				: (() => {
+					const [year, month, day] = date.split('-').map(Number);
+					const now = new Date();
+					return new Date(
+						year,
+						month - 1,
+						day,
+						now.getHours(),
+						now.getMinutes(),
+						now.getSeconds()
+					);
+				})(),
 			recurrence: undefined as CreateRecurrenceRule | undefined,
 			startDate: selectedWorktime?.startDate
 				? new Date(selectedWorktime.startDate)
-				: createLocalDate(date),
+				: createUtcDate(date),
 			endDate: selectedWorktime?.endDate
 				? new Date(selectedWorktime.endDate)
 				: undefined,
