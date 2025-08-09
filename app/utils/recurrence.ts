@@ -64,4 +64,58 @@ export function parseRecurrenceRule(recurrence: string): string[] {
 		console.error('Erreur lors du parsing de la récurrence:', error);
 		return [];
 	}
+}
+
+/**
+ * Convertit un code de jour en nom français
+ * @param dayCode - Code du jour (MO, TU, WE, etc.)
+ * @returns Nom du jour en français
+ */
+export function getDayNameInFrench(dayCode: string): string {
+	const dayNames: { [key: string]: string } = {
+		'MO': 'Lundi',
+		'TU': 'Mardi',
+		'WE': 'Mercredi',
+		'TH': 'Jeudi',
+		'FR': 'Vendredi',
+		'SA': 'Samedi',
+		'SU': 'Dimanche'
+	};
+	
+	return dayNames[dayCode] || dayCode;
+}
+
+/**
+ * Formate la liste des jours actifs en français
+ * @param recurrence - Règle de récurrence
+ * @returns Chaîne formatée des jours actifs
+ */
+export function formatActiveDaysInFrench(recurrence: string): string {
+	if (!recurrence) return 'Aucun jour défini';
+	
+	const activeDays = parseRecurrenceRule(recurrence);
+	
+	if (activeDays.length === 0) {
+		return 'Aucun jour défini';
+	}
+	
+	if (activeDays.length === 1) {
+		return getDayNameInFrench(activeDays[0]);
+	}
+	
+	// Trier les jours dans l'ordre logique
+	const dayOrder = ['MO', 'TU', 'WE', 'TH', 'FR', 'SA', 'SU'];
+	const sortedDays = activeDays.sort((a, b) => 
+		dayOrder.indexOf(a) - dayOrder.indexOf(b)
+	);
+	
+	// Formater la liste avec des virgules et "et" pour le dernier
+	const dayNames = sortedDays.map(day => getDayNameInFrench(day));
+	
+	if (dayNames.length === 2) {
+		return `${dayNames[0]} et ${dayNames[1]}`;
+	}
+	
+	const lastDay = dayNames.pop();
+	return `${dayNames.join(', ')} et ${lastDay}`;
 } 

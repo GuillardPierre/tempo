@@ -22,29 +22,47 @@ export const formatDateTime = (dateString: string | undefined): string => {
 	return `${hours}:${minutes} ${day}-${month}-${year}`;
 };
 
+
+
+// Fonction utilitaire pour formater seulement l'heure
+const formatHourOnly = (hourString: string | undefined): string => {
+	if (!hourString) return '00:00';
+	const date = new Date(hourString);
+	const hours = date.getHours().toString().padStart(2, '0');
+	const minutes = date.getMinutes().toString().padStart(2, '0');
+	return `${hours}:${minutes}`;
+};
+
 export const formatDateRange = (
-	start: string | undefined,
-	end: string | undefined,
+	startDate: string | undefined,
+	endDate: string | undefined,
+	startHour: string | undefined,
+	endHour: string | undefined,
 	type?: string
 ): string => {
-	const formatDate = (dateString: string | undefined): string => {
-		if (!dateString) return '';
-		const date = new Date(dateString);
-		const day = date.getDate().toString().padStart(2, '0');
-		const month = (date.getMonth() + 1).toString().padStart(2, '0');
-		const year = date.getFullYear();
-		const hours = date.getHours().toString().padStart(2, '0');
-		const minutes = date.getMinutes().toString().padStart(2, '0');
-		return `${hours}:${minutes} ${day}-${month}-${year}`;
-	};
-
-	// Gestion spéciale selon le type
-	let endFormatted = formatDate(end);
-	if (type === 'SINGLE' && !end) {
-		endFormatted = 'pas de fin';
+	// Gestion selon le type
+	if (type === 'RECURRING') {
+		
+		// Pour RECURRING : utiliser les dates pour les jours et les heures pour les heures
+		const startDateFormatted = formatDateOnly(startDate);
+		const endDateFormatted = formatDateOnly(endDate);
+		const startHourFormatted = formatHourOnly(startHour);
+		const endHourFormatted = formatHourOnly(endHour);
+		
+		return `Du: ${startDateFormatted} ${startHourFormatted} au: ${endDateFormatted} ${endHourFormatted}`;
+	} else if (type === 'SINGLE') {
+		// Pour SINGLE : utiliser seulement les heures
+		const startHourFormatted = formatHourOnly(startHour);
+		const endHourFormatted = endHour ? formatHourOnly(endHour) : 'pas de fin';
+		
+		return `De: ${startHourFormatted} à ${endHourFormatted}`;
+	} else {
+		// Comportement par défaut (fallback)
+		const startFormatted = startDate ? formatDateTime(startDate) : formatHourOnly(startHour);
+		const endFormatted = endDate ? formatDateTime(endDate) : (endHour ? formatHourOnly(endHour) : 'pas de fin');
+		
+		return `Du: ${startFormatted} au: ${endFormatted}`;
 	}
-
-	return `Du: ${formatDate(start) || '00:00'} au: ${endFormatted}`;
 };
 
 export const formatDuration = (duration: number): string => {

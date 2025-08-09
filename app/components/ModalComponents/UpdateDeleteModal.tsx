@@ -8,6 +8,8 @@ import DeleteBlock from './DeleteBlock';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
 import { useDateFormatter } from '@/app/hooks/useDateFormatter';
 import { formatDateRange } from '@/app/utils/dateFormatters';
+import { formatActiveDaysInFrench } from '@/app/utils/recurrence';
+
 
 type Props = {
 	setModalVisible: (visible: boolean) => void;
@@ -69,12 +71,26 @@ export default function UpdateDeleteModal({
 							}`}
 						</ThemedText>
 						<ThemedText variant='body' color='secondaryText'>
+							{`Type: ${
+								selectedWorktime?.isRecurring
+									? 'Récurrent'
+									: 'Unique'
+							}`}
+						</ThemedText>
+						<ThemedText variant='body' color='secondaryText'>
 							{formatDateRange(
+								selectedWorktime?.startDate,
+								selectedWorktime?.endDate,
 								selectedWorktime?.startHour,
 								selectedWorktime?.endHour,
 								selectedWorktime?.type
 							)}
 						</ThemedText>
+						{selectedWorktime?.isRecurring && (
+							<ThemedText variant='body' color='secondaryText'>
+								{`Jours actifs: ${formatActiveDaysInFrench(selectedWorktime?.recurrence || '')}`}
+							</ThemedText>
+						)}
 					</View>
 					<View style={styles.buttonsContainer}>
 						<ButtonMenu

@@ -7,7 +7,6 @@ import { Button } from 'react-native-paper';
 import { httpDelete } from '../utils/querySetup';
 import ButtonMenu from '../ButtonMenu';
 import { useThemeColors } from '@/app/hooks/useThemeColors';
-import { useDateFormatter } from '@/app/hooks/useDateFormatter';
 
 type Props = {
 	setModalVisible: (visible: boolean) => void;
@@ -31,7 +30,6 @@ export default function DeleteBlock({
 	setSnackBar,
 }: Props) {
 	const colors = useThemeColors();
-	const { formatDateRange } = useDateFormatter();
 	const [isDeleting, setIsDeleting] = useState(false);
 
 	const handleDelete = async () => {
@@ -98,23 +96,6 @@ export default function DeleteBlock({
 				Êtes-vous sûr de vouloir supprimer cette entrée ?
 			</ThemedText>
 
-			{selectedWorktime && (
-				<View style={styles.workTimeInfoContainer}>
-					<ThemedText variant='body' color='secondaryText'>
-						{`Catégorie: ${
-							selectedWorktime.categoryName || 'Non spécifiée'
-						}`}
-					</ThemedText>
-					<ThemedText variant='body' color='secondaryText'>
-						{formatDateRange(
-							selectedWorktime.start,
-							selectedWorktime.end,
-							selectedWorktime.type
-						)}
-					</ThemedText>
-				</View>
-			)}
-
 			<View style={styles.buttonsContainer}>
 				<ButtonMenu action={handleCancel} type='round' text='Non' />
 				<ButtonMenu
@@ -131,6 +112,7 @@ export default function DeleteBlock({
 const styles = StyleSheet.create({
 	container: {
 		padding: 10,
+		width: '90%',
 	},
 	workTimeInfoContainer: {
 		marginVertical: 15,
