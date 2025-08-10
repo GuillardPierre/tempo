@@ -136,6 +136,9 @@ export default function PauseForm({
 		}
 	};
 
+	console.log("selectedException", selectedException);
+	
+
 	return (
 		<View>
 			{!isEditing && (
@@ -150,10 +153,10 @@ export default function PauseForm({
 			<Formik
 				initialValues={{
 					pauseStart: selectedException
-						? new Date(selectedException.pauseStart)
+						? new Date(selectedException.pauseStart + 'Z')
 						: new Date(date + 'T00:00:00'),
 					pauseEnd: selectedException
-						? new Date(selectedException.pauseEnd)
+						? new Date(selectedException.pauseEnd + 'Z')
 						: new Date(date + 'T00:00:00'),
 					seriesIds: selectedException?.seriesIds || [],
 				}}
@@ -169,7 +172,7 @@ export default function PauseForm({
 								Modification de la pause
 							</ThemedText>
 						)}
-						<View style={{ flexDirection: 'row', gap: 10 }}>
+						<View style={{ flexDirection: 'row', gap: 10, justifyContent: 'center' }}>
 							<TimePickerInput
 								mode='date'
 								display='calendar'
@@ -194,6 +197,7 @@ export default function PauseForm({
 								width: '50%',
 								flexDirection: 'row',
 								gap: 10,
+								marginLeft: 5,
 							}}
 						>
 							<ButtonMenu

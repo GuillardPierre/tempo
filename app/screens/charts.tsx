@@ -235,7 +235,7 @@ export default function Charts() {
 					/>
 					<View style={{ flex: 1, overflow: 'hidden' }}>
 						<MainWrapper style={styles.container}>
-							<ThemedText variant='header1' color='secondaryText'>
+							<ThemedText variant='header1' color='secondaryText' style={{ marginBottom: 10}}>
 								Statistiques
 							</ThemedText>
 							<SegmentedButtons

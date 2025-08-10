@@ -22,6 +22,7 @@ const ExceptionsList = ({
 	const filteredExceptions = exceptions.filter((exception) => {
 		const exceptionStart = new Date(exception.pauseStart);
 		const exceptionEnd = new Date(exception.pauseEnd);
+		exceptionEnd.setDate(exceptionEnd.getDate() + 1);
 		const currentDate = new Date(date);
 		return currentDate >= exceptionStart && currentDate <= exceptionEnd;
 	});

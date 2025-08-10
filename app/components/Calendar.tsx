@@ -40,7 +40,9 @@ export default function Calendar({
 		return exceptions.some((exception) => {
 			const start = new Date(exception.pauseStart).getTime();
 			const end = new Date(exception.pauseEnd).getTime();
-			return timestamp >= start && timestamp <= end;
+			const endPlusOneDay = new Date(end);
+			endPlusOneDay.setDate(endPlusOneDay.getDate() + 1);
+			return timestamp >= start && timestamp < endPlusOneDay.getTime();
 		});
 	}
 
@@ -66,25 +68,59 @@ export default function Calendar({
 		}
 
 		if (wt.recurrence && typeof wt.recurrence === 'string') {
-			const endDate = (wt as any).end;
+			const startDate = (wt as any).startDate;
+			const endDate = (wt as any).endDate;
+			
+			// Utiliser startDate pour la récurrence, pas startHour
 			const rrule = getRRuleFromRecurrence(
 				wt.recurrence,
-				wt.startHour,
+				startDate || wt.startHour,
 				endDate,
 				to
 			);
 
-			if (!rrule) return [];
+			if (!rrule) {
+				return [];
+			}
 
-			const dates = rrule
-				.between(from, to)
-				.map((d) => d.toISOString().slice(0, 10))
-				.filter((date) => {
-					const dateObj = new Date(date);
-					return !isDateInException(dateObj, recurrenceExceptions);
-				});
+			// Générer les dates de récurrence
+			const allDates = rrule.between(from, to);
+			
+			// Filtrer pour respecter les dates de début et fin de série
+			const filteredDates = allDates.filter((d) => {
+				// Vérifier que la date est dans la période de la série
+				if (startDate) {
+					const startDateObj = new Date(startDate + 'Z');
+					// Comparer seulement les dates (sans l'heure) pour startDate
+					const startDateOnly = new Date(startDateObj.getFullYear(), startDateObj.getMonth(), startDateObj.getDate());
+					const dDateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+					const isBeforeStart = dDateOnly < startDateOnly;
+					if (isBeforeStart) return false;
+				}
+				
+				if (endDate) {
+					const endDateObj = new Date(endDate + 'Z');
+					// Comparer seulement les dates (sans l'heure) pour endDate
+					const endDateOnly = new Date(endDateObj.getFullYear(), endDateObj.getMonth(), endDateObj.getDate());
+					const dDateOnly = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+					const isAfterEnd = dDateOnly > endDateOnly;
+					if (isAfterEnd) return false;
+				}
+				
+				return true;
+			});
+			
+			// Convertir en format YYYY-MM-DD
+			const dateStrings = filteredDates.map((d) => d.toISOString().slice(0, 10));
+			
+			// Filtrer les exceptions
+			const finalDates = dateStrings.filter((date) => {
+				const dateObj = new Date(date);
+				const isInException = isDateInException(dateObj, recurrenceExceptions);
+				return !isInException;
+			});
 
-			return dates;
+			return finalDates;
 		}
 
 		return [];
@@ -99,51 +135,63 @@ export default function Calendar({
 		if (dates) {
 			dates.forEach((d) => {
 				if (!markedDates[d]) {
-					markedDates[d] = {};
+					markedDates[d] = { dots: [] };
 				}
-				markedDates[d] = {
-					...markedDates[d],
-					marked: true,
-					dotColor:
-						wt.type === 'SINGLE'
-							? colors.secondary
-							: colors.primary,
-				};
+				
+				// Initialiser dots si pas encore présent
+				if (!markedDates[d].dots) {
+					markedDates[d].dots = [];
+				}
+				
+				// Ajouter le point pour ce worktime
+				markedDates[d].dots.push({
+					key: (wt.id || `wt-${Date.now()}`).toString(),
+					color: wt.type === 'SINGLE' ? colors.secondary : colors.primary,
+				});
+				
+				// Garder la propriété marked pour la compatibilité
+				markedDates[d].marked = true;
 			});
 		}
 	});
 
-	// Ajouter les exceptions comme des périodes
+	// Ajouter les exceptions comme des dots
 	recurrenceExceptions.forEach((exception) => {
-		const start = new Date(exception.pauseStart);
-		const end = new Date(exception.pauseEnd);
+		const start = new Date(exception.pauseStart + 'Z');
+		const end = new Date(exception.pauseEnd + 'Z');
 
-		// Générer toutes les dates entre start et end
+		// Générer toutes les dates entre start et end (inclus)
 		let current = new Date(start);
-		while (current <= end) {
+		const endDate = new Date(end);
+		endDate.setDate(endDate.getDate() + 1); // Inclure le jour de fin
+		
+		while (current < endDate) {
 			const dateStr = current.toISOString().slice(0, 10);
 
 			// Vérifier si la date est dans le mois actuel
-			if (
-				current.getMonth() === month.getMonth() &&
-				current.getFullYear() === month.getFullYear()
-			) {
-				const isStart = current.getTime() === start.getTime();
-				const isEnd = current.getTime() === end.getTime();
+			const isInCurrentMonth = current.getMonth() === month.getMonth() && current.getFullYear() === month.getFullYear();
 
-				markedDates[dateStr] = {
-					...markedDates[dateStr], // Préserver les marqueurs existants
+			if (isInCurrentMonth) {
+				// Créer un dot pour l'exception
+				const exceptionDot = {
+					key: `exception-${exception.id}-${dateStr}`,
 					color: colors.primaryLight,
-					textColor: colors.primaryText,
-					...(isStart && { startingDay: true }),
-					...(isEnd && { endingDay: true }),
-					...(!isStart && !isEnd && { color: colors.primaryLight }),
-					// Si on a déjà un point, on le garde avec sa couleur d'origine
-					...(markedDates[dateStr]?.marked && {
-						marked: true,
-						dotColor: markedDates[dateStr].dotColor,
-					}),
 				};
+
+				if (!markedDates[dateStr]) {
+					markedDates[dateStr] = { dots: [] };
+				}
+
+				// Initialiser dots si pas encore présent
+				if (!markedDates[dateStr].dots) {
+					markedDates[dateStr].dots = [];
+				}
+
+				// Ajouter le dot pour cette exception
+				markedDates[dateStr].dots.push(exceptionDot);
+
+				// Garder la propriété marked pour la compatibilité
+				markedDates[dateStr].marked = true;
 			}
 
 			// Passer au jour suivant
@@ -155,7 +203,7 @@ export default function Calendar({
 		...markedDates[date],
 		selected: true,
 		color: colors.primary,
-		textColor: colors.primaryText,
+		textColor: '#FFFFFF',
 		startingDay: true,
 		endingDay: true,
 	};
@@ -170,14 +218,14 @@ export default function Calendar({
 				dayTextColor: colors.secondaryText,
 				todayTextColor: colors.primaryText,
 				todayBackgroundColor: colors.secondary,
-				selectedDayTextColor: colors.primary,
+				selectedDayTextColor: '#FFFFFF',
 				selectedDayBackgroundColor: colors.primary,
 				textDisabledColor: colors.secondaryText,
 			}}
 			current={date}
 			onDayPress={onDayPress}
 			markedDates={markedDates}
-			markingType='period'
+			markingType='multi-dot'
 			onMonthChange={(month) => {
 				setMonth(new Date(month.timestamp));
 			}}

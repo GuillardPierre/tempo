@@ -75,6 +75,8 @@ export function isInInterval(
     const date = toDate(dateInput);
     const start = toDate(startIso);
     const end = toDate(endIso);
+    end.setDate(end.getDate() + 1);
+	
 
     if (isNaN(date.getTime()) || isNaN(start.getTime()) || isNaN(end.getTime())) {
         return false;

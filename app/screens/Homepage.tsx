@@ -59,7 +59,6 @@ export default function Homepage() {
 		selectedException,
 		setSelectedException,
 	} = useIndex();
-
 	const currentDateRef = useRef<string>(date);
 
 	useEffect(() => {
@@ -111,7 +110,7 @@ export default function Homepage() {
 	});
 
 	const screenWidth = Dimensions.get('window').width;
-
+	
 	return (
 		<ProtectedRoute>
 			<SafeAreaView
@@ -160,7 +159,7 @@ export default function Homepage() {
 										? '48%'
 										: '83%'
 									: calendarIsOpen
-									? '46%'
+									? '47.3%'
 									: '100%',
 								backgroundColor: colors.background,
 								marginInline: 0,
@@ -175,6 +174,11 @@ export default function Homepage() {
 									alignItems: 'flex-start',
 								}}
 							>
+								<ExceptionsList
+									exceptions={recurrenceExceptions}
+									date={new Date(new Date(date).getTime() - 24 * 60 * 60 * 1000).toISOString().slice(0, 10)}
+									onExceptionPress={handleExceptionPress}
+								/>
 								<WorktimesList
 									worktimes={worktimesByDay.yesterday}
 									currentDate={date}
@@ -196,7 +200,7 @@ export default function Homepage() {
 										? '48%'
 										: '83%'
 									: calendarIsOpen
-									? '46%'
+									? '47.5%'
 									: '100%',
 							}}
 						>
@@ -244,7 +248,7 @@ export default function Homepage() {
 										? '48%'
 										: '83%'
 									: calendarIsOpen
-									? '46%'
+									? '47.5%'
 									: '100%',
 								backgroundColor: colors.background,
 								marginInline: 0,
@@ -259,9 +263,14 @@ export default function Homepage() {
 									alignItems: 'flex-start',
 								}}
 							>
+								<ExceptionsList
+									exceptions={recurrenceExceptions}
+									date={new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10)}
+									onExceptionPress={handleExceptionPress}
+								/>
 								<WorktimesList
 									worktimes={worktimesByDay.tomorrow}
-									currentDate={date}
+									currentDate={new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000).toISOString().slice(0, 10)}
 									recurrenceExceptions={recurrenceExceptions}
 									setModalType={setModalType}
 									setModalVisible={setModalVisible}

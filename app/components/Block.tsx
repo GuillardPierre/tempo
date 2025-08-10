@@ -85,10 +85,10 @@ export default function Block({
 			}
 
 			const exceptionStart = exception.pauseStart
-				? new Date(exception.pauseStart)
+				? new Date(exception.pauseStart + 'Z')
 				: null;
 			const exceptionEnd = exception.pauseEnd
-				? new Date(exception.pauseEnd)
+				? new Date(exception.pauseEnd + 'Z')
 				: null;
 			const currentDateObj = new Date(currentDate);
 
