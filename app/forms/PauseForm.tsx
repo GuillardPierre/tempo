@@ -164,6 +164,11 @@ export default function PauseForm({
 			>
 				{({ setFieldValue, values, handleSubmit, errors, touched }) => (
 					<>
+						{isEditing && (
+							<ThemedText variant='header2' color='secondaryText'style={{textAlign: 'center'}}>
+								Modification de la pause
+							</ThemedText>
+						)}
 						<View style={{ flexDirection: 'row', gap: 10 }}>
 							<TimePickerInput
 								mode='date'
@@ -197,6 +202,7 @@ export default function PauseForm({
 								type='round'
 								style={{ marginTop: 10, width: '95%' }}
 							/>
+							{isEditing && (
 							<ButtonMenu
 								text='Supprimer'
 								action={deleteException}
@@ -204,9 +210,10 @@ export default function PauseForm({
 								style={{
 									marginTop: 10,
 									width: '95%',
-									backgroundColor: colors.error,
-								}}
-							/>
+										backgroundColor: colors.error,
+									}}
+								/>
+							)}
 						</View>
 					</>
 				)}

@@ -5,6 +5,7 @@ import BlockWrapper from './BlockWrapper';
 import ThemedText from './utils/ThemedText';
 import Block from './Block';
 import RoundButton from './utils/RoundButton';
+import { isInInterval } from './utils/utils';
 import { WorktimeSeries, RecurrenceException } from '@/app/types/worktime';
 
 interface WorktimesListProps {
@@ -25,8 +26,12 @@ const WorktimesList = ({
 	setSelectedWorktime,
 }: WorktimesListProps) => {
 	const colors = useThemeColors();
+	const visibleWorktimes = worktimes.filter((worktime) => worktime.endHour !== null);
+	const hasApplicableException = recurrenceExceptions.some((e) =>
+		isInInterval(currentDate, e.pauseStart, e.pauseEnd)
+	);
 
-	if (!worktimes || worktimes.length === 0) {
+	if (visibleWorktimes.length === 0 && !hasApplicableException) {
 		return (
 			<BlockWrapper backgroundColor={colors.primaryLight}>
 				<View style={{ flex: 1, justifyContent: 'center' }}>
@@ -67,9 +72,7 @@ const WorktimesList = ({
 				flex: 1,
 			}}
 		>
-			{worktimes
-				.filter((worktime) => worktime.endHour !== null)
-				.map((worktime) => (
+			{visibleWorktimes.map((worktime) => (
 					<Block
 						key={`${worktime.type}-${worktime.id}`}
 						worktime={worktime}

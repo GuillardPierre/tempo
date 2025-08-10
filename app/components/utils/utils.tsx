@@ -61,3 +61,25 @@ export function formatLocalDateTime(date: Date) {
 		':00'
 	);
 }
+
+export function isInInterval(
+    dateInput: string | Date,
+    startIso: string,
+    endIso: string
+): boolean {
+    const toDate = (d: string | Date) =>
+        typeof d === 'string'
+            ? new Date(d.length === 10 ? `${d}T00:00:00` : d)
+            : d;
+
+    const date = toDate(dateInput);
+    const start = toDate(startIso);
+    const end = toDate(endIso);
+
+    if (isNaN(date.getTime()) || isNaN(start.getTime()) || isNaN(end.getTime())) {
+        return false;
+    }
+
+    // début inclus, fin exclue
+    return date >= start && date < end;
+}
