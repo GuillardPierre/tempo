@@ -45,7 +45,7 @@ export default function Login() {
 				style={styles.keyboardAvoidingView}
 			>
 				<ThemedText variant='header1' color='primaryText'>
-					Bienvenue sur Tempos
+					Bienvenue sur Tempo
 				</ThemedText>
 
 				<ThemedText

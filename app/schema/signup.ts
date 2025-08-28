@@ -8,7 +8,10 @@ export const signupFormSchema = z
 			.string()
 			.nonempty("L'adresse email est requise")
 			.email("Format d'email invalide"),
-		password: z.string().nonempty('Le mot de passe est requis'),
+		password: z
+			.string()
+			.nonempty('Le mot de passe est requis')
+			.min(4, 'Le mot de passe doit contenir au moins 4 caractères'),
 		confirmPassword: z
 			.string()
 			.nonempty('La confirmation du mot de passe est requise'),

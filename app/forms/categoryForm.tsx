@@ -8,20 +8,20 @@ import ENDPOINTS from '../components/utils/ENDPOINT';
 import { useThemeColors } from '../hooks/useThemeColors';
 import ButtonMenu from '../components/ButtonMenu';
 import BlockWrapper from '../components/BlockWrapper';
+import { useCategoryContext } from '../context/CategoryContext';
+import useSnackBar from '../hooks/useSnackBar';
 
 type Props = {
 	category: Category;
 	setModalVisible: (visible: boolean) => void;
-	setCategories: React.Dispatch<React.SetStateAction<Category[]>>;
-	setSnackBar: (type: 'error' | 'info', messageText: string) => void;
 };
 
 export default function CategoryForm({
 	category,
 	setModalVisible,
-	setCategories,
-	setSnackBar,
 }: Props) {
+	const { setCategories } = useCategoryContext();
+	const { setSnackBar } = useSnackBar();
 	const colors = useThemeColors();
 	return (
 		<View style={[styles.container]}>

@@ -38,7 +38,7 @@ export default function Signup() {
 				style={styles.keyboardAvoidingView}
 			>
 				<ThemedText variant='header1' color='primaryText'>
-					Bienvenue sur Tempos
+					Bienvenue sur Tempo
 				</ThemedText>
 				<ThemedText
 					style={styles.header}

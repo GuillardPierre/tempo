@@ -4,11 +4,11 @@ import ThemedText from '../components/utils/ThemedText';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useThemeColors } from '../hooks/useThemeColors';
 import Header from '../components/Header';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import ModalMenu from '../components/Modal';
 import Menu from '../components/ModalComponents/Menu';
 import { Category } from '../types/worktime';
-import { httpDelete, httpGet } from '../components/utils/querySetup';
+import { httpDelete } from '../components/utils/querySetup';
 import ENDPOINTS from '../components/utils/ENDPOINT';
 import MainWrapper from '../components/MainWrapper';
 import BlockWrapper from '../components/BlockWrapper';
@@ -18,18 +18,18 @@ import CategoryForm from '../forms/categoryForm';
 import ButtonMenu from '../components/ButtonMenu';
 import useSnackBar from '../hooks/useSnackBar';
 import CustomSnackBar from '../components/utils/CustomSnackBar';
-
+import { useCategoryContext } from '../context/CategoryContext';
 export default function Categories() {
 	const colors = useThemeColors();
 	const [modalVisible, setModalVisible] = useState(false);
-	const [modalType, setModalType] = useState<'menu' | 'update' | 'delete'>(
+	const [modalType, setModalType] = useState<'menu' | 'update' | 'delete' | 'exception'>(
 		'menu'
 	);
-	const [categories, setCategories] = useState<Category[]>([]);
 	const [selectedCategory, setSelectedCategory] = useState<Category | null>(
 		null
 	);
 
+	const { categories, setCategories } = useCategoryContext();
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
 	const deleteCategory = async (category: Category) => {
@@ -47,17 +47,6 @@ export default function Categories() {
 			);
 		}
 	};
-
-	useEffect(() => {
-		const fetchCategories = async () => {
-			const categories = await httpGet(`${ENDPOINTS.category.all}`);
-			if (categories.ok) {
-				const data = await categories.json();
-				setCategories(data);
-			}
-		};
-		fetchCategories();
-	}, []);
 
 	const handleButton = (category: Category, type: 'delete' | 'update') => {
 		if (type === 'delete') {
@@ -138,8 +127,6 @@ export default function Categories() {
 					<CategoryForm
 						category={selectedCategory}
 						setModalVisible={setModalVisible}
-						setCategories={setCategories}
-						setSnackBar={setSnackBar}
 					/>
 				)}
 				{modalType === 'delete' && selectedCategory && (
@@ -147,7 +134,7 @@ export default function Categories() {
 						<ThemedText variant='header2' color='secondaryText'>
 							Êtes-vous sûr de vouloir supprimer cette catégorie ?
 						</ThemedText>
-						<BlockWrapper backgroundColor={colors.error}>
+						<BlockWrapper backgroundColor={colors.error} style={{minHeight: 70}}>
 							<ThemedText color='primaryText'>
 								Attention toutes les entrées de cette catégorie
 								seront supprimées.

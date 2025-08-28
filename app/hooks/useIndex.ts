@@ -10,6 +10,7 @@ import {
 } from '../types/worktime';
 import { useRouter } from 'expo-router';
 import useSnackBar from '@/app/hooks/useSnackBar';
+import { useCategoryContext } from '../context/CategoryContext';
 
 export const useIndex = () => {
 	const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
@@ -21,7 +22,7 @@ export const useIndex = () => {
 		today: [],
 		tomorrow: [],
 	});
-	const [categories, setCategories] = useState<Category[]>([]);
+	const { categories, setCategories } = useCategoryContext();
 	const [monthWorktimes, setMonthWorktimes] = useState<Worktime[]>([]);
 	const [recurrenceExceptions, setRecurrenceExceptions] = useState<
 		RecurrenceException[]
@@ -167,6 +168,8 @@ export const useIndex = () => {
 			console.error('Erreur getRecurrenceExceptions:', error);
 		}
 	};
+
+
 
 	return {
 		worktimesByDay,
