@@ -17,6 +17,7 @@ export function useTimerForm({
 	selectedWorktime = null,
 	isEditing = false,
 	date,
+	mode,
 }: {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
 	setTimerIsOpen: (isOpen: boolean) => void;
@@ -29,6 +30,7 @@ export function useTimerForm({
 	selectedWorktime?: SelectedWorktime | null;
 	isEditing?: boolean;
 	date: string;
+	mode: 'chrono' | 'activity';
 }) {	
 	const [selectedDays, setSelectedDays] = useState<string[]>([]);
 	const [open, setOpen] = useState(false);
@@ -166,7 +168,7 @@ export function useTimerForm({
 				})(),
 			endHour: selectedWorktime?.endHour
 				? new Date(selectedWorktime.endHour)
-				: (() => {
+				: mode === 'chrono' ? null : (() => {
 					const [year, month, day] = date.split('-').map(Number);
 					const now = new Date();
 					return new Date(
@@ -181,6 +183,8 @@ export function useTimerForm({
 			recurrence: undefined as CreateRecurrenceRule | undefined,
 			startDate: selectedWorktime?.startDate
 				? new Date(selectedWorktime.startDate)
+				: mode === 'chrono'
+				? createUtcDate(new Date().toISOString().split('T')[0] + "Z") 
 				: createUtcDate(date),
 			endDate: selectedWorktime?.endDate
 				? new Date(selectedWorktime.endDate)

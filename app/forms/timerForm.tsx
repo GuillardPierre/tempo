@@ -82,6 +82,7 @@ export default function TimerForm({
 		selectedWorktime,
 		isEditing,
 		date,
+		mode,
 	});
 
 	const weekdays = [
@@ -100,6 +101,8 @@ export default function TimerForm({
 			setSelectedDays(parsedDays);
 		}
 	}, [selectedWorktime]);
+
+
 
 	const [isRecurring, setIsRecurring] = useState(
 		selectedWorktime?.recurrence ? true : false
@@ -139,6 +142,15 @@ export default function TimerForm({
 				}}
 			>
 				{({ setFieldValue, values, handleSubmit, errors, touched }) => {
+					// Forcer la date du jour pour le mode chrono
+					React.useEffect(() => {
+						if (mode === 'chrono') {
+							const today = new Date().toISOString().split('T')[0];
+							const todayDate = new Date(today + 'T00:00:00'); 
+							setFieldValue('startDate', todayDate);
+						}
+					}, [mode, setFieldValue]);
+
 					return (
 						<View
 							style={[
@@ -258,6 +270,7 @@ export default function TimerForm({
 								style={{ width: '100%' }}
 								mode='date'
 								display='calendar'
+								disabled={mode === "chrono"}
 							/>
 
 							<View style={styles.timePickersContainer}>

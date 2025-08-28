@@ -12,6 +12,7 @@ type Props = {
 	style?: StyleProp<ViewStyle>;
 	mode?: 'time' | 'date';
 	display?: 'default' | 'calendar';
+	disabled?: boolean;
 };
 
 export default function TimePickerInput({
@@ -21,6 +22,7 @@ export default function TimePickerInput({
 	style,
 	mode = 'time',
 	display = 'default',
+	disabled = false,
 }: Props) {
 	const [show, setShow] = useState(false);
 	const colors = useThemeColors();
@@ -76,7 +78,7 @@ export default function TimePickerInput({
 				</ThemedText>
 			)}
 			<Pressable
-				onPress={() => setShow(true)}
+				onPress={() => !disabled && setShow(true)}
 				style={[
 					styles.input,
 					{

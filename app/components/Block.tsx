@@ -22,11 +22,8 @@ type Props = {
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: any) => void;
 	setUnfinishedWorktimes?: (worktimes: WorktimeSeries[]) => void;
-	setWorktimes?: (
-		worktimes:
-			| WorktimeSeries[]
-			| ((prev: WorktimeSeries[]) => WorktimeSeries[])
-	) => void;
+	setWorktimes?: (worktimes: WorktimeSeries[]) => void;
+	worktimes?: WorktimeSeries[];
 	setSnackBar?: (type: 'error' | 'info', messageText: string) => void;
 	currentDate: string;
 	recurrenceExceptions?: RecurrenceException[];
@@ -39,6 +36,7 @@ export default function Block({
 	setSelectedWorktime,
 	setUnfinishedWorktimes,
 	setWorktimes,
+	worktimes,
 	setSnackBar,
 	currentDate,
 	recurrenceExceptions = [],
@@ -121,13 +119,13 @@ export default function Block({
 			if (setUnfinishedWorktimes) {
 				setUnfinishedWorktimes([]);
 			}
-			if (setWorktimes) {
+			if (setWorktimes && worktimes) {
 				const worktimeDay = new Date(data.start)
 					.toISOString()
 					.split('T')[0];
 				if (worktimeDay === currentDate) {
-					setWorktimes((prevWorktimes: WorktimeSeries[]) => [
-						...prevWorktimes.filter((wt) => wt.id !== data.id),
+					setWorktimes([
+						...worktimes.filter((wt: WorktimeSeries) => wt.id !== data.id),
 						data,
 					]);
 				}

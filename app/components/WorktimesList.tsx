@@ -15,6 +15,7 @@ interface WorktimesListProps {
 	setModalType: (type: 'menu' | 'update') => void;
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: WorktimeSeries) => void;
+	setWorktimes?: (worktimes: WorktimeSeries[]) => void;
 }
 
 const WorktimesList = ({
@@ -24,6 +25,7 @@ const WorktimesList = ({
 	setModalType,
 	setModalVisible,
 	setSelectedWorktime,
+	setWorktimes,
 }: WorktimesListProps) => {
 	const colors = useThemeColors();
 	const visibleWorktimes = worktimes.filter((worktime) => worktime.endHour !== null);
@@ -81,6 +83,7 @@ const WorktimesList = ({
 						setModalType={setModalType}
 						setModalVisible={setModalVisible}
 						setSelectedWorktime={setSelectedWorktime}
+						setWorktimes={setWorktimes}
 					/>
 				))}
 		</View>

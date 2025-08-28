@@ -234,6 +234,7 @@ export default function Homepage() {
 									setModalType={setModalType}
 									setModalVisible={setModalVisible}
 									setSelectedWorktime={setSelectedWorktime}
+									setWorktimes={setWorktimes}
 								/>
 							</MainWrapper>
 						</View>
