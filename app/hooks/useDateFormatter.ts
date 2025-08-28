@@ -1,4 +1,5 @@
 import { useMemo } from 'react';
+import { formatDateOnly, getDayName } from '../components/utils/utils';
 
 export const useDateFormatter = () => {
 	const formatTime = useMemo(() => {
@@ -64,10 +65,15 @@ export const useDateFormatter = () => {
 		};
 	}, []);
 
+	const formatDate = formatDateOnly;
+	const getDayNameFromHook = getDayName;
+
 	return {
 		formatTime,
 		formatDateTime,
 		formatDateRange,
 		formatDuration,
+		formatDate,
+		getDayName: getDayNameFromHook,
 	};
 };

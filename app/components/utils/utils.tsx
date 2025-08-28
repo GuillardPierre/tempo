@@ -85,3 +85,17 @@ export function isInInterval(
     // début inclus, fin exclue
     return date >= start && date < end;
 }
+
+export const formatDateOnly = (dateString: string): string => {
+	const d = new Date(dateString);
+	const day = String(d.getDate()).padStart(2, '0');
+	const month = String(d.getMonth() + 1).padStart(2, '0');
+	const year = d.getFullYear();
+	return `${day}/${month}/${year}`;
+};
+
+export const getDayName = (dateString: string): string => {
+	const d = new Date(dateString);
+	const days = ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'];
+	return days[d.getDay()];
+};

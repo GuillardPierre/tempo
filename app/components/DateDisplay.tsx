@@ -4,6 +4,7 @@ import { useThemeColors } from '../hooks/useThemeColors';
 import RoundButton from './utils/RoundButton';
 import ThemedText from './utils/ThemedText';
 import { useDateDisplay } from '../hooks/useDateDisplay';
+import { useDateFormatter } from '../hooks/useDateFormatter';
 
 type Props = {
 	date: string;
@@ -18,6 +19,7 @@ export default function DateDisplay({
 }: Props) {
 	const colors = useThemeColors();
 	const { handlePrevious, handleNext } = useDateDisplay(date, setDate);
+	const { formatDate, getDayName } = useDateFormatter();
 
 	return (
 		<View style={[styles.dateDisplay, { backgroundColor: colors.primary }]}>
@@ -28,15 +30,14 @@ export default function DateDisplay({
 				onPress={handlePrevious}
 			/>
 			<Pressable onPress={setCalendarIsOpen}>
-				<ThemedText variant='header2' color='primaryText'>
-					{(() => {
-						const d = new Date(date);
-						const day = String(d.getDate()).padStart(2, '0');
-						const month = String(d.getMonth() + 1).padStart(2, '0');
-						const year = d.getFullYear();
-						return `${day}/${month}/${year}`;
-					})()}
-				</ThemedText>
+				<View style={styles.dateContainer}>
+					<ThemedText variant='header2' color='primaryText'>
+						{formatDate(date)}
+					</ThemedText>
+					<ThemedText variant='body' color='primaryText' style={styles.dayName}>
+						{getDayName(date)}
+					</ThemedText>
+				</View>
 			</Pressable>
 			<RoundButton
 				type='nextDate'
@@ -54,5 +55,12 @@ const styles = StyleSheet.create({
 		justifyContent: 'center',
 		alignItems: 'center',
 		gap: 20,
+	},
+	dateContainer: {
+		alignItems: 'center',
+	},
+	dayName: {
+		fontSize: 14,
+		marginTop: 2,
 	},
 });
