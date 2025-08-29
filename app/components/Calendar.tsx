@@ -143,11 +143,26 @@ export default function Calendar({
 					markedDates[d].dots = [];
 				}
 				
-				// Ajouter le point pour ce worktime
-				markedDates[d].dots.push({
-					key: (wt.id || `wt-${Date.now()}`).toString(),
-					color: wt.type === 'SINGLE' ? colors.secondary : colors.primary,
-				});
+				// Vérifier si on a déjà un point pour ce type de worktime
+				const hasRecurringDot = markedDates[d].dots.some((dot: any) => 
+					dot.key.startsWith('recurring-')
+				);
+				const hasNonRecurringDot = markedDates[d].dots.some((dot: any) => 
+					dot.key.startsWith('non-recurring-')
+				);
+				
+				// Ajouter le point seulement si on n'en a pas déjà un pour ce type
+				if (wt.type === 'RECURRING' && !hasRecurringDot) {
+					markedDates[d].dots.push({
+						key: `recurring-${d}`,
+						color: colors.primary,
+					});
+				} else if (wt.type === 'SINGLE' && !hasNonRecurringDot) {
+					markedDates[d].dots.push({
+						key: `non-recurring-${d}`,
+						color: colors.secondary,
+					});
+				}
 				
 				// Garder la propriété marked pour la compatibilité
 				markedDates[d].marked = true;
@@ -187,8 +202,15 @@ export default function Calendar({
 					markedDates[dateStr].dots = [];
 				}
 
-				// Ajouter le dot pour cette exception
-				markedDates[dateStr].dots.push(exceptionDot);
+				// Vérifier si on a déjà un point d'exception pour cette date
+				const hasExceptionDot = markedDates[dateStr].dots.some((dot: any) => 
+					dot.key.startsWith('exception-')
+				);
+
+				// Ajouter le dot d'exception seulement s'il n'y en a pas déjà un
+				if (!hasExceptionDot) {
+					markedDates[dateStr].dots.push(exceptionDot);
+				}
 
 				// Garder la propriété marked pour la compatibilité
 				markedDates[dateStr].marked = true;

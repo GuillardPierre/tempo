@@ -22,13 +22,13 @@ export default function ButtonMenu({
 			style={[
 				styles.button,
 				styles[type],
-				{ backgroundColor: colors.primaryLight, borderColor: colors.primary },
+				{ backgroundColor: type === 'round' ? colors.primaryLight : "", borderColor: colors.primary },
 				!fullWidth && { width: 'auto', minWidth: 50, paddingHorizontal: 12 },
 				style,
 			]}
 			onPress={action}
 		>
-			<ThemedText variant='body' style={styles.textButton}>
+			<ThemedText variant='body' style={styles.textButton} color={type === 'round' ? 'primaryText' : 'secondaryText'}>
 				{text}
 			</ThemedText>
 		</Pressable>
@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		width: '100%',
 		borderStyle: 'solid',
-		borderWidth: 4,
+		borderWidth: 3,
 		marginVertical: 5,
 		paddingVertical: 8,
 		paddingHorizontal: 15,
@@ -56,7 +56,7 @@ const styles = StyleSheet.create({
 	},
 	textButton: {
 		fontSize: 18,
-		fontWeight: 'bold',
+		fontWeight: '500',
 		textAlign: 'center',
 	},
 });

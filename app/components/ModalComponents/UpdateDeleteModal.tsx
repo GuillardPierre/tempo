@@ -74,7 +74,7 @@ export default function UpdateDeleteModal({
 							{`Type: ${
 								selectedWorktime?.isRecurring
 									? 'Récurrent'
-									: 'Unique'
+									: 'Ponctuel'
 							}`}
 						</ThemedText>
 						<ThemedText variant='body' color='secondaryText'>
@@ -143,7 +143,6 @@ export default function UpdateDeleteModal({
 					<View
 						style={[
 							styles.buttonBack,
-							{ width: '77%', marginHorizontal: 'auto' },
 						]}
 					>
 						<ButtonMenu

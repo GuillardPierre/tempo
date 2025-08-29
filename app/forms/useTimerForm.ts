@@ -126,7 +126,7 @@ export function useTimerForm({
 				setCategories((prev) => [...prev, data.category]);
 		},
 		onError: (error: Error) => {
-			console.log('error', error.message);
+			console.error('error', error.message);
 			setSnackBar('error', error.message || 'Erreur');
 		},
 	});

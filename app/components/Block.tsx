@@ -134,7 +134,7 @@ export default function Block({
 				setSnackBar('info', 'Temps de travail terminé ! Bravo !');
 			}
 		} else {
-			console.log('error', rep);
+			console.error('error', rep);
 		}
 	};
 

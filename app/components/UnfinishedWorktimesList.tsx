@@ -34,7 +34,6 @@ export default function UnfinishedWorktimesList({
 		return null;
 	}
 
-	console.log('unfinishedWorktimes', unfinishedWorktimes);
 	return (
 		<>
 			{unfinishedWorktimes.map((worktime) => (

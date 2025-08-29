@@ -88,8 +88,6 @@ export default function DeleteBlock({
 		}
 	};
 
-	console.log('selectedWorktime', selectedWorktime);
-
 	return (
 		<View style={styles.container}>
 			<ThemedText variant='header2' color='secondaryText'>

@@ -107,7 +107,7 @@ export default function PauseForm({
 				);
 			}
 		} catch (error) {
-			console.log('error', error);
+			console.error('error', error);
 			setSnackBar?.(
 				'error',
 				isEditing
@@ -131,21 +131,19 @@ export default function PauseForm({
 				setTimerIsOpen?.(false);
 			}
 		} catch (error) {
-			console.log('error', error);
+			console.error('error', error);
 			setSnackBar?.('error', 'Erreur lors de la suppression de la pause');
 		}
 	};
-
-	console.log("selectedException", selectedException);
 	
 
 	return (
 		<View>
 			{!isEditing && (
-				<BlockWrapper style={{ height: 100, maxHeight: 100 }}>
+				<BlockWrapper style={{ height: 120, maxHeight: 120 }}>
 					<ThemedText variant='body' color='secondaryText'>
-						Les périodes de pause permettent de ne pas compter les
-						temps de travail durant celle-ci (sauf si vous avez
+						Les périodes de pause (ou vacances) permettent de ne pas compter les
+						temps de travail récurrent durant celle-ci (sauf si vous avez
 						coché "ignorer les périodes de pause").
 					</ThemedText>
 				</BlockWrapper>
@@ -194,7 +192,6 @@ export default function PauseForm({
 						</View>
 						<View
 							style={{
-								width: '50%',
 								flexDirection: 'row',
 								gap: 10,
 								marginLeft: 5,

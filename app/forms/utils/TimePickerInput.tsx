@@ -82,17 +82,16 @@ export default function TimePickerInput({
 				style={[
 					styles.input,
 					{
-						backgroundColor: colors.primaryLight,
 						borderColor: colors.primary,
 					},
 				]}
 			>
 				<ThemedText
 					style={{
-						color: colors.primaryText,
+						color: colors.secondaryText,
 						textAlign: 'center',
-						fontSize: 18,
-						fontWeight: 'bold',
+						fontSize: 16,
+						fontWeight: 500,
 					}}
 				>
 					{value
@@ -121,24 +120,21 @@ export default function TimePickerInput({
 
 const styles = StyleSheet.create({
 	container: {
-		marginBottom: 5,
 		textAlign: 'center',
 		width: 150,
 	},
 	label: {
-		fontSize: 16,
-		fontWeight: 'bold',
-		paddingLeft: 5,
-		marginBottom: 5,
+		fontSize: 14,
+		paddingLeft: 8,
+		marginBottom: 1,
+		marginTop: 3
 	},
 	input: {
-		borderWidth: 4,
+		borderWidth: 3,
 		borderStyle: 'solid',
 		borderRadius: 12,
 		padding: 10,
-		fontSize: 18,
-		fontWeight: 'bold',
+		fontSize: 16,
 		textAlign: 'center',
-		height: 55,
 	},
 });

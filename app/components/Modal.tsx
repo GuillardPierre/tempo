@@ -57,7 +57,7 @@ const styles = StyleSheet.create({
 		borderWidth: 5,
 		borderRadius: 16,
 		borderColor: '#FF8F33',
-		// width: '95%',
+		width: '98%',
 		maxHeight: '80%',
 		elevation: 5,
 		marginHorizontal: 'auto',

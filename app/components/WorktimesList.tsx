@@ -35,9 +35,9 @@ const WorktimesList = ({
 
 	if (visibleWorktimes.length === 0 && !hasApplicableException) {
 		return (
-			<BlockWrapper backgroundColor={colors.primaryLight}>
+			<BlockWrapper>
 				<View style={{ flex: 1, justifyContent: 'center' }}>
-					<ThemedText variant='body' color='primaryText'>
+					<ThemedText variant='body' color='secondaryText'>
 						Rien de prévu pour ce jour-ci !{' '}
 					</ThemedText>
 					<View
@@ -47,7 +47,7 @@ const WorktimesList = ({
 							flexWrap: 'wrap',
 						}}
 					>
-						<ThemedText variant='body' color='primaryText'>
+						<ThemedText variant='body' color='secondaryText'>
 							Reposez-vous ou appuyez sur
 						</ThemedText>
 						<View style={{ marginHorizontal: 4 }}>
@@ -59,7 +59,7 @@ const WorktimesList = ({
 								btnSize={25}
 							/>
 						</View>
-						<ThemedText variant='body' color='primaryText'>
+						<ThemedText variant='body' color='secondaryText'>
 							pour enregistrer une activité
 						</ThemedText>
 					</View>

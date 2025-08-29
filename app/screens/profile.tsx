@@ -42,7 +42,7 @@ export default function Profile() {
 				router.replace('/screens/auth/Login');
 			}, 1500);
 		} catch (error) {
-			console.log(error);
+			console.error(error);
 			setSnackBar('error', 'Erreur lors de la suppression du compte');
 		}
 	};

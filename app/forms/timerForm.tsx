@@ -158,7 +158,6 @@ export default function TimerForm({
 								{
 									paddingVertical:
 										mode === 'activity' ? 0 : 10,
-									width: screenWidth - 100,
 								},
 							]}
 						>
@@ -213,6 +212,7 @@ export default function TimerForm({
 								]}
 								listMode='MODAL'
 								modalAnimationType='slide'
+								placeholderStyle={{fontWeight: 500}}
 								modalContentContainerStyle={[
 									styles.modalContentContainer,
 									{
@@ -267,7 +267,7 @@ export default function TimerForm({
 									Vibration.vibrate(50);
 									setFieldValue('startDate', date);
 								}}
-								style={{ width: '100%' }}
+
 								mode='date'
 								display='calendar'
 								disabled={mode === "chrono"}
@@ -290,10 +290,9 @@ export default function TimerForm({
 										<ButtonMenu
 											fullWidth={false}
 											style={{
-												transform: [{ translateY: 7 }],
+												transform: [{ translateY: 12 }],
 												marginLeft: 10,
 												alignSelf: 'flex-end',
-												marginBottom: 10,
 												width: '50%',
 											}}
 											type='round'
@@ -320,15 +319,13 @@ export default function TimerForm({
 										<TimePickerInput
 											label='Heure fin:'
 											value={
-												values.endHour
-													? values.endHour
-													: new Date(
-															date +
-																'T' +
-																new Date()
-																	.toTimeString()
-																	.slice(0, 8)
-													  )
+												values.endHour || new Date(
+													date +
+														'T' +
+														new Date()
+															.toTimeString()
+															.slice(0, 8)
+												)
 											}
 											onChange={(date) => {
 												Vibration.vibrate(50);
@@ -347,6 +344,7 @@ export default function TimerForm({
 											flexDirection: 'row',
 											alignItems: 'center',
 											width: '100%',
+											justifyContent: 'center',
 										}}
 									>
 										<Text style={styles.recurrenceLabel}>
@@ -508,12 +506,12 @@ const styles = StyleSheet.create({
 		display: 'flex',
 		flexDirection: 'column',
 		justifyContent: 'center',
-		alignItems: 'center',
+		alignItems: 'flex-start',
 	},
 	dropdown: {
 		borderWidth: 3,
 		borderRadius: 12,
-		marginBottom: 10,
+		marginBottom: 2,
 		width: '100%',
 	},
 	dropdownContainer: {
@@ -524,7 +522,6 @@ const styles = StyleSheet.create({
 	modalContentContainer: {
 		borderWidth: 3,
 		borderRadius: 4,
-		padding: 10,
 		height: '50%',
 		width: '100%',
 		marginLeft: 'auto',
@@ -592,7 +589,7 @@ const styles = StyleSheet.create({
 		marginBottom: 10,
 	},
 	submitButton: {
-		width: '75%',
-		marginTop: 10,
+		width: '100%',
+
 	},
 });
