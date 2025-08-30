@@ -226,6 +226,14 @@ export default function TimerForm({
 											categoryName={searchText}
 											onSuccess={(category) => {
 												handleCategoryCreated(category);
+												setFieldValue('category', {
+													id: String(category.id),
+													title: category.name,
+												});
+												setSearchText(category.name);
+												setTimeout(() => {
+													setOpen(false);
+												}, 100);
 											}}
 										/>
 									) : (

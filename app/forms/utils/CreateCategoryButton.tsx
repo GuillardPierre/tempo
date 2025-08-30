@@ -19,6 +19,9 @@ export default function CreateCategoryButton({
 	onError,
 }: Props) {
 	const colors = useThemeColors();
+	
+	// Vérifier si le nom de la catégorie est valide (non vide après nettoyage)
+	const isValidCategoryName = categoryName.trim().length > 0;
 
 	// Mutation pour créer une nouvelle catégorie
 	const { mutate: createCategory, isPending } = useMutation<
@@ -30,6 +33,8 @@ export default function CreateCategoryButton({
 			const response = await httpPost(`${ENDPOINTS.category.create}`, {
 				name,
 			});
+
+			console.log('response', response);
 
 			if (!response?.ok) {
 				const errorMessage = await response?.text();
@@ -54,8 +59,15 @@ export default function CreateCategoryButton({
 	});
 
 	const handlePress = () => {
-		if (categoryName.trim() !== '') {
-			createCategory(categoryName.trim());
+		// Nettoyer le nom de la catégorie en supprimant les espaces en début et fin
+		const cleanCategoryName = categoryName.trim();
+		if (cleanCategoryName !== '') {
+			createCategory(cleanCategoryName);
+		} else {
+			// Afficher un message d'erreur si le nom est vide
+			if (onError) {
+				onError(new Error('Le nom de la catégorie ne peut pas être vide'));
+			}
 		}
 	};
 
@@ -63,18 +75,23 @@ export default function CreateCategoryButton({
 		<TouchableOpacity
 			style={[
 				styles.button,
-				{ backgroundColor: colors.secondary },
+				{ 
+					backgroundColor: isValidCategoryName ? colors.secondary : colors.primaryLight,
+					opacity: isValidCategoryName ? 1 : 0.6,
+				},
 				isPending && styles.disabled,
 			]}
 			onPress={handlePress}
-			disabled={isPending || categoryName.trim() === ''}
+			disabled={isPending || !isValidCategoryName}
 		>
 			<View style={styles.buttonContent}>
 				<Ionicons name='add-circle-outline' size={18} color='#FFFFFF' />
 				<ThemedText style={styles.buttonText}>
 					{isPending
 						? 'Création...'
-						: `Créer "${categoryName.trim()}"`}
+						: isValidCategoryName
+						? `Créer "${categoryName.trim()}"`
+						: 'Nom de catégorie invalide'}
 				</ThemedText>
 			</View>
 		</TouchableOpacity>

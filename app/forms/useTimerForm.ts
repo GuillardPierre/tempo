@@ -134,6 +134,7 @@ export function useTimerForm({
 	const handleCategoryCreated = (category: Category) => {
 		setCategories?.((prev) => [...prev, category]);
 		setSnackBar('info', `Catégorie "${category.name}" créée`);
+		setSearchText('');
 	};
 
 	const getInitialValues = () => {
