@@ -1,7 +1,8 @@
-import { TextInput } from 'react-native';
-import { StyleSheet, View } from 'react-native';
+import React, { useState } from 'react';
+import { TextInput, TouchableOpacity, StyleSheet, View } from 'react-native';
 import { useThemeColors } from '../../hooks/useThemeColors';
 import ThemedText from '../../components/utils/ThemedText';
+import { Ionicons } from '@expo/vector-icons';
 
 type Props = {
 	label?: string;
@@ -29,11 +30,19 @@ export default function CustomTextInput({
 	autoCapitalize,
 }: Props) {
 	const colors = useThemeColors();
+	const [showPassword, setShowPassword] = useState(false);
+	
 	const isEmailField =
 		name.toLowerCase().includes('email') ||
 		(placeholder && placeholder.toLowerCase().includes('email'));
 	const finalAutoCapitalize =
 		autoCapitalize || (isEmailField ? 'none' : 'sentences');
+	
+	const isPasswordField = secureTextEntry || 
+		name.toLowerCase().includes('password') || 
+		(placeholder && placeholder.toLowerCase().includes('password'));
+	
+	const finalSecureTextEntry = isPasswordField ? !showPassword : false;
 
 	return (
 		<View style={[styles.container, style]}>
@@ -44,23 +53,39 @@ export default function CustomTextInput({
 					{label}
 				</ThemedText>
 			)}
-			<TextInput
-				style={[
-					styles.input,
-					{
-						backgroundColor: colors.primaryLight,
-						color: colors.primaryText,
-						borderColor: error ? '#pgB22222' : '#8955FD',
-					},
-				]}
-				value={value}
-				onChangeText={onChangeText}
-				onBlur={onBlur}
-				placeholder={placeholder}
-				placeholderTextColor={colors.primaryText}
-				secureTextEntry={secureTextEntry}
-				autoCapitalize={finalAutoCapitalize}
-			/>
+			<View style={styles.inputContainer}>
+				<TextInput
+					style={[
+						styles.input,
+						{
+							backgroundColor: colors.primaryLight,
+							color: colors.primaryText,
+							borderColor: error ? '#pgB22222' : '#8955FD',
+							paddingRight: isPasswordField ? 50 : 10, // Espace pour le bouton
+						},
+					]}
+					value={value}
+					onChangeText={onChangeText}
+					onBlur={onBlur}
+					placeholder={placeholder}
+					placeholderTextColor={colors.primaryText}
+					secureTextEntry={finalSecureTextEntry}
+					autoCapitalize={finalAutoCapitalize}
+				/>
+				{isPasswordField && (
+					<TouchableOpacity
+						style={styles.passwordToggle}
+						onPress={() => setShowPassword(!showPassword)}
+						activeOpacity={0.7}
+					>
+						<Ionicons
+							name={showPassword ? 'eye-off' : 'eye'}
+							size={20}
+							color={colors.primaryText}
+						/>
+					</TouchableOpacity>
+				)}
+			</View>
 			{error && (
 				<ThemedText style={[styles.error, { color: 'red' }]}>
 					{error}
@@ -81,6 +106,10 @@ const styles = StyleSheet.create({
 		paddingLeft: 5,
 		marginBottom: 5,
 	},
+	inputContainer: {
+		position: 'relative',
+		width: '100%',
+	},
 	input: {
 		width: '100%',
 		borderWidth: 3,
@@ -89,6 +118,13 @@ const styles = StyleSheet.create({
 		padding: 10,
 		fontSize: 18,
 		fontWeight: 'bold',
+	},
+	passwordToggle: {
+		position: 'absolute',
+		right: 15,
+		top: '50%',
+		transform: [{ translateY: -15 }],
+		padding: 5,
 	},
 	error: {
 		fontSize: 14,

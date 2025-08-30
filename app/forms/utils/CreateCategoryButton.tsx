@@ -20,7 +20,6 @@ export default function CreateCategoryButton({
 }: Props) {
 	const colors = useThemeColors();
 	
-	// Vérifier si le nom de la catégorie est valide (non vide après nettoyage)
 	const isValidCategoryName = categoryName.trim().length > 0;
 
 	// Mutation pour créer une nouvelle catégorie
@@ -34,7 +33,6 @@ export default function CreateCategoryButton({
 				name,
 			});
 
-			console.log('response', response);
 
 			if (!response?.ok) {
 				const errorMessage = await response?.text();
@@ -59,7 +57,6 @@ export default function CreateCategoryButton({
 	});
 
 	const handlePress = () => {
-		// Nettoyer le nom de la catégorie en supprimant les espaces en début et fin
 		const cleanCategoryName = categoryName.trim();
 		if (cleanCategoryName !== '') {
 			createCategory(cleanCategoryName);
