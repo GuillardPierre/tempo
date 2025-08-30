@@ -8,19 +8,22 @@ import ENDPOINTS from '../components/utils/ENDPOINT';
 import { useThemeColors } from '../hooks/useThemeColors';
 import ButtonMenu from '../components/ButtonMenu';
 import BlockWrapper from '../components/BlockWrapper';
-import { useCategoryContext } from '../context/CategoryContext';
+
 import useSnackBar from '../hooks/useSnackBar';
 
 type Props = {
 	category: Category;
 	setModalVisible: (visible: boolean) => void;
+	onCancel?: () => void;
+	setCategories: (categories: Category[] | ((prev: Category[]) => Category[])) => void;
 };
 
 export default function CategoryForm({
 	category,
 	setModalVisible,
+	onCancel,
+	setCategories,
 }: Props) {
-	const { setCategories } = useCategoryContext();
 	const { setSnackBar } = useSnackBar();
 	const colors = useThemeColors();
 	return (
@@ -91,7 +94,11 @@ export default function CategoryForm({
 										text='Annuler'
 										action={() => {
 											Vibration.vibrate(50);
-											setModalVisible(false);
+											if (onCancel) {
+												onCancel();
+											} else {
+												setModalVisible(false);
+											}
 										}}
 									/>
 									<ButtonMenu

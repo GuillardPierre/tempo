@@ -32,6 +32,12 @@ export default function Categories() {
 	const { categories, setCategories } = useCategoryContext();
 	const { color, open, message, setOpen, setSnackBar } = useSnackBar();
 
+	const resetModalState = () => {
+		setModalVisible(false);
+		setModalType('menu');
+		setSelectedCategory(null);
+	};
+
 	const deleteCategory = async (category: Category) => {
 		const rep = await httpDelete(
 			`${ENDPOINTS.category.root}${category.id}`
@@ -39,7 +45,7 @@ export default function Categories() {
 		if (rep.ok) {
 			setSnackBar('info', 'Catégorie supprimée');
 			setCategories(categories.filter((c) => c.id !== category.id));
-			setModalVisible(false);
+			resetModalState();
 		} else {
 			setSnackBar(
 				'error',
@@ -50,14 +56,14 @@ export default function Categories() {
 
 	const handleButton = (category: Category, type: 'delete' | 'update') => {
 		if (type === 'delete') {
+			setSelectedCategory(category);
 			setModalType('delete');
 			setModalVisible(true);
-			setSelectedCategory(category);
 		}
 		if (type === 'update') {
+			setSelectedCategory(category);
 			setModalType('update');
 			setModalVisible(true);
-			setSelectedCategory(category);
 		}
 	};
 	return (
@@ -123,13 +129,15 @@ export default function Categories() {
 				{modalType === 'menu' && (
 					<Menu setModalVisible={setModalVisible} />
 				)}
-				{modalType === 'update' && selectedCategory && (
+				{modalType === 'update' && selectedCategory ? (
 					<CategoryForm
 						category={selectedCategory}
 						setModalVisible={setModalVisible}
+						onCancel={resetModalState}
+						setCategories={setCategories}
 					/>
-				)}
-				{modalType === 'delete' && selectedCategory && (
+				) : null}
+				{modalType === 'delete' && selectedCategory ? (
 					<View style={styles.deleteContainer}>
 						<ThemedText variant='header2' color='secondaryText'>
 							Êtes-vous sûr de vouloir supprimer cette catégorie ?
@@ -145,7 +153,7 @@ export default function Categories() {
 								type='round'
 								text='Annuler'
 								action={() => {
-									setModalVisible(false);
+									resetModalState();
 								}}
 							/>
 							<ButtonMenu
@@ -158,7 +166,7 @@ export default function Categories() {
 							/>
 						</View>
 					</View>
-				)}
+				) : null}
 			</ModalMenu>
 		</>
 	);
