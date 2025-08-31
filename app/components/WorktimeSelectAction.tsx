@@ -30,6 +30,7 @@ interface WorktimeSelectActionProps {
 			  ) => RecurrenceException[])
 	) => void;
 	recurrenceExceptions: RecurrenceException[];
+	setChronoOpen: (isOpen: boolean) => void; // Nouvelle prop
 }
 
 export default function WorktimeSelectAction({
@@ -42,17 +43,21 @@ export default function WorktimeSelectAction({
 	setFormIsOpen,
 	setRecurrenceExceptions,
 	recurrenceExceptions,
+	setChronoOpen, // Nouvelle prop
 }: WorktimeSelectActionProps) {
 	const colors = useThemeColors();
 	const [value, setValue] = useState<string>('');
 
 	useEffect(() => {
-		setFormIsOpen(
-			value === 'addWorktime' ||
-				value === 'startTimer' ||
-				value === 'addPause'
-		);
-	}, [value]);
+		const isFormOpen = value === 'addWorktime' ||
+			value === 'startTimer' ||
+			value === 'addPause';
+		
+		setFormIsOpen(isFormOpen);
+		
+		// Notifier si le chrono est ouvert
+		setChronoOpen(value === 'startTimer');
+	}, [value, setFormIsOpen, setChronoOpen]);
 
 	return (
 		<View style={{ gap: 10 }}>

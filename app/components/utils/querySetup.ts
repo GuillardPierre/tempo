@@ -9,8 +9,6 @@ let REFRESH_TOKEN: string | null = null;
 const EXPO_PUBLIC_BASE_URL = process.env.EXPO_PUBLIC_BASE_URL ||  'https://tempo-api-b6ab0c957af4.herokuapp.com'
 // Debug: Log the BASE_URL to see what's being loaded
 console.log('🔍 EXPO_PUBLIC_BASE_URL:', EXPO_PUBLIC_BASE_URL);
-console.log('🔍 process.env:', process.env);
-console.log('🔍 NODE_ENV:', process.env.NODE_ENV);
 
 // Initialize token function
 const initToken = async () => {
@@ -115,7 +113,6 @@ export function makeUrl(url: String) {
 	const fullUrl = `${EXPO_PUBLIC_BASE_URL}${url}`;
 	console.log('🌐 Making request to:', fullUrl);
 	console.log('🌐 BASE_URL:', EXPO_PUBLIC_BASE_URL);
-	console.log('🌐 Endpoint:', url);
 	
 	return fullUrl;
 }

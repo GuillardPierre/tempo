@@ -27,6 +27,7 @@ import WorktimesList from '@/app/components/WorktimesList';
 import UnfinishedWorktimesList from '@/app/components/UnfinishedWorktimesList';
 import PauseForm from '../forms/PauseForm';
 import ProtectedRoute from '@/app/components/utils/ProtectedRoute';
+import { useState } from 'react';
 
 export default function Homepage() {
 	const colors = useThemeColors() || {
@@ -82,6 +83,9 @@ export default function Homepage() {
 		toggleCalendar,
 		toggleTimer,
 	} = useToggleViews();
+
+	// État pour savoir si le chrono est ouvert
+	const [chronoOpen, setChronoOpen] = useState(false);
 
 	const handleExceptionPress = (exception: RecurrenceException) => {
 		setSelectedException(exception);
@@ -155,7 +159,9 @@ export default function Homepage() {
 							style={{
 								width: '31.7%',
 								height: '99%',
-								maxHeight: timerIsOpen
+								maxHeight: chronoOpen
+									? '52%'
+									: timerIsOpen
 									? formIsOpen
 										? '48%'
 										: '83%'
@@ -165,7 +171,7 @@ export default function Homepage() {
 								backgroundColor: colors.background,
 								marginInline: 0,
 								marginBlock: 0,
-								marginTop: 6.5,
+								marginTop: 5.5,
 							}}
 						>
 							<View
@@ -197,7 +203,9 @@ export default function Homepage() {
 							style={{
 								width: '33.33%',
 								height: '99%',
-								maxHeight: timerIsOpen
+								maxHeight: chronoOpen
+									? '52%'
+									: timerIsOpen
 									? formIsOpen
 										? '48%'
 										: '83%'
@@ -249,9 +257,11 @@ export default function Homepage() {
 						{/* Bloc droit */}
 						<MainWrapper
 							style={{
-								width: '31.7%',
+								width: '31.8%',
 								height: '99%',
-								maxHeight: timerIsOpen
+								maxHeight: chronoOpen
+									? '52%'
+									: timerIsOpen
 									? formIsOpen
 										? '48%'
 										: '83%'
@@ -312,6 +322,7 @@ export default function Homepage() {
 							setFormIsOpen={setFormIsOpen}
 							setRecurrenceExceptions={setRecurrenceExceptions}
 							recurrenceExceptions={recurrenceExceptions}
+							setChronoOpen={setChronoOpen}
 						/>
 					</MainWrapper>
 					<MainWrapper

@@ -51,15 +51,15 @@ export function getCurrentMonthRange() {
 export function getCurrentSchoolYearRange() {
   const now = dayjs();
   let startYear, endYear;
-  if (now.month() + 1 >= 9) {
+  if (now.month() + 1 >= 7) {
     startYear = now.year();
     endYear = now.year() + 1;
   } else {
     startYear = now.year() - 1;
     endYear = now.year();
   }
-  const startOfSchoolYear = dayjs(`${startYear}-09-01T00:00:00`);
-  const endOfSchoolYear = dayjs(`${endYear}-08-31T23:59:59`);
+  const startOfSchoolYear = dayjs(`${startYear}-07-01T00:00:00`);
+  const endOfSchoolYear = dayjs(`${endYear}-06-30T23:59:59`);
   return {
     from: startOfSchoolYear.format('YYYY-MM-DDTHH:mm:ss'),
     to: endOfSchoolYear.format('YYYY-MM-DDTHH:mm:ss'),
