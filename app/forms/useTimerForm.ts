@@ -139,7 +139,7 @@ export function useTimerForm({
 
 	const getInitialValues = () => {
 		// Créer une date locale pour éviter les problèmes de timezone
-		const createUtcDate = (dateString: string, timeString: string = '00:00:00') => {
+		const createUtcDate = (dateString: string, timeString: string = '02:00:00') => {
 			const [year, month, day] = dateString.split('-').map(Number);
 			const [hours, minutes, seconds] = timeString.split(':').map(Number);
 			return new Date(Date.UTC(year, month - 1, day, hours, minutes, seconds));
@@ -184,8 +184,6 @@ export function useTimerForm({
 			recurrence: undefined as CreateRecurrenceRule | undefined,
 			startDate: selectedWorktime?.startDate
 				? new Date(selectedWorktime.startDate)
-				: mode === 'chrono'
-				? createUtcDate(new Date().toISOString().split('T')[0] + "Z") 
 				: createUtcDate(date),
 			endDate: selectedWorktime?.endDate
 				? new Date(selectedWorktime.endDate)
