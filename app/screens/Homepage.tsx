@@ -186,6 +186,7 @@ export default function Homepage() {
 									setModalType={setModalType}
 									setModalVisible={setModalVisible}
 									setSelectedWorktime={setSelectedWorktime}
+									onAddPress={toggleTimer}
 								/>
 							</View>
 						</MainWrapper>
@@ -235,6 +236,7 @@ export default function Homepage() {
 									setModalVisible={setModalVisible}
 									setSelectedWorktime={setSelectedWorktime}
 									setWorktimes={setWorktimes}
+									onAddPress={toggleTimer}
 								/>
 							</MainWrapper>
 						</View>
@@ -276,6 +278,7 @@ export default function Homepage() {
 									setModalType={setModalType}
 									setModalVisible={setModalVisible}
 									setSelectedWorktime={setSelectedWorktime}
+									onAddPress={toggleTimer}
 								/>
 							</View>
 						</MainWrapper>

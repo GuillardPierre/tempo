@@ -16,6 +16,7 @@ interface WorktimesListProps {
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: WorktimeSeries) => void;
 	setWorktimes?: (worktimes: WorktimeSeries[]) => void;
+	onAddPress?: () => void;
 }
 
 const WorktimesList = ({
@@ -26,6 +27,7 @@ const WorktimesList = ({
 	setModalVisible,
 	setSelectedWorktime,
 	setWorktimes,
+	onAddPress,
 }: WorktimesListProps) => {
 	const colors = useThemeColors();
 	const visibleWorktimes = worktimes.filter((worktime) => worktime.endHour !== null);
@@ -52,7 +54,7 @@ const WorktimesList = ({
 						</ThemedText>
 						<View style={{ marginHorizontal: 4 }}>
 							<RoundButton
-								onPress={() => {}}
+								onPress={onAddPress || (() => {})}
 								svgSize={12}
 								type='add'
 								variant='secondary'
