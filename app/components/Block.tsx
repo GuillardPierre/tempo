@@ -8,6 +8,7 @@ import {
 	RecurrenceException,
 	Worktime,
 	WorktimeSeries,
+	WorktimeByDay,
 } from '../types/worktime';
 import StopSvg from './svg/stop';
 import { httpPut } from './utils/querySetup';
@@ -21,12 +22,18 @@ type Props = {
 	setModalType: (type: 'menu' | 'update') => void;
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: any) => void;
-	setUnfinishedWorktimes?: (worktimes: WorktimeSeries[]) => void;
+	setUnfinishedWorktimes?: (
+		worktimes: WorktimeSeries[] | ((prev: WorktimeSeries[]) => WorktimeSeries[])
+	) => void;
 	setWorktimes?: (worktimes: WorktimeSeries[]) => void;
+	setWorktimesByDay?: (
+		worktimes: WorktimeByDay | ((prev: WorktimeByDay) => WorktimeByDay)
+	) => void;
 	worktimes?: WorktimeSeries[];
 	setSnackBar?: (type: 'error' | 'info', messageText: string) => void;
 	currentDate: string;
 	recurrenceExceptions?: RecurrenceException[];
+	onWorktimeStopped?: () => void; // Nouvelle prop pour déclencher le rafraîchissement
 };
 
 export default function Block({
@@ -36,10 +43,12 @@ export default function Block({
 	setSelectedWorktime,
 	setUnfinishedWorktimes,
 	setWorktimes,
+	setWorktimesByDay,
 	worktimes,
 	setSnackBar,
 	currentDate,
 	recurrenceExceptions = [],
+	onWorktimeStopped,
 }: Props) {
 	const colors = useThemeColors();
 	const convertTime = (time: string) => {
@@ -110,15 +119,21 @@ export default function Block({
 			...newData,
 			endHour: formatLocalDateTime(new Date()),
 		};
+		
 		const rep = await httpPut(
 			`${ENDPOINTS.worktime.root}${worktime.id}`,
 			formattedData
 		);
+		
 		if (rep.ok) {
 			const data = await rep.json();
+			
 			if (setUnfinishedWorktimes) {
-				setUnfinishedWorktimes([]);
+				setUnfinishedWorktimes((prev) => 
+					prev.filter((wt) => wt.id !== worktime.id)
+				);
 			}
+			
 			if (setWorktimes && worktimes) {
 				const worktimeDay = new Date(data.start)
 					.toISOString()
@@ -130,11 +145,17 @@ export default function Block({
 					]);
 				}
 			}
+			
 			if (setSnackBar) {
 				setSnackBar('info', 'Temps de travail terminé ! Bravo !');
 			}
+			
+			// Déclencher le rafraîchissement des données depuis le serveur
+			if (onWorktimeStopped) {
+				onWorktimeStopped();
+			}
 		} else {
-			console.error('error', rep);
+			console.error('Erreur lors de l\'arrêt du worktime:', rep);
 		}
 	};
 

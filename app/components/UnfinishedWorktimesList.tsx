@@ -1,5 +1,5 @@
 import React from 'react';
-import { WorktimeSeries, RecurrenceException } from '@/app/types/worktime';
+import { WorktimeSeries, RecurrenceException, WorktimeByDay } from '@/app/types/worktime';
 import Block from './Block';
 import MainWrapper from './MainWrapper';
 
@@ -10,13 +10,19 @@ interface UnfinishedWorktimesListProps {
 	setModalType: (type: 'menu' | 'update') => void;
 	setModalVisible: (visible: boolean) => void;
 	setSelectedWorktime: (worktime: WorktimeSeries) => void;
-	setUnfinishedWorktimes: (worktimes: WorktimeSeries[]) => void;
+	setUnfinishedWorktimes: (
+		worktimes: WorktimeSeries[] | ((prev: WorktimeSeries[]) => WorktimeSeries[])
+	) => void;
 	setWorktimes: (
 		worktimes:
 			| WorktimeSeries[]
 			| ((prev: WorktimeSeries[]) => WorktimeSeries[])
 	) => void;
+	setWorktimesByDay: (
+		worktimes: WorktimeByDay | ((prev: WorktimeByDay) => WorktimeByDay)
+	) => void;
 	setSnackBar: (type: 'error' | 'info', messageText: string) => void;
+	onWorktimeStopped?: () => void; // Nouvelle prop
 }
 
 export default function UnfinishedWorktimesList({
@@ -28,7 +34,9 @@ export default function UnfinishedWorktimesList({
 	setSelectedWorktime,
 	setUnfinishedWorktimes,
 	setWorktimes,
+	setWorktimesByDay,
 	setSnackBar,
+	onWorktimeStopped,
 }: UnfinishedWorktimesListProps) {
 	if (unfinishedWorktimes.length === 0) {
 		return null;
@@ -45,9 +53,11 @@ export default function UnfinishedWorktimesList({
 					setSelectedWorktime={setSelectedWorktime}
 					setUnfinishedWorktimes={setUnfinishedWorktimes}
 					setWorktimes={setWorktimes}
+					setWorktimesByDay={setWorktimesByDay}
 					setSnackBar={setSnackBar}
 					currentDate={currentDate}
 					recurrenceExceptions={recurrenceExceptions}
+					onWorktimeStopped={onWorktimeStopped}
 				/>
 			))}
 		</>

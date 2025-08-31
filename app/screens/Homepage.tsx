@@ -58,6 +58,7 @@ export default function Homepage() {
 		setSnackBar,
 		selectedException,
 		setSelectedException,
+		getWorktimes,
 	} = useIndex();
 	const currentDateRef = useRef<string>(date);
 
@@ -221,7 +222,11 @@ export default function Homepage() {
 										setUnfinishedWorktimes
 									}
 									setWorktimes={setWorktimes}
+									setWorktimesByDay={setWorktimesByDay}
 									setSnackBar={setSnackBar}
+									onWorktimeStopped={() => {
+										getWorktimes();
+									}}
 								/>
 								<ExceptionsList
 									exceptions={recurrenceExceptions}

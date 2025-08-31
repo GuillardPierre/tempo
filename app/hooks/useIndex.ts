@@ -67,11 +67,12 @@ export const useIndex = () => {
 				...(worktimesByDay.today || []),
 				...(worktimesByDay.tomorrow || []),
 			];
-			setUnfinishedWorktimes(
-				worktimesByDay.today.filter(
-					(worktime) => worktime.endHour === null
-				)
+			
+			const unfinished = worktimesByDay.today.filter(
+				(worktime) => worktime.endHour === null
 			);
+			
+			setUnfinishedWorktimes(unfinished);
 		}
 	}, [worktimesByDay, month]);
 
@@ -195,5 +196,6 @@ export const useIndex = () => {
 		setSnackBar,
 		selectedException,
 		setSelectedException,
+		getWorktimes, // Ajout de getWorktimes
 	};
 };
