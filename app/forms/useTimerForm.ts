@@ -35,12 +35,30 @@ export function useTimerForm({
 	const [selectedDays, setSelectedDays] = useState<string[]>([]);
 	const [open, setOpen] = useState(false);
 	const [searchText, setSearchText] = useState('');
+	const [isRecurring, setIsRecurring] = useState(
+		selectedWorktime?.recurrence ? true : false
+	);
+
+	const weekdays = [
+		{ label: 'Lun', value: 'MO' },
+		{ label: 'Mar', value: 'TU' },
+		{ label: 'Mer', value: 'WE' },
+		{ label: 'Jeu', value: 'TH' },
+		{ label: 'Ven', value: 'FR' },
+		{ label: 'Sam', value: 'SA' },
+		{ label: 'Dim', value: 'SU' },
+	];
 
 	useEffect(() => {
 		if (selectedWorktime?.recurrence) {
 			const parsedDays = parseRecurrenceRule(selectedWorktime.recurrence);
 			setSelectedDays(parsedDays);
 		}
+	}, [selectedWorktime]);
+
+	// Mettre à jour isRecurring quand selectedWorktime change
+	useEffect(() => {
+		setIsRecurring(selectedWorktime?.recurrence ? true : false);
 	}, [selectedWorktime]);
 
 	const { mutate: submitWorktime, isPending } = useMutation({
@@ -137,6 +155,28 @@ export function useTimerForm({
 		setSearchText('');
 	};
 
+	// Fonction pour créer une nouvelle catégorie
+	const createCategory = async (categoryName: string) => {
+		try {
+			const response = await httpPost(`${ENDPOINTS.category.create}`, {
+				name: categoryName.trim(),
+			});
+
+			if (!response?.ok) {
+				const errorMessage = await response?.text();
+				setSnackBar('error', errorMessage || 'Échec de la création de la catégorie');
+				return null;
+			}
+
+			const newCategory = await response.json();
+			return newCategory;
+		} catch (error) {
+			console.error('Erreur lors de la création de la catégorie:', error);
+			setSnackBar('error', 'Erreur lors de la création de la catégorie');
+			return null;
+		}
+	};
+
 	const getInitialValues = () => {
 		// Créer une date locale pour éviter les problèmes de timezone
 		const createUtcDate = (dateString: string, timeString: string = '02:00:00') => {
@@ -212,7 +252,11 @@ export function useTimerForm({
 		submitWorktime,
 		isPending,
 		handleCategoryCreated,
+		createCategory,
 		getInitialValues,
 		daysAreDisplayed,
+		weekdays,
+		isRecurring,
+		setIsRecurring,
 	};
 }

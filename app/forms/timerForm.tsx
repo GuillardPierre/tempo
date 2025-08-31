@@ -9,7 +9,6 @@ import { createWorkTimeSchema } from '../schema/createWorkTime';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { Category, SelectedWorktime } from '../types/worktime';
 import DropDownPicker from 'react-native-dropdown-picker';
-import CreateCategoryButton from './utils/CreateCategoryButton';
 import { useTimerForm } from './useTimerForm';
 import BlockWrapper from '../components/BlockWrapper';
 import ThemedText from '../components/utils/ThemedText';
@@ -74,6 +73,10 @@ export default function TimerForm({
 		handleCategoryCreated,
 		getInitialValues,
 		daysAreDisplayed,
+		createCategory,
+		weekdays,
+		isRecurring,
+		setIsRecurring,
 	} = useTimerForm({
 		setSnackBar,
 		setTimerIsOpen,
@@ -84,31 +87,6 @@ export default function TimerForm({
 		date,
 		mode,
 	});
-
-	const weekdays = [
-		{ label: 'Lun', value: 'MO' },
-		{ label: 'Mar', value: 'TU' },
-		{ label: 'Mer', value: 'WE' },
-		{ label: 'Jeu', value: 'TH' },
-		{ label: 'Ven', value: 'FR' },
-		{ label: 'Sam', value: 'SA' },
-		{ label: 'Dim', value: 'SU' },
-	];
-
-	useEffect(() => {
-		if (selectedWorktime?.recurrence) {
-			const parsedDays = parseRecurrenceRule(selectedWorktime.recurrence);
-			setSelectedDays(parsedDays);
-		}
-	}, [selectedWorktime]);
-
-
-
-	const [isRecurring, setIsRecurring] = useState(
-		selectedWorktime?.recurrence ? true : false
-	);
-
-	const screenWidth = Dimensions.get('window').width;
 
 	return (
 		<View>
@@ -142,6 +120,29 @@ export default function TimerForm({
 				}}
 			>
 				{({ setFieldValue, values, handleSubmit, errors, touched }) => {
+					const handleDateChange = (date: Date) => {
+						Vibration.vibrate(50);
+						
+						if (mode === 'chrono') {
+							const today = new Date();
+							today.setHours(0, 0, 0, 0); // Remettre à minuit pour la comparaison
+							
+							if (date > today) {
+								setSnackBar(
+									'error',
+									'Vous ne pouvez pas lancer un chronomètre dans le futur.'
+								);
+								// Remettre la date à aujourd'hui
+								const todayDate = new Date();
+								todayDate.setHours(2, 0, 0, 0);
+								setFieldValue('startDate', todayDate);
+								return;
+							}
+						}
+						
+						setFieldValue('startDate', date);
+					};
+
 					return (
 						<View
 							style={[
@@ -213,18 +214,24 @@ export default function TimerForm({
 								]}
 								ListEmptyComponent={(props) =>
 									searchText.length > 0 ? (
-										<CreateCategoryButton
-											categoryName={searchText}
-											onSuccess={(category) => {
-												handleCategoryCreated(category);
-												setFieldValue('category', {
-													id: String(category.id),
-													title: category.name,
-												});
-												setSearchText(category.name);
-												setTimeout(() => {
-													setOpen(false);
-												}, 100);
+										<ButtonMenu
+											style={{ width: '80%', marginLeft: 'auto', marginRight: 'auto' }}
+											type='round'
+											text={`Créer "${searchText}"`}
+											action={async () => {
+												const newCategory = await createCategory(searchText);
+												
+												if (newCategory) {
+													handleCategoryCreated(newCategory);
+													setFieldValue('category', {
+														id: String(newCategory.id),
+														title: newCategory.name,
+													});
+													setSearchText(newCategory.name);
+													setTimeout(() => {
+														setOpen(false);
+													}, 100);
+												}
 											}}
 										/>
 									) : (
@@ -262,14 +269,9 @@ export default function TimerForm({
 										: "Date de l'activité"
 								} :`}
 								value={values.startDate}
-								onChange={(date) => {
-									Vibration.vibrate(50);
-									setFieldValue('startDate', date);
-								}}
-
+								onChange={handleDateChange}
 								mode='date'
 								display='calendar'
-								disabled={mode === "chrono"}
 							/>
 
 							<View style={styles.timePickersContainer}>
@@ -488,6 +490,20 @@ export default function TimerForm({
 									}
 									action={() => {
 										Vibration.vibrate(50);
+										
+										if (values.startHour && values.endHour) {
+											const startTime = values.startHour.getTime();
+											const endTime = values.endHour.getTime();
+											
+											if (startTime === endTime) {
+												setSnackBar(
+													'error',
+													'L\'heure de début et de fin ne peuvent pas être identiques. Veuillez ajuster les heures.'
+												);
+												return;
+											}
+										}
+										
 										handleSubmit();
 									}}
 								/>
@@ -529,7 +545,7 @@ const styles = StyleSheet.create({
 	timePickersContainer: {
 		flexDirection: 'row',
 		alignItems: 'flex-start',
-		justifyContent: 'space-around',
+		justifyContent: 'space-between',
 		width: '100%',
 		gap: 20,
 	},
