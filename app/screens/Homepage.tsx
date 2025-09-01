@@ -27,7 +27,6 @@ import WorktimesList from '@/app/components/WorktimesList';
 import UnfinishedWorktimesList from '@/app/components/UnfinishedWorktimesList';
 import PauseForm from '../forms/PauseForm';
 import ProtectedRoute from '@/app/components/utils/ProtectedRoute';
-import { useState } from 'react';
 
 export default function Homepage() {
 	const colors = useThemeColors() || {
@@ -79,13 +78,13 @@ export default function Homepage() {
 		calendarIsOpen,
 		timerIsOpen,
 		formIsOpen,
+		chronoOpen,
 		setFormIsOpen,
 		toggleCalendar,
 		toggleTimer,
+		handleChronoStart,
+		handleChronoClose,
 	} = useToggleViews();
-
-	// État pour savoir si le chrono est ouvert
-	const [chronoOpen, setChronoOpen] = useState(false);
 
 	const handleExceptionPress = (exception: RecurrenceException) => {
 		setSelectedException(exception);
@@ -322,7 +321,10 @@ export default function Homepage() {
 							setFormIsOpen={setFormIsOpen}
 							setRecurrenceExceptions={setRecurrenceExceptions}
 							recurrenceExceptions={recurrenceExceptions}
-							setChronoOpen={setChronoOpen}
+							onChronoStart={handleChronoStart}
+							onChronoClose={handleChronoClose}
+							timerIsOpen={timerIsOpen}
+							setUnfinishedWorktimes={setUnfinishedWorktimes}
 						/>
 					</MainWrapper>
 					<MainWrapper

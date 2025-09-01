@@ -6,6 +6,7 @@ import {
 	Category,
 	SelectedWorktime,
 	CreateRecurrenceRule,
+	WorktimeSeries,
 } from '../types/worktime';
 import { parseRecurrenceRule } from '../utils/recurrence';
 
@@ -18,6 +19,8 @@ export function useTimerForm({
 	isEditing = false,
 	date,
 	mode,
+	onChronoClose,
+	setUnfinishedWorktimes,
 }: {
 	setSnackBar: (type: 'error' | 'info', message: string) => void;
 	setTimerIsOpen: (isOpen: boolean) => void;
@@ -31,6 +34,10 @@ export function useTimerForm({
 	isEditing?: boolean;
 	date: string;
 	mode: 'chrono' | 'activity';
+	onChronoClose?: () => void;
+	setUnfinishedWorktimes?: (
+		worktimes: WorktimeSeries[] | ((prevWorktimes: WorktimeSeries[]) => WorktimeSeries[])
+	) => void;
 }) {	
 	const [selectedDays, setSelectedDays] = useState<string[]>([]);
 	const [open, setOpen] = useState(false);
@@ -87,7 +94,19 @@ export function useTimerForm({
 					? 'Activité modifiée'
 					: 'Temps enregistré'
 			);
+			
+			// Si c'est un chrono qui vient d'être lancé, notifier la fermeture
+			if (mode === 'chrono' && !data.endHour && onChronoClose) {
+				onChronoClose();
+			}
+			
 			setTimerIsOpen(false);
+
+			// Pour les chronos, toujours les ajouter à unfinishedWorktimes même si la date ne correspond pas
+			if (mode === 'chrono' && !data.endHour && setUnfinishedWorktimes) {
+				data.type = 'CHRONO';
+				setUnfinishedWorktimes((prev) => [...prev, data]);
+			}
 
 			const shouldAddToFeed = (() => {
 				if (!data.recurrence) {
@@ -133,10 +152,11 @@ export function useTimerForm({
 					setWorktimes((prev) =>
 						prev.map((wt) => (wt.id === data.id ? data : wt))
 					);
-				} else if (!data.endHour) {
-					data.type = 'CHRONO';
+				} else if (!data.endHour && mode !== 'chrono') {
+					// Pour les activités non-chrono, les ajouter à la liste normale
 					setWorktimes((prev) => [...prev, data]);
-				} else {
+				} else if (data.endHour) {
+					// Activités terminées
 					setWorktimes((prev) => [...prev, data]);
 				}
 			}

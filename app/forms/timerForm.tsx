@@ -1,19 +1,17 @@
-import { Vibration, View, Text, StyleSheet, ScrollView, Dimensions } from 'react-native';
-import React, { useEffect, useState } from 'react';
-import ButtonMenu from '../components/ButtonMenu';
-import TimePickerInput from './utils/TimePickerInput';
+import { View, StyleSheet, Vibration } from 'react-native';
+import React from 'react';
 import { Formik } from 'formik';
 import { useThemeColors } from '../hooks/useThemeColors';
-import { Pressable } from 'react-native';
 import { createWorkTimeSchema } from '../schema/createWorkTime';
 import { toFormikValidationSchema } from 'zod-formik-adapter';
 import { Category, SelectedWorktime } from '../types/worktime';
-import DropDownPicker from 'react-native-dropdown-picker';
 import { useTimerForm } from './useTimerForm';
-import BlockWrapper from '../components/BlockWrapper';
-import ThemedText from '../components/utils/ThemedText';
-import { Switch } from 'react-native-paper';
 import { formatRecurrenceRule, parseRecurrenceRule } from '../utils/recurrence';
+import { formatLocalDateTime } from '../components/utils/utils';
+import CategorySelector from './components/CategorySelector';
+import DateTimeSelectors from './components/DateTimeSelectors';
+import RecurrenceSettings from './components/RecurrenceSettings';
+import FormActions from './components/FormActions';
 
 type TimerFormMode = 'chrono' | 'activity';
 
@@ -31,23 +29,13 @@ interface Props {
 	isEditing?: boolean;
 	date: string;
 	mode: TimerFormMode;
+	onChronoClose?: () => void;
+	setUnfinishedWorktimes?: (
+		worktimes: any[] | ((prevWorktimes: any[]) => any[])
+	) => void;
 }
 
-function formatLocalDateTime(date: Date) {
-	const pad = (n: number) => n.toString().padStart(2, '0');
-	return (
-		date.getFullYear() +
-		'-' +
-		pad(date.getMonth() + 1) +
-		'-' +
-		pad(date.getDate()) +
-		'T' +
-		pad(date.getHours()) +
-		':' +
-		pad(date.getMinutes()) +
-		':00'
-	);
-}
+
 
 export default function TimerForm({
 	setSnackBar,
@@ -59,6 +47,8 @@ export default function TimerForm({
 	isEditing = false,
 	date,
 	mode,
+	onChronoClose,
+	setUnfinishedWorktimes,
 }: Props) {
 	const colors = useThemeColors();
 
@@ -86,6 +76,8 @@ export default function TimerForm({
 		isEditing,
 		date,
 		mode,
+		onChronoClose,
+		setUnfinishedWorktimes,
 	});
 
 	return (
@@ -120,24 +112,39 @@ export default function TimerForm({
 				}}
 			>
 				{({ setFieldValue, values, handleSubmit, errors, touched }) => {
+					
 					const handleDateChange = (date: Date) => {
 						Vibration.vibrate(50);
 						
-						if (mode === 'chrono') {
-							const today = new Date();
-							today.setHours(0, 0, 0, 0); // Remettre à minuit pour la comparaison
+						// Pour tous les modes, mettre à jour startHour avec la nouvelle date mais garder l'heure
+						if (values.startHour) {
+
+							const currentStartHour = new Date(values.startHour);
+							const newStartHour = new Date(date);
 							
-							if (date > today) {
-								setSnackBar(
-									'error',
-									'Vous ne pouvez pas lancer un chronomètre dans le futur.'
-								);
-								// Remettre la date à aujourd'hui
-								const todayDate = new Date();
-								todayDate.setHours(2, 0, 0, 0);
-								setFieldValue('startDate', todayDate);
-								return;
-							}
+							// Garder l'heure, minute, seconde de startHour mais changer la date
+							newStartHour.setHours(
+								currentStartHour.getHours(),
+								currentStartHour.getMinutes(),
+								currentStartHour.getSeconds(),
+								currentStartHour.getMilliseconds()
+							);
+							setFieldValue('startHour', newStartHour);
+						}
+						
+						// Pour le mode activité, mettre à jour aussi endHour avec la nouvelle date
+						if (mode === 'activity' && values.endHour) {
+							const currentEndHour = new Date(values.endHour);
+							const newEndHour = new Date(date);
+							
+							// Garder l'heure, minute, seconde de endHour mais changer la date
+							newEndHour.setHours(
+								currentEndHour.getHours(),
+								currentEndHour.getMinutes(),
+								currentEndHour.getSeconds(),
+								currentEndHour.getMilliseconds()
+							);
+							setFieldValue('endHour', newEndHour);
 						}
 						
 						setFieldValue('startDate', date);
@@ -153,361 +160,70 @@ export default function TimerForm({
 								},
 							]}
 						>
-							<DropDownPicker
+							<CategorySelector
 								open={open}
-								value={values.category.id}
-								items={categories.map((c) => ({
-									label: c.name,
-									value: String(c.id),
-								}))}
 								setOpen={setOpen}
-								setValue={(callback) => {
-									const currentValue = callback(
-										values.category.id
-									);
-									return currentValue;
+								value={values.category.id}
+								categories={categories}
+								onSelectCategory={(category) => {
+									setFieldValue('category', category);
 								}}
-								onSelectItem={(item) => {
-									Vibration.vibrate(50);
-									if (item && item.value) {
-										const value = item.value.toString();
-										const category = categories.find(
-											(c) => String(c.id) === value
-										);
-										if (category) {
-											setFieldValue('category', {
-												id: value,
-												title: category.name,
-											});
-										}
-									}
-								}}
-								searchable={true}
-								searchPlaceholder='Tapez pour rechercher ou créer une catégorie'
-								onChangeSearchText={(text) => {
-									setSearchText(text);
-								}}
-								placeholder='Sélectionnez une catégorie'
-								style={[
-									styles.dropdown,
-									{
-										borderColor: colors.primary,
-										width: '100%',
-									},
-								]}
-								dropDownContainerStyle={[
-									styles.dropdownContainer,
-									{
-										backgroundColor: colors.background,
-										borderColor: colors.primary,
-									},
-								]}
-								listMode='MODAL'
-								modalAnimationType='slide'
-								placeholderStyle={{fontWeight: 500}}
-								modalContentContainerStyle={[
-									styles.modalContentContainer,
-									{
-										backgroundColor: colors.background,
-										borderColor: colors.secondary,
-									},
-								]}
-								ListEmptyComponent={(props) =>
-									searchText.length > 0 ? (
-										<ButtonMenu
-											style={{ width: '80%', marginLeft: 'auto', marginRight: 'auto' }}
-											type='round'
-											text={`Créer "${searchText}"`}
-											action={async () => {
-												const newCategory = await createCategory(searchText);
-												
-												if (newCategory) {
-													handleCategoryCreated(newCategory);
-													setFieldValue('category', {
-														id: String(newCategory.id),
-														title: newCategory.name,
-													});
-													setSearchText(newCategory.name);
-													setTimeout(() => {
-														setOpen(false);
-													}, 100);
-												}
-											}}
-										/>
-									) : (
-										<BlockWrapper
-											style={{ maxHeight: 100 }}
-											backgroundColor={
-												colors.primaryLight
-											}
-										>
-											<ThemedText>
-												Créez une catégorie en tapant
-												dans la barre de recherche
-											</ThemedText>
-										</BlockWrapper>
-									)
-								}
+								searchText={searchText}
+								setSearchText={setSearchText}
+								onCreateCategory={createCategory}
+								onCategoryCreated={handleCategoryCreated}
+								error={errors.category?.title}
+								touched={touched.category?.title}
 							/>
 
-							{touched.category?.title &&
-								errors.category?.title && (
-									<Text
-										style={[
-											styles.errorText,
-											{ color: colors.primary },
-										]}
-									>
-										{errors.category.title}
-									</Text>
-								)}
-
-							<TimePickerInput
-								label={`${
-									selectedDays.length > 0
-										? 'Date de début'
-										: "Date de l'activité"
-								} :`}
-								value={values.startDate}
-								onChange={handleDateChange}
-								mode='date'
-								display='calendar'
+							<DateTimeSelectors
+								mode={mode}
+								selectedDays={selectedDays}
+								startDate={values.startDate}
+								startHour={values.startHour}
+								endHour={values.endHour}
+								date={date}
+								onDateChange={handleDateChange}
+								onStartHourChange={(date) => {
+									setFieldValue('startHour', date);
+									values.startHour &&
+										date > values.startHour &&
+										setFieldValue('endHour', date);
+								}}
+								onEndHourChange={(date) => {
+									setFieldValue('endHour', date);
+								}}
+								onSubmit={handleSubmit}
+								setSnackBar={setSnackBar}
 							/>
-
-							<View style={styles.timePickersContainer}>
-								<View style={styles.timePickerContainer}>
-									<TimePickerInput
-										label='Heure début:'
-										value={values.startHour}
-										onChange={(date) => {
-											Vibration.vibrate(50);
-											setFieldValue('startHour', date);
-											values.startHour &&
-												date > values.startHour &&
-												setFieldValue('endHour', date);
-										}}
-									/>
-									{mode === 'chrono' && (
-										<ButtonMenu
-											fullWidth={false}
-											style={{
-												transform: [{ translateY: 12 }],
-												marginLeft: 10,
-												alignSelf: 'flex-end',
-												width: '50%',
-											}}
-											type='round'
-											text='Lancer Chronomètre'
-											action={() => {
-												Vibration.vibrate(50);
-												if (
-													values.startHour >
-													new Date()
-												) {
-													setSnackBar(
-														'error',
-														'Vous ne pouvez pas démarrer un chronomètre dans le futur. Veuillez choisir une date/heure valide.'
-													);
-													return;
-												}
-												handleSubmit();
-											}}
-										/>
-									)}
-								</View>
-								{mode === 'activity' && (
-									<View style={styles.timePickerContainer}>
-										<TimePickerInput
-											label='Heure fin:'
-											value={
-												values.endHour || new Date(
-													date +
-														'T' +
-														new Date()
-															.toTimeString()
-															.slice(0, 8)
-												)
-											}
-											onChange={(date) => {
-												Vibration.vibrate(50);
-												setFieldValue('endHour', date);
-											}}
-										/>
-									</View>
-								)}
-							</View>
 
 							{mode === 'activity' && daysAreDisplayed() && (
-								<>
-									<View
-										style={{
-											display: 'flex',
-											flexDirection: 'row',
-											alignItems: 'center',
-											width: '100%',
-											justifyContent: 'center',
-										}}
-									>
-										<Text style={styles.recurrenceLabel}>
-											Répétition sur plusieurs jours :
-										</Text>
-										<Switch
-											value={isRecurring}
-											onValueChange={setIsRecurring}
-											disabled={selectedDays.length > 0}
-										/>
-									</View>
-									{isRecurring && (
-										<View
-											style={styles.recurrenceContainer}
-										>
-											<ScrollView
-												style={styles.dayButtonsScroll}
-												contentContainerStyle={
-													styles.dayButtonsContainer
-												}
-												horizontal
-												showsHorizontalScrollIndicator={
-													false
-												}
-											>
-												{weekdays.map((day) => (
-													<Pressable
-														key={day.value}
-														style={[
-															styles.dayButton,
-															selectedDays.includes(
-																day.value
-															) && {
-																backgroundColor:
-																	colors.secondary,
-															},
-														]}
-														onPress={() => {
-															Vibration.vibrate(
-																50
-															);
-															setSelectedDays(
-																(prev) =>
-																	prev.includes(
-																		day.value
-																	)
-																		? prev.filter(
-																				(
-																					d
-																				) =>
-																					d !==
-																					day.value
-																		  )
-																		: [
-																				...prev,
-																				day.value,
-																		  ]
-															);
-														}}
-													>
-														<Text
-															style={[
-																styles.dayButtonText,
-																selectedDays.includes(
-																	day.value
-																) && {
-																	color: 'white',
-																},
-															]}
-														>
-															{day.label}
-														</Text>
-													</Pressable>
-												))}
-											</ScrollView>
-
-											<TimePickerInput
-												label='Date de fin (non obligatoire):'
-												value={values.endDate}
-												onChange={(date) => {
-													Vibration.vibrate(50);
-													setFieldValue(
-														'endDate',
-														date
-													);
-												}}
-												style={{ width: '100%' }}
-												mode='date'
-												display='calendar'
-											/>
-											<BlockWrapper style={{minHeight: 80}}>
-												<ThemedText
-													variant='body'
-													color='secondaryText'
-												>
-													Vous voulez que vos temps de
-													travail soient comptés même
-													en vacances ? Activez
-													l'option ci-dessous.
-												</ThemedText>
-											</BlockWrapper>
-											<View
-												style={{
-													flexDirection: 'row',
-													alignItems: 'center',
-													marginBottom: isEditing ? 60: 0
-												}}
-											>
-												<Switch
-													value={
-														values.ignoreExceptions
-													}
-													onValueChange={(value) => {
-														Vibration.vibrate(50);
-														setFieldValue(
-															'ignoreExceptions',
-															value
-														);
-													}}
-												/>
-												<ThemedText
-													variant='body'
-													color='secondaryText'
-												>
-													Ignorer les périodes de
-													pause ?
-												</ThemedText>
-											</View>
-										</View>
-									)}
-								</>
-							)}
-
-							{mode === 'activity' && (
-								<ButtonMenu
-									style={styles.submitButton}
-									type='round'
-									text={
-										isEditing
-											? 'Mettre à jour'
-											: "Enregistrer l'activité"
-									}
-									action={() => {
-										Vibration.vibrate(50);
-										
-										if (values.startHour && values.endHour) {
-											const startTime = values.startHour.getTime();
-											const endTime = values.endHour.getTime();
-											
-											if (startTime === endTime) {
-												setSnackBar(
-													'error',
-													'L\'heure de début et de fin ne peuvent pas être identiques. Veuillez ajuster les heures.'
-												);
-												return;
-											}
-										}
-										
-										handleSubmit();
+								<RecurrenceSettings
+									isRecurring={isRecurring}
+									setIsRecurring={setIsRecurring}
+									selectedDays={selectedDays}
+									setSelectedDays={setSelectedDays}
+									weekdays={weekdays}
+									endDate={values.endDate || undefined}
+									onEndDateChange={(date) => {
+										setFieldValue('endDate', date);
 									}}
+									ignoreExceptions={values.ignoreExceptions}
+									onIgnoreExceptionsChange={(value) => {
+										setFieldValue('ignoreExceptions', value);
+									}}
+									isEditing={isEditing}
 								/>
 							)}
+
+							<FormActions
+								mode={mode}
+								isEditing={isEditing}
+								startHour={values.startHour}
+								endHour={values.endHour || undefined}
+								onSubmit={handleSubmit}
+								setSnackBar={setSnackBar}
+							/>
 						</View>
 					);
 				}}
@@ -522,89 +238,5 @@ const styles = StyleSheet.create({
 		flexDirection: 'column',
 		justifyContent: 'center',
 		alignItems: 'flex-start',
-	},
-	dropdown: {
-		borderWidth: 3,
-		borderRadius: 12,
-		marginBottom: 2,
-		width: '100%',
-	},
-	dropdownContainer: {
-		borderWidth: 3,
-		borderRadius: 4,
-		width: '100%',
-	},
-	modalContentContainer: {
-		borderWidth: 3,
-		borderRadius: 4,
-		height: '50%',
-		width: '100%',
-		marginLeft: 'auto',
-		marginRight: 'auto',
-	},
-	timePickersContainer: {
-		flexDirection: 'row',
-		alignItems: 'flex-start',
-		justifyContent: 'space-between',
-		width: '100%',
-		gap: 20,
-	},
-	timePickerContainer: {
-		flexDirection: 'row',
-		alignItems: 'flex-end',
-	},
-	recurrenceContainer: {
-		width: '100%',
-	},
-	recurrenceLabel: {
-		fontSize: 16,
-		fontWeight: 'bold',
-		marginBottom: 5,
-		width: '70%',
-	},
-	dayButtonsScroll: {
-		width: '100%',
-		marginLeft: 'auto',
-		marginRight: 'auto',
-		borderWidth: 2,
-		borderColor: '#cccccc',
-		borderRadius: 16,
-		backgroundColor: '#f7f7f7',
-		paddingVertical: 6,
-		minHeight: 70,
-		marginBottom: 10,
-	},
-	dayButtonsContainer: {
-		flexDirection: 'row',
-		justifyContent: 'flex-start',
-		alignItems: 'center',
-		gap: 20,
-		paddingHorizontal: 10,
-	},
-	dayButton: {
-		width: 45,
-		height: 45,
-		borderRadius: 20,
-		justifyContent: 'center',
-		alignItems: 'center',
-		backgroundColor: '#F0F0F0',
-	},
-	dayButtonText: {
-		fontSize: 12,
-		fontWeight: 'bold',
-	},
-	errorText: {
-		fontSize: 12,
-		marginBottom: 10,
-		paddingLeft: 5,
-	},
-	label: {
-		fontSize: 16,
-		fontWeight: 'bold',
-		marginBottom: 10,
-	},
-	submitButton: {
-		width: '100%',
-
 	},
 });

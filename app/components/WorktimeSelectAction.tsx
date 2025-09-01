@@ -30,7 +30,12 @@ interface WorktimeSelectActionProps {
 			  ) => RecurrenceException[])
 	) => void;
 	recurrenceExceptions: RecurrenceException[];
-	setChronoOpen: (isOpen: boolean) => void; // Nouvelle prop
+	onChronoStart: () => void;
+	onChronoClose: () => void;
+	timerIsOpen: boolean;
+	setUnfinishedWorktimes?: (
+		worktimes: any[] | ((prevWorktimes: any[]) => any[])
+	) => void;
 }
 
 export default function WorktimeSelectAction({
@@ -43,10 +48,24 @@ export default function WorktimeSelectAction({
 	setFormIsOpen,
 	setRecurrenceExceptions,
 	recurrenceExceptions,
-	setChronoOpen, // Nouvelle prop
+	onChronoStart,
+	onChronoClose,
+	timerIsOpen,
+	setUnfinishedWorktimes,
 }: WorktimeSelectActionProps) {
 	const colors = useThemeColors();
 	const [value, setValue] = useState<string>('');
+
+	// Réinitialiser la valeur quand le timer se ferme
+	const resetValue = () => {
+		setValue('');
+	};
+
+	useEffect(() => {
+		if (!timerIsOpen) {
+			setValue('');
+		}
+	}, [timerIsOpen]);
 
 	useEffect(() => {
 		const isFormOpen = value === 'addWorktime' ||
@@ -54,10 +73,10 @@ export default function WorktimeSelectAction({
 			value === 'addPause';
 		
 		setFormIsOpen(isFormOpen);
-		
-		// Notifier si le chrono est ouvert
-		setChronoOpen(value === 'startTimer');
-	}, [value, setFormIsOpen, setChronoOpen]);
+		if (value === 'startTimer' && timerIsOpen) {
+			onChronoStart();
+		}
+	}, [value, setFormIsOpen, onChronoStart, timerIsOpen]);
 
 	return (
 		<View style={{ gap: 10 }}>
@@ -117,32 +136,47 @@ export default function WorktimeSelectAction({
 				<TimerForm
 					mode='activity'
 					setSnackBar={setSnackBar}
-					setTimerIsOpen={setTimerIsOpen}
+					setTimerIsOpen={() => {
+						setTimerIsOpen();
+						resetValue();
+					}}
 					setWorktimes={setWorktimes}
 					categories={categories}
 					setCategories={setCategories}
 					date={date}
+					setUnfinishedWorktimes={setUnfinishedWorktimes}
 				/>
 			)}
 			{value === 'startTimer' && (
 				<TimerForm
 					mode='chrono'
 					setSnackBar={setSnackBar}
-					setTimerIsOpen={setTimerIsOpen}
+					setTimerIsOpen={() => {
+						setTimerIsOpen();
+						resetValue();
+					}}
 					setWorktimes={setWorktimes}
 					categories={categories}
 					setCategories={setCategories}
 					date={date}
+					onChronoClose={onChronoClose}
+					setUnfinishedWorktimes={setUnfinishedWorktimes}
 				/>
 			)}
 			{value === 'addPause' && (
 				<PauseForm
 					setSnackBar={setSnackBar}
-					setTimerIsOpen={setTimerIsOpen}
+					setTimerIsOpen={() => {
+						setTimerIsOpen();
+						resetValue();
+					}}
 					date={date}
 					setRecurrenceExceptions={setRecurrenceExceptions}
 					recurrenceExceptions={recurrenceExceptions}
-					setModalVisible={setTimerIsOpen}
+					setModalVisible={() => {
+						setTimerIsOpen();
+						resetValue();
+					}}
 				/>
 			)}
 		</View>
