@@ -6,7 +6,8 @@ import { Platform } from 'react-native';
 export let TOKEN: string | null = null;
 let REFRESH_TOKEN: string | null = null;
 
-const EXPO_PUBLIC_BASE_URL = process.env.EXPO_PUBLIC_BASE_URL ||  'https://tempo-api-b6ab0c957af4.herokuapp.com'
+// const EXPO_PUBLIC_BASE_URL = process.env.EXPO_PUBLIC_BASE_URL ||  'https://tempo-api-b6ab0c957af4.herokuapp.com'
+const EXPO_PUBLIC_BASE_URL = 'http://192.168.1.98:8080/'
 
 // Initialize token function
 const initToken = async () => {

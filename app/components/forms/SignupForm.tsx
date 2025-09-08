@@ -1,18 +1,18 @@
-import React from 'react';
-import { useThemeColors } from '@/app/hooks/useThemeColors';
-import { StyleSheet, View, Text } from 'react-native';
-import { Formik } from 'formik';
-import CustomTextInput from '@/app/forms/utils/CustomTextInput';
-import TextButton from '../utils/TextButton';
-import { useMutation } from '@tanstack/react-query';
-import { httpPost } from '../utils/querySetup';
-import ENDPOINTS from '../utils/ENDPOINT';
-import { useRouter } from 'expo-router';
-import { signupFormSchema, SignupFormData } from '@/app/schema/signup';
-import { toFormikValidationSchema } from 'zod-formik-adapter';
+import React from "react";
+import { useThemeColors } from "@/app/hooks/useThemeColors";
+import { StyleSheet, View, Text } from "react-native";
+import { Formik } from "formik";
+import CustomTextInput from "@/app/forms/utils/CustomTextInput";
+import TextButton from "../utils/TextButton";
+import { useMutation } from "@tanstack/react-query";
+import { httpPost } from "../utils/querySetup";
+import ENDPOINTS from "../utils/ENDPOINT";
+import { useRouter } from "expo-router";
+import { signupFormSchema, SignupFormData } from "@/app/schema/signup";
+import { toFormikValidationSchema } from "zod-formik-adapter";
 
 type Props = {
-  setSnackBar: (type: 'error' | 'info', message: string) => void;
+  setSnackBar: (type: "error" | "info", message: string) => void;
 };
 
 export default function SignupForm({ setSnackBar }: Props) {
@@ -27,7 +27,7 @@ export default function SignupForm({ setSnackBar }: Props) {
     mutationFn: async (formData) => {
       const response = await httpPost(ENDPOINTS.auth.signup, formData);
       if (!response) {
-        throw new Error('Erreur réseau');
+        throw new Error("Erreur réseau");
       }
 
       if (!response.ok) {
@@ -39,24 +39,31 @@ export default function SignupForm({ setSnackBar }: Props) {
       return data;
     },
     onSuccess: (data) => {
-      setSnackBar('info', 'Inscription réussie !');
+      setSnackBar("info", "Inscription réussie !");
       setTimeout(() => {
-        router.push('/screens/auth/Login');
+        router.push("/screens/auth/Login");
       }, 2000);
     },
     onError: (error) => {
-      console.error("Erreur d'inscription:", error);
-      setSnackBar('error', error.message || "Erreur d'inscription");
+      if (error.message.includes("duplicate key value")) {
+        if (error.message.includes("username")) {
+          setSnackBar("error", "Le nom d'utilisateur existe déjà");
+        } else {
+          setSnackBar("error", "L'email existe déjà");
+        }
+        return;
+      }
+      setSnackBar("error", "Erreur d'inscription");
     },
   });
 
   return (
     <Formik
       initialValues={{
-        username: '',
-        email: '',
-        password: '',
-        confirmPassword: '',
+        username: "",
+        email: "",
+        password: "",
+        confirmPassword: "",
       }}
       validationSchema={toFormikValidationSchema(signupFormSchema)}
       onSubmit={(values) => {
@@ -73,11 +80,11 @@ export default function SignupForm({ setSnackBar }: Props) {
       }) => (
         <>
           <CustomTextInput
-            name='username'
+            name="username"
             label="Nom d'utilisateur"
             placeholder="Nom d'utilisateur"
-            onChangeText={handleChange('username')}
-            onBlur={() => handleBlur('username')}
+            onChangeText={handleChange("username")}
+            onBlur={() => handleBlur("username")}
             value={values.username}
             error={
               touched.username && errors.username ? errors.username : undefined
@@ -85,21 +92,21 @@ export default function SignupForm({ setSnackBar }: Props) {
           />
 
           <CustomTextInput
-            name='email'
-            label='Adresse email'
-            placeholder='Adresse email'
-            onChangeText={handleChange('email')}
-            onBlur={() => handleBlur('email')}
+            name="email"
+            label="Adresse email"
+            placeholder="Adresse email"
+            onChangeText={handleChange("email")}
+            onBlur={() => handleBlur("email")}
             value={values.email}
             error={touched.email && errors.email ? errors.email : undefined}
           />
 
           <CustomTextInput
-            name='password'
-            label='Mot de passe'
-            placeholder='Mot de passe'
-            onChangeText={handleChange('password')}
-            onBlur={() => handleBlur('password')}
+            name="password"
+            label="Mot de passe"
+            placeholder="Mot de passe"
+            onChangeText={handleChange("password")}
+            onBlur={() => handleBlur("password")}
             value={values.password}
             secureTextEntry={true}
             error={
@@ -108,11 +115,11 @@ export default function SignupForm({ setSnackBar }: Props) {
           />
 
           <CustomTextInput
-            name='confirmPassword'
-            label='Confirmez votre mot de passe'
-            placeholder='Confirmez votre mot de passe'
-            onChangeText={handleChange('confirmPassword')}
-            onBlur={() => handleBlur('confirmPassword')}
+            name="confirmPassword"
+            label="Confirmez votre mot de passe"
+            placeholder="Confirmez votre mot de passe"
+            onChangeText={handleChange("confirmPassword")}
+            onBlur={() => handleBlur("confirmPassword")}
             value={values.confirmPassword}
             secureTextEntry={true}
             error={
@@ -125,7 +132,7 @@ export default function SignupForm({ setSnackBar }: Props) {
           <View style={[styles.button, { backgroundColor: colors.secondary }]}>
             <TextButton
               onPress={handleSubmit}
-              text='Créer un compte'
+              text="Créer un compte"
               isPending={isPending}
             />
           </View>
@@ -138,14 +145,14 @@ export default function SignupForm({ setSnackBar }: Props) {
 const styles = StyleSheet.create({
   input: {
     height: 40,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderWidth: 1,
     marginBottom: 12,
     paddingLeft: 8,
     borderRadius: 5,
   },
   button: {
-    backgroundColor: '#007BFF',
+    backgroundColor: "#007BFF",
     padding: 10,
     borderRadius: 5,
     marginTop: 20,
