@@ -15,6 +15,7 @@ import {
   getCurrentMonthRange,
   getCurrentSchoolYearRange,
 } from "../utils/dateRanges";
+import { formatDuration } from "../utils/dateFormatters";
 import type { ModalType } from "../types/modal";
 import ModalMenu from "../components/Modal";
 import Menu from "../components/ModalComponents/Menu";
@@ -276,6 +277,18 @@ export default function Charts() {
                 <ThemedText variant="header2" color="secondaryText">
                   Répartition globale
                 </ThemedText>
+                <ThemedText
+                  variant="body"
+                  color="secondaryText"
+                  style={{ fontWeight: "bold" }}
+                >
+                  {` ${formatDuration(
+                    safePieChartData.reduce(
+                      (acc: number, item: any) => acc + item.population,
+                      0
+                    )
+                  )} de travail`}
+                </ThemedText>
                 <PieChart
                   data={safePieChartData}
                   width={screenWidth}
@@ -328,7 +341,17 @@ export default function Charts() {
                             fontSize: 13,
                           }}
                         >
-                          {item.name}: {timeDisplay}
+                          {item.name}:{" "}
+                          <ThemedText
+                            variant="body"
+                            color="secondaryText"
+                            style={{
+                              fontWeight: "bold",
+                              fontSize: 13,
+                            }}
+                          >
+                            {timeDisplay}
+                          </ThemedText>
                         </ThemedText>
                       </View>
                     );
