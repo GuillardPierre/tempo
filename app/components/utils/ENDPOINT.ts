@@ -5,6 +5,8 @@ const ENDPOINTS = {
 		logout: 'user/logout',
 		refresh: 'user/refresh-token',
 		delete: 'user/delete',
+		forgotPassword: 'user/password-reset/request',
+		resetPassword: 'user/password-reset/confirm',
 	},
 	worktime: {
 		root: 'worktime/',
