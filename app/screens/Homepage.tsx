@@ -4,6 +4,7 @@ import {
   View,
   Animated,
   Dimensions,
+  Button,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useRef, useEffect } from "react";
@@ -27,6 +28,7 @@ import WorktimesList from "@/app/components/WorktimesList";
 import UnfinishedWorktimesList from "@/app/components/UnfinishedWorktimesList";
 import PauseForm from "../forms/PauseForm";
 import ProtectedRoute from "@/app/components/utils/ProtectedRoute";
+import notifee from "@notifee/react-native";
 
 export default function Homepage() {
   const colors = useThemeColors() || {
@@ -110,6 +112,31 @@ export default function Homepage() {
 
   const screenWidth = Dimensions.get("window").width;
 
+  async function onDisplayNotification() {
+    // Request permissions (required for iOS)
+    await notifee.requestPermission();
+
+    // Create a channel (required for Android)
+    const channelId = await notifee.createChannel({
+      id: "default",
+      name: "Default Channel",
+    });
+
+    // Display a notification
+    await notifee.displayNotification({
+      title: "Notification Title",
+      body: "Main body content of the notification",
+      android: {
+        channelId,
+        smallIcon: "name-of-a-small-icon", // optional, defaults to 'ic_launcher'.
+        // pressAction is needed if you want the notification to open the app when pressed
+        pressAction: {
+          id: "default",
+        },
+      },
+    });
+  }
+
   return (
     <ProtectedRoute>
       <SafeAreaView
@@ -130,6 +157,14 @@ export default function Homepage() {
           setCalendarIsOpen={toggleCalendar}
           todayWorktimes={worktimesByDay.today}
         />
+        <View>
+          <Button
+            title="Test"
+            onPress={() => {
+              onDisplayNotification();
+            }}
+          />
+        </View>
         <View style={[{ position: "relative", flex: 1 }]}>
           {/* Zone de swipe gauche */}
 
