@@ -128,6 +128,7 @@ export default function Homepage() {
           date={date}
           setDate={setDate}
           setCalendarIsOpen={toggleCalendar}
+          todayWorktimes={worktimesByDay.today}
         />
         <View style={[{ position: "relative", flex: 1 }]}>
           {/* Zone de swipe gauche */}
