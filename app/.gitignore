@@ -1,0 +1,10 @@
+# Ignore non-route files from Expo Router
+components/
+context/
+forms/
+hooks/
+reducer/
+schema/
+types/
+utils/
+constants/
