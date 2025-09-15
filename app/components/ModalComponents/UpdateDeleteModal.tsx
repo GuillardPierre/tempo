@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, Text, Vibration } from 'react-native';
 import ThemedText from '../utils/ThemedText';
-import { SelectedWorktime, WorktimeSeries } from '@/app/types/worktime';
-import TimerForm from '@/app/forms/timerForm';
+import { SelectedWorktime, WorktimeSeries } from '../../types/worktime';
+import TimerForm from '../../forms/timerForm';
 import ButtonMenu from '../ButtonMenu';
 import DeleteBlock from './DeleteBlock';
-import { useThemeColors } from '@/app/hooks/useThemeColors';
-import { useDateFormatter } from '@/app/hooks/useDateFormatter';
-import { formatDateRange } from '@/app/utils/dateFormatters';
-import { formatActiveDaysInFrench } from '@/app/utils/recurrence';
+import { useThemeColors } from '../../hooks/useThemeColors';
+import { useDateFormatter } from '../../hooks/useDateFormatter';
+import { formatDateRange } from '../../utils/dateFormatters';
+import { formatActiveDaysInFrench } from '../../utils/recurrence';
 
 
 type Props = {

@@ -155,10 +155,10 @@ export default function Homepage() {
                   ? "52%"
                   : timerIsOpen
                   ? formIsOpen
-                    ? "48%"
+                    ? "47%"
                     : "83%"
                   : calendarIsOpen
-                  ? "47.3%"
+                  ? "46.3%"
                   : "100%",
                 backgroundColor: colors.background,
                 marginInline: 0,
@@ -216,10 +216,10 @@ export default function Homepage() {
                   ? "52%"
                   : timerIsOpen
                   ? formIsOpen
-                    ? "48%"
+                    ? "47%"
                     : "83%"
                   : calendarIsOpen
-                  ? "47.5%"
+                  ? "46.5%"
                   : "100%",
               }}
             >
@@ -270,10 +270,10 @@ export default function Homepage() {
                   ? "52%"
                   : timerIsOpen
                   ? formIsOpen
-                    ? "48%"
+                    ? "47%"
                     : "83%"
                   : calendarIsOpen
-                  ? "47.5%"
+                  ? "46.5%"
                   : "100%",
                 backgroundColor: colors.background,
                 marginInline: 0,

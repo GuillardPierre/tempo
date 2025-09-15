@@ -1,12 +1,12 @@
 import React from 'react';
 import { View } from 'react-native';
-import { useThemeColors } from '@/app/hooks/useThemeColors';
+import { useThemeColors } from '../hooks/useThemeColors';
 import BlockWrapper from './BlockWrapper';
 import ThemedText from './utils/ThemedText';
 import Block from './Block';
 import RoundButton from './utils/RoundButton';
 import { isInInterval } from './utils/utils';
-import { WorktimeSeries, RecurrenceException } from '@/app/types/worktime';
+import { WorktimeSeries, RecurrenceException } from '../types/worktime';
 
 interface WorktimesListProps {
 	worktimes: WorktimeSeries[];

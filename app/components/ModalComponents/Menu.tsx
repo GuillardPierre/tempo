@@ -3,7 +3,7 @@ import { StyleSheet, View } from "react-native";
 import ButtonMenu from "../ButtonMenu";
 import { deleteToken } from "../utils/utils";
 import { router, useSegments } from "expo-router";
-import { useAuth } from "@/app/context/authContext";
+import { useAuth } from "../../context/authContext";
 
 type Props = {
   setModalVisible: (visible: boolean) => void;

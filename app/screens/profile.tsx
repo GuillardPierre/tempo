@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { View } from 'react-native';
-import { useThemeColors } from '@/app/hooks/useThemeColors';
+import { useThemeColors } from '../hooks/useThemeColors';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar, StyleSheet } from 'react-native';
 import ThemedText from '../components/utils/ThemedText';
@@ -17,7 +17,7 @@ import CustomSnackBar from '../components/utils/CustomSnackBar';
 import useSnackBar from '../hooks/useSnackBar';
 import { router } from 'expo-router';
 import { deleteToken } from '../components/utils/utils';
-import { ModalType } from '@/app/types/modal';
+import { ModalType } from '../types/modal';
 
 export default function Profile() {
 	const colors = useThemeColors();

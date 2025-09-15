@@ -1,14 +1,14 @@
 import React from "react";
-import { useThemeColors } from "@/app/hooks/useThemeColors";
+import { useThemeColors } from "../../hooks/useThemeColors";
 import { StyleSheet, View, Text } from "react-native";
 import { Formik } from "formik";
-import CustomTextInput from "@/app/forms/utils/CustomTextInput";
+import CustomTextInput from "../../forms/utils/CustomTextInput";
 import TextButton from "../utils/TextButton";
 import { useMutation } from "@tanstack/react-query";
 import { httpPost } from "../utils/querySetup";
 import ENDPOINTS from "../utils/ENDPOINT";
 import { useRouter } from "expo-router";
-import { signupFormSchema, SignupFormData } from "@/app/schema/signup";
+import { signupFormSchema, SignupFormData } from "../../schema/signup";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 
 type Props = {

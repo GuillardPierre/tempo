@@ -3,7 +3,7 @@ import { useThemeColors } from "../hooks/useThemeColors";
 import SquareButton from "./utils/SquareButton";
 import { router, usePathname } from "expo-router";
 import ArrowBackSvg from "./svg/arrowback";
-import type { ModalType } from "@/app/types/modal";
+import type { ModalType } from "../types/modal";
 import DateDisplay from "./DateDisplay";
 import { WorktimeSeries } from "../types/worktime";
 

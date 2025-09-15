@@ -1,19 +1,19 @@
-import LoginForm from "@/app/components/forms/LoginForm";
-import CustomSnackBar from "@/app/components/utils/CustomSnackBar";
-import TextButton from "@/app/components/utils/TextButton";
-import ThemedText from "@/app/components/utils/ThemedText";
-import useSnackBar from "@/app/hooks/useSnackBar";
-import { useThemeColors } from "@/app/hooks/useThemeColors";
+import LoginForm from "../../components/forms/LoginForm";
+import CustomSnackBar from "../../components/utils/CustomSnackBar";
+import TextButton from "../../components/utils/TextButton";
+import ThemedText from "../../components/utils/ThemedText";
+import useSnackBar from "../../hooks/useSnackBar";
+import { useThemeColors } from "../../hooks/useThemeColors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { Link, useRouter } from "expo-router";
 import { useEffect } from "react";
 import {
-  SafeAreaView,
   StatusBar,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Login() {
   const colors = useThemeColors();
@@ -29,6 +29,7 @@ export default function Login() {
   }, []);
   return (
     <SafeAreaView
+      edges={["top", "bottom"]}
       style={[
         styles.container,
         {

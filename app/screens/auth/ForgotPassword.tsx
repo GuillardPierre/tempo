@@ -1,27 +1,27 @@
 import React from "react";
-import CustomSnackBar from "@/app/components/utils/CustomSnackBar";
-import ENDPOINTS from "@/app/components/utils/ENDPOINT";
-import { httpPost } from "@/app/components/utils/querySetup";
-import TextButton from "@/app/components/utils/TextButton";
-import ThemedText from "@/app/components/utils/ThemedText";
-import CustomTextInput from "@/app/forms/utils/CustomTextInput";
-import useSnackBar from "@/app/hooks/useSnackBar";
-import { useThemeColors } from "@/app/hooks/useThemeColors";
+import CustomSnackBar from "../../components/utils/CustomSnackBar";
+import ENDPOINTS from "../../components/utils/ENDPOINT";
+import { httpPost } from "../../components/utils/querySetup";
+import TextButton from "../../components/utils/TextButton";
+import ThemedText from "../../components/utils/ThemedText";
+import CustomTextInput from "../../forms/utils/CustomTextInput";
+import useSnackBar from "../../hooks/useSnackBar";
+import { useThemeColors } from "../../hooks/useThemeColors";
 import { useMutation } from "@tanstack/react-query";
 import { Link, router } from "expo-router";
 import {
-  SafeAreaView,
   StatusBar,
   View,
   StyleSheet,
   KeyboardAvoidingView,
   Platform,
 } from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 import { Formik } from "formik";
 import {
   forgotPasswordSchema,
   ForgotPasswordData,
-} from "@/app/schema/forgotPassword";
+} from "../../schema/forgotPassword";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 
 export default function ForgotPassword() {
@@ -73,6 +73,7 @@ export default function ForgotPassword() {
   });
   return (
     <SafeAreaView
+      edges={["top", "bottom"]}
       style={[styles.container, { backgroundColor: colors.primary }]}
     >
       <StatusBar backgroundColor={colors.primary} barStyle="light-content" />

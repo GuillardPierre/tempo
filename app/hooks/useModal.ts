@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { ModalType } from '@/app/types/modal';
+import type { ModalType } from '../types/modal';
 
 export const useModal = () => {
 	const [modalVisible, setModalVisible] = useState(false);

@@ -1,12 +1,12 @@
 import { View, Pressable, StyleSheet, Vibration } from 'react-native';
 import ThemedText from '../utils/ThemedText';
-import { SelectedWorktime, WorktimeSeries } from '@/app/types/worktime';
+import { SelectedWorktime, WorktimeSeries } from '../../types/worktime';
 import { useState } from 'react';
 import ENDPOINTS from '../utils/ENDPOINT';
 import { Button } from 'react-native-paper';
 import { httpDelete } from '../utils/querySetup';
 import ButtonMenu from '../ButtonMenu';
-import { useThemeColors } from '@/app/hooks/useThemeColors';
+import { useThemeColors } from '../../hooks/useThemeColors';
 
 type Props = {
 	setModalVisible: (visible: boolean) => void;

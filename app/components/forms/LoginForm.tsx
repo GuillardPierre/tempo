@@ -1,8 +1,8 @@
 import React from "react";
-import { useThemeColors } from "@/app/hooks/useThemeColors";
+import { useThemeColors } from "../../hooks/useThemeColors";
 import { StyleSheet, View } from "react-native";
 import { Formik } from "formik";
-import CustomTextInput from "@/app/forms/utils/CustomTextInput";
+import CustomTextInput from "../../forms/utils/CustomTextInput";
 import TextButton from "../utils/TextButton";
 import { router } from "expo-router";
 import { useMutation } from "@tanstack/react-query";
@@ -10,8 +10,8 @@ import { httpPost, updateToken } from "../utils/querySetup";
 import ENDPOINTS from "../utils/ENDPOINT";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toFormikValidationSchema } from "zod-formik-adapter";
-import { loginSchema, LoginFormData } from "@/app/schema/login";
-import { useAuth } from "@/app/context/authContext";
+import { loginSchema, LoginFormData } from "../../schema/login";
+import { useAuth } from "../../context/authContext";
 
 type Props = {
   setSnackBar: (type: "error" | "info", message: string) => void;

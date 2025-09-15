@@ -1,4 +1,4 @@
-import { useThemeColors } from '@/app/hooks/useThemeColors';
+import { useThemeColors } from '../../hooks/useThemeColors';
 import {
 	Pressable,
 	StyleProp,

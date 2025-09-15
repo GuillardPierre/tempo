@@ -2,7 +2,7 @@ import React from 'react';
 import { Image, Pressable, StyleSheet, Vibration, View } from 'react-native';
 import CloseSvg from '../svg/close';
 import MenuSvg from '../svg/menu';
-import { useThemeColors } from '@/app/hooks/useThemeColors';
+import { useThemeColors } from '../../hooks/useThemeColors';
 
 const types = {
 	close: CloseSvg,

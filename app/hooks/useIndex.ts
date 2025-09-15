@@ -9,7 +9,7 @@ import {
 	WorktimeByDay,
 } from '../types/worktime';
 import { useRouter } from 'expo-router';
-import useSnackBar from '@/app/hooks/useSnackBar';
+import useSnackBar from '../hooks/useSnackBar';
 import { useCategoryContext } from '../context/CategoryContext';
 
 export const useIndex = () => {

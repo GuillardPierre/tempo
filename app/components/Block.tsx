@@ -159,45 +159,46 @@ export default function Block({
 
   return (
     <BlockWrapper backgroundColor={categoryColor} hasException={hasException}>
-      <Pressable
-        style={styles.pressableContent}
-        onPress={() => {
-          Vibration.vibrate(50);
-          if (worktime.endHour !== null) {
-            // Activité terminée : ouvrir la modal d'update
-            setModalType("update");
-            setModalVisible(true);
-            setSelectedWorktime(worktime);
-          }
-        }}
-      >
-        <View style={styles.leftContainer}>
-          <View style={styles.timeContainer}>
-            <ThemedText>{convertTime(worktime.startHour)}</ThemedText>
-            <View style={styles.separator} />
-            <ThemedText>
-              {worktime.endHour ? convertTime(worktime.endHour) : "-"}
-            </ThemedText>
-          </View>
-          <ThemedText
-            style={styles.mainText}
-            variant="header2"
-            color="primaryText"
+      <View style={styles.timeContainer}>
+        <ThemedText>{convertTime(worktime.startHour)}</ThemedText>
+        <View style={styles.separator} />
+        <ThemedText>
+          {worktime.endHour ? convertTime(worktime.endHour) : "-"}
+        </ThemedText>
+      </View>
+      <ThemedText style={styles.mainText} variant="header2" color="primaryText">
+        {categoryName} {!worktime.endHour ? "- En cours..." : ""}
+      </ThemedText>
+      <>
+        <CustomChip>
+          {typeof worktime.duration === "number" ? (
+            convertDuration(worktime.duration)
+          ) : (
+            <Chronometre startTime={worktime.startHour} />
+          )}
+        </CustomChip>
+        {worktime.endHour !== null ? (
+          <Pressable
+            onPress={() => {
+              Vibration.vibrate(50);
+              setModalType("update");
+              setModalVisible(true);
+              setSelectedWorktime(worktime);
+            }}
           >
-            {categoryName} {!worktime.endHour ? "- En cours..." : ""}
-          </ThemedText>
-        </View>
-        <>
-          <CustomChip>
-            {typeof worktime.duration === "number" ? (
-              convertDuration(worktime.duration)
-            ) : (
-              <Chronometre startTime={worktime.startHour} />
-            )}
-          </CustomChip>
-          {worktime.endHour !== null ? null : <StopSvg />}
-        </>
-      </Pressable>
+            <BurgerMenuSvg />
+          </Pressable>
+        ) : (
+          <Pressable
+            onPress={() => {
+              Vibration.vibrate(50);
+              stopWorktime();
+            }}
+          >
+            <StopSvg />
+          </Pressable>
+        )}
+      </>
     </BlockWrapper>
   );
 }
@@ -217,20 +218,6 @@ const styles = StyleSheet.create({
     paddingBlock: 5,
     paddingHorizontal: 10,
     marginBlock: 5,
-  },
-  pressableContent: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-  },
-  leftContainer: {
-    flex: 1,
-    flexDirection: "row",
-    justifyContent: "flex-start",
-    alignItems: "center",
-    gap: 20,
   },
   timeContainer: {
     display: "flex",

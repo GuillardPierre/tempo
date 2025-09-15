@@ -1,5 +1,5 @@
 import React from 'react';
-import { WorktimeSeries, RecurrenceException, WorktimeByDay } from '@/app/types/worktime';
+import { WorktimeSeries, RecurrenceException, WorktimeByDay } from '../types/worktime';
 import Block from './Block';
 import MainWrapper from './MainWrapper';
 
