@@ -41,7 +41,9 @@ export default function CategorySelector({
 
   // Calculer la hauteur maximale (par défaut 60% de l'écran, ou la valeur fournie)
   const modalMaxHeight = maxHeight || screenHeight * 0.9;
-
+  console.log("error", error);
+  console.log("touched", touched);
+  console.log("value", value);
   return (
     <>
       <DropDownPicker
@@ -146,7 +148,7 @@ export default function CategorySelector({
         }
       />
 
-      {touched && error && (
+      {touched && !value && (
         <Text
           style={{
             fontSize: 12,
@@ -155,7 +157,7 @@ export default function CategorySelector({
             color: colors.primary,
           }}
         >
-          {error}
+          Veuillez sélectionner une catégorie
         </Text>
       )}
     </>

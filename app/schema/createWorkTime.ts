@@ -5,7 +5,7 @@ export const createWorkTimeSchema = () => {
 		.object({
 			category: z.object({
 				id: z.string().nullable(),
-				title: z.string().min(1, 'Une catégorie est requise'),
+				title: z.string().min(1, 'Veuillez sélectionner une catégorie'),
 			}),
 			startHour: z.date(),
 			endHour: z.date().nullish(),

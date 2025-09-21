@@ -1,6 +1,8 @@
 import React from "react";
 import { Chip } from "react-native-paper";
 import { WorktimeSeries } from "../types/worktime";
+// @ts-ignore
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 type Props = {
   worktimes: WorktimeSeries[];
@@ -17,22 +19,16 @@ export default function DailyTimer({ worktimes }: Props) {
     const hours = Math.floor(totalMinutes / 60);
     const minutes = totalMinutes % 60;
 
-    if (hours > 0) {
-      return minutes > 0
-        ? `${hours}h${minutes.toString().padStart(2, "0")}`
-        : `${hours}h`;
-    }
-    return `${minutes}min`;
+    return minutes > 0
+      ? `${hours}h${minutes.toString().padStart(2, "0")}`
+      : `${hours}h`;
   };
-
-  // Ne pas afficher si la durée est 0
-  if (totalDuration === 0) {
-    return null;
-  }
 
   return (
     <Chip
-      icon="clock-outline"
+      icon={({ size, color }) => (
+        <Icon name="clock-outline" size={size} color="white" />
+      )}
       mode="outlined"
       compact
       style={{

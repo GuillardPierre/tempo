@@ -130,7 +130,7 @@ export default function PauseForm({
   };
 
   return (
-    <View>
+    <View style={{ maxWidth: "100%" }}>
       {!isEditing && (
         <BlockWrapper style={{ height: 120, maxHeight: 120 }}>
           <ThemedText variant="body" color="secondaryText">
@@ -169,6 +169,7 @@ export default function PauseForm({
                 flexDirection: "row",
                 gap: 10,
                 justifyContent: "center",
+                width: "100%",
               }}
             >
               <TimePickerInput

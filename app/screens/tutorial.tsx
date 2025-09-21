@@ -39,6 +39,7 @@ export default function Tutorial() {
         </ThemedText>
         <List.Accordion
           style={{ backgroundColor: colors.primary }}
+          titleStyle={{ color: colors.primaryText }}
           title="Quel est le but de l'application ?"
           id="0"
         >
@@ -52,6 +53,7 @@ Grâce à Tempo, vous pourrez observer facilement le temps que vous consacrez à
         <List.AccordionGroup>
           <List.Accordion
             style={{ backgroundColor: colors.primary }}
+            titleStyle={{ color: colors.primaryText }}
             title="Comment créer une catégorie ?"
             id="1"
           >
@@ -63,6 +65,7 @@ Grâce à Tempo, vous pourrez observer facilement le temps que vous consacrez à
           </List.Accordion>
           <List.Accordion
             style={{ backgroundColor: colors.primary }}
+            titleStyle={{ color: colors.primaryText }}
             title="Comment créer une activité ponctuelle ?"
             id="2"
           >
@@ -78,6 +81,7 @@ Une activité ponctuelle permet d'enregistrer une activité avec une durée dét
           </List.Accordion>
           <List.Accordion
             style={{ backgroundColor: colors.primary }}
+            titleStyle={{ color: colors.primaryText }}
             title="Comment créer une activité récurrente ?"
             id="3"
           >
@@ -93,6 +97,7 @@ Une activité récurrente permet d'enregistrer une activité avec une durée dé
           </List.Accordion>
           <List.Accordion
             style={{ backgroundColor: colors.primary }}
+            titleStyle={{ color: colors.primaryText }}
             title="Comment créer un chrono ?"
             id="4"
           >
@@ -109,6 +114,7 @@ Un chrono permet d'enregistrer un temps de travail avec un chronomètre en temps
           </List.Accordion>
           <List.Accordion
             style={{ backgroundColor: colors.primary }}
+            titleStyle={{ color: colors.primaryText }}
             title="Comment modifier ou supprimer une catégorie ?"
             id="5"
           >
@@ -120,6 +126,7 @@ Un chrono permet d'enregistrer un temps de travail avec un chronomètre en temps
           </List.Accordion>
           <List.Accordion
             style={{ backgroundColor: colors.primary }}
+            titleStyle={{ color: colors.primaryText }}
             title="Comment créer une période de vacances / de pause / d'arrêt ?"
             id="6"
           >
