@@ -4,25 +4,31 @@ import { PaperProvider } from "react-native-paper";
 import { AuthProvider } from "./context/authContext";
 import { CategoryProvider } from "./context/CategoryContext";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
+import {
+  SafeAreaProvider,
+  initialWindowMetrics,
+} from "react-native-safe-area-context";
 
 const queryClient = new QueryClient();
 
 export default function RootLayout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <PaperProvider>
-        <QueryClientProvider client={queryClient}>
-          <AuthProvider>
-            <CategoryProvider>
-              <Stack
-                screenOptions={{
-                  headerShown: false,
-                }}
-              />
-            </CategoryProvider>
-          </AuthProvider>
-        </QueryClientProvider>
-      </PaperProvider>
+      <SafeAreaProvider initialMetrics={initialWindowMetrics}>
+        <PaperProvider>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <CategoryProvider>
+                <Stack
+                  screenOptions={{
+                    headerShown: false,
+                  }}
+                />
+              </CategoryProvider>
+            </AuthProvider>
+          </QueryClientProvider>
+        </PaperProvider>
+      </SafeAreaProvider>
     </GestureHandlerRootView>
   );
 }
