@@ -118,6 +118,7 @@ const styles = StyleSheet.create({
   container: {
     textAlign: "center",
     flex: 1,
+    minHeight: 60,
   },
   label: {
     fontSize: 14,

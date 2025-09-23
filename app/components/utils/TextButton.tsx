@@ -1,59 +1,67 @@
-import { useThemeColors } from '../../hooks/useThemeColors';
+import { useThemeColors } from "../../hooks/useThemeColors";
 import {
-	Pressable,
-	StyleProp,
-	StyleSheet,
-	TextStyle,
-	Vibration,
-	View,
-} from 'react-native';
-import ThemedText from './ThemedText';
-import { ActivityIndicator } from 'react-native-paper';
-import { tuple } from 'zod';
+  Pressable,
+  StyleProp,
+  StyleSheet,
+  TextStyle,
+  Vibration,
+  View,
+} from "react-native";
+import ThemedText from "./ThemedText";
+import { ActivityIndicator } from "react-native-paper";
 
 type Props = {
-	onPress: () => void;
-	text: string;
-	style?: StyleProp<TextStyle>;
-	isPending?: boolean;
+  onPress: () => void;
+  text: string;
+  style?: any;
+  isPending?: boolean;
 };
 
 export default function TextButton({ onPress, text, style, isPending }: Props) {
-	const colors = useThemeColors();
+  const colors = useThemeColors();
 
-	return (
-		<Pressable
-			onPress={() => {
-				Vibration.vibrate(50);
-				onPress();
-			}}
-		>
-			<View style={styles.container}>
-				<ThemedText style={[style, styles.base]}>
-					{isPending && (
-						<ActivityIndicator
-							style={{ transform: [{ translateY: 4 }], paddingRight: 5 }}
-							animating={true}
-						/>
-					)}
-					{text}
-				</ThemedText>
-			</View>
-		</Pressable>
-	);
+  return (
+    <Pressable
+      onPress={() => {
+        Vibration.vibrate(50);
+        onPress();
+      }}
+      style={[styles.pressable, style]}
+    >
+      <View style={styles.content}>
+        {isPending && (
+          <ActivityIndicator
+            size="small"
+            color={colors.primary}
+            style={styles.loader}
+          />
+        )}
+        <ThemedText style={styles.text}>{text}</ThemedText>
+      </View>
+    </Pressable>
+  );
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flexDirection: 'row',
-		justifyContent: 'center',
-		alignItems: 'center',
-		gap: 10,
-	},
-	base: {
-		display: 'flex',
-		justifyContent: 'center',
-		alignItems: 'center',
-		textAlign: 'center',
-	},
+  pressable: {
+    paddingVertical: 12,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    minHeight: 48,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 8,
+  },
+  loader: {
+    marginRight: 4,
+  },
+  text: {
+    textAlign: "center",
+    fontWeight: "600",
+  },
 });
