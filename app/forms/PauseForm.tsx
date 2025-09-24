@@ -2,6 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import ThemedText from "../components/utils/ThemedText";
 import { useThemeColors } from "../hooks/useThemeColors";
+import { useVibration } from "../hooks/useVibration";
 import { Formik } from "formik";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { recurrenceExceptionSchema } from "../schema/RecurrenceException";
@@ -38,6 +39,7 @@ export default function PauseForm({
   selectedException = null,
 }: Props) {
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
   const isEditing = !!selectedException;
 
   const checkOverlap = (start: Date, end: Date): boolean => {
@@ -177,14 +179,20 @@ export default function PauseForm({
                 display="calendar"
                 label="Date de début"
                 value={values.pauseStart}
-                onChange={(date) => setFieldValue("pauseStart", date)}
+                onChange={(date) => {
+                  vibrate();
+                  setFieldValue("pauseStart", date);
+                }}
               />
               <TimePickerInput
                 mode="date"
                 display="calendar"
                 label="Date de fin"
                 value={values.pauseEnd}
-                onChange={(date) => setFieldValue("pauseEnd", date)}
+                onChange={(date) => {
+                  vibrate();
+                  setFieldValue("pauseEnd", date);
+                }}
               />
             </View>
             <View

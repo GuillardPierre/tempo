@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Vibration } from "react-native";
+import { View } from "react-native";
 import TimePickerInput from "../utils/TimePickerInput";
 import ButtonMenu from "../../components/ButtonMenu";
+import { useVibration } from "../../hooks/useVibration";
 
 type TimerFormMode = "chrono" | "activity";
 
@@ -32,6 +33,8 @@ export default function DateTimeSelectors({
   onSubmit,
   setSnackBar,
 }: DateTimeSelectorsProps) {
+  const { vibrate } = useVibration();
+
   return (
     <>
       <TimePickerInput
@@ -68,7 +71,7 @@ export default function DateTimeSelectors({
             label="Heure début:"
             value={startHour}
             onChange={(date) => {
-              Vibration.vibrate(50);
+              vibrate();
               onStartHourChange(date);
               startHour && date > startHour && onEndHourChange(date);
             }}
@@ -84,7 +87,7 @@ export default function DateTimeSelectors({
               type="round"
               text="Lancer Chronomètre"
               action={() => {
-                Vibration.vibrate(50);
+                vibrate();
                 if (startHour > new Date()) {
                   setSnackBar(
                     "error",
@@ -112,7 +115,7 @@ export default function DateTimeSelectors({
                 new Date(date + "T" + new Date().toTimeString().slice(0, 8))
               }
               onChange={(date) => {
-                Vibration.vibrate(50);
+                vibrate();
                 onEndHourChange(date);
               }}
             />

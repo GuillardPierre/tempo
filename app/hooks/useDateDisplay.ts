@@ -1,18 +1,20 @@
-import { Vibration } from 'react-native';
+
+import { useVibration } from './useVibration';
 
 export const useDateDisplay = (
 	date: string,
 	setDate: (date: string) => void
 ) => {
+	const { vibrate } = useVibration();
 	const handlePrevious = () => {
-		Vibration.vibrate(50);
+		vibrate();
 		const currentDate = new Date(date);
 		currentDate.setDate(currentDate.getDate() - 1);
 		setDate(currentDate.toISOString().split('T')[0]);
 	};
 
 	const handleNext = () => {
-		Vibration.vibrate(50);
+		vibrate();
 		const currentDate = new Date(date);
 		currentDate.setDate(currentDate.getDate() + 1);
 		setDate(currentDate.toISOString().split('T')[0]);

@@ -4,6 +4,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import { useThemeColors } from "../../hooks/useThemeColors";
 import ThemedText from "../../components/utils/ThemedText";
 import { StyleProp, ViewStyle } from "react-native";
+import { useVibration } from "../../hooks/useVibration";
 
 type Props = {
   label?: string;
@@ -26,6 +27,7 @@ export default function TimePickerInput({
 }: Props) {
   const [show, setShow] = useState(false);
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
 
   const onTimeChange = (event: any, selectedDate?: Date) => {
     setShow(false);
@@ -74,7 +76,10 @@ export default function TimePickerInput({
         </ThemedText>
       )}
       <Pressable
-        onPress={() => !disabled && setShow(true)}
+        onPress={() => {
+          vibrate();
+          !disabled && setShow(true);
+        }}
         style={[
           styles.input,
           {
@@ -102,6 +107,12 @@ export default function TimePickerInput({
 
       {show && (
         <DateTimePicker
+          onFocus={() => {
+            vibrate();
+          }}
+          onBlur={() => {
+            vibrate();
+          }}
           value={value ?? new Date()}
           mode={mode}
           is24Hour={true}

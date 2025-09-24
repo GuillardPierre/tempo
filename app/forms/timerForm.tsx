@@ -1,7 +1,8 @@
-import { View, StyleSheet, Vibration } from "react-native";
+import { View, StyleSheet } from "react-native";
 import React from "react";
 import { Formik } from "formik";
 import { useThemeColors } from "../hooks/useThemeColors";
+import { useVibration } from "../hooks/useVibration";
 import { createWorkTimeSchema } from "../schema/createWorkTime";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { Category, SelectedWorktime } from "../types/worktime";
@@ -47,6 +48,7 @@ export default function TimerForm({
   setUnfinishedWorktimes,
 }: Props) {
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
 
   const {
     selectedDays,
@@ -105,7 +107,7 @@ export default function TimerForm({
       >
         {({ setFieldValue, values, handleSubmit, errors, touched }) => {
           const handleDateChange = (date: Date) => {
-            Vibration.vibrate(50);
+            vibrate();
 
             // Pour tous les modes, mettre à jour startHour avec la nouvelle date mais garder l'heure
             if (values.startHour) {

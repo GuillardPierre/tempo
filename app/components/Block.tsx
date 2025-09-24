@@ -1,5 +1,6 @@
-import { StyleSheet, View, Pressable, Vibration } from "react-native";
+import { StyleSheet, View, Pressable } from "react-native";
 import { useThemeColors } from "../hooks/useThemeColors";
+import { useVibration } from "../hooks/useVibration";
 import React from "react";
 import ThemedText from "./utils/ThemedText";
 import CustomChip from "./utils/CustomChip";
@@ -51,6 +52,7 @@ export default function Block({
   onWorktimeStopped,
 }: Props) {
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
   const convertTime = (time: string) => {
     const date = new Date(time);
     const hours = date.getHours().toString().padStart(2, "0");
@@ -180,7 +182,7 @@ export default function Block({
         {worktime.endHour !== null ? (
           <Pressable
             onPress={() => {
-              Vibration.vibrate(50);
+              vibrate();
               setModalType("update");
               setModalVisible(true);
               setSelectedWorktime(worktime);
@@ -191,7 +193,7 @@ export default function Block({
         ) : (
           <Pressable
             onPress={() => {
-              Vibration.vibrate(50);
+              vibrate();
               stopWorktime();
             }}
           >

@@ -25,6 +25,13 @@ export const useToggleViews = () => {
 		});
 	};
 
+	const setFormIsOpenWithChrono = (isOpen: boolean) => {
+		setFormIsOpen(isOpen);
+		if (!isOpen) {
+			setChronoOpen(false);
+		}
+	};
+
 	const handleChronoStart = () => {
 		setChronoOpen(true);
 	};
@@ -38,7 +45,7 @@ export const useToggleViews = () => {
 		timerIsOpen,
 		formIsOpen,
 		chronoOpen,
-		setFormIsOpen,
+		setFormIsOpen: setFormIsOpenWithChrono,
 		toggleCalendar,
 		toggleTimer,
 		handleChronoStart,

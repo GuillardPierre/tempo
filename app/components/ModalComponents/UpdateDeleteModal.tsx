@@ -1,11 +1,12 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Vibration } from "react-native";
+import { View, StyleSheet } from "react-native";
 import ThemedText from "../utils/ThemedText";
 import { SelectedWorktime, WorktimeSeries } from "../../types/worktime";
 import TimerForm from "../../forms/timerForm";
 import ButtonMenu from "../ButtonMenu";
 import DeleteBlock from "./DeleteBlock";
 import { useThemeColors } from "../../hooks/useThemeColors";
+import { useVibration } from "../../hooks/useVibration";
 import { formatDateRange } from "../../utils/dateFormatters";
 import { formatActiveDaysInFrench } from "../../utils/recurrence";
 
@@ -31,6 +32,7 @@ export default function UpdateDeleteModal({
   date,
 }: Props) {
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
   const [mode, setMode] = useState<"view" | "edit" | "delete">("view");
   const [snackBarMessage, setSnackBarMessage] = useState<{
     type: "error" | "info";
@@ -88,7 +90,7 @@ export default function UpdateDeleteModal({
             <ButtonMenu
               type="round"
               action={() => {
-                Vibration.vibrate(50);
+                vibrate();
                 setMode("edit");
               }}
               text="Modifier"
@@ -96,7 +98,7 @@ export default function UpdateDeleteModal({
             <ButtonMenu
               type="round"
               action={() => {
-                Vibration.vibrate(50);
+                vibrate();
                 setMode("delete");
               }}
               style={[{ backgroundColor: colors.error }]}
@@ -133,7 +135,7 @@ export default function UpdateDeleteModal({
               type="round"
               text="Annuler"
               action={() => {
-                Vibration.vibrate(50);
+                vibrate();
                 setMode("view");
               }}
             />

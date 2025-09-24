@@ -1,5 +1,6 @@
-import { Pressable, StyleSheet, Vibration, View } from "react-native";
+import { Pressable, StyleSheet, View } from "react-native";
 import { useThemeColors } from "../hooks/useThemeColors";
+import { useVibration } from "../hooks/useVibration";
 import SquareButton from "./utils/SquareButton";
 import { router, usePathname } from "expo-router";
 import ArrowBackSvg from "./svg/arrowback";
@@ -27,6 +28,7 @@ export default function Header({
   todayWorktimes = [],
 }: Props) {
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
   const pathname = usePathname();
   return (
     <View style={[styles.header, { backgroundColor: colors.primary }]}>
@@ -72,7 +74,7 @@ export default function Header({
       <SquareButton
         type={modalVisible ? "close" : "menu"}
         onPress={() => {
-          Vibration.vibrate(50);
+          vibrate();
           setModalVisible(!modalVisible);
           setModalType("menu");
         }}

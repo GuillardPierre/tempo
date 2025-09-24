@@ -1,7 +1,8 @@
 import React from "react";
-import { Text, Vibration, Dimensions } from "react-native";
+import { Text, Dimensions } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useThemeColors } from "../../hooks/useThemeColors";
+import { useVibration } from "../../hooks/useVibration";
 import DropDownPicker from "react-native-dropdown-picker";
 import ButtonMenu from "../../components/ButtonMenu";
 import BlockWrapper from "../../components/BlockWrapper";
@@ -38,13 +39,13 @@ export default function CategorySelector({
   maxHeight, // Nouvelle prop
 }: CategorySelectorProps) {
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
   const screenHeight = Dimensions.get("window").height;
   const insets = useSafeAreaInsets();
 
-  // Calculer la hauteur maximale (par défaut 60% de l'écran, ou la valeur fournie)
   const modalMaxHeight = Math.min(
-    maxHeight || screenHeight * 0.9,
-    screenHeight - insets.top - insets.bottom - 24
+    maxHeight || screenHeight * 0.8,
+    screenHeight - insets.top - insets.bottom
   );
   return (
     <>
@@ -60,8 +61,14 @@ export default function CategorySelector({
           const currentValue = callback(value);
           return currentValue;
         }}
+        onPress={() => {
+          vibrate();
+        }}
+        onClose={() => {
+          vibrate();
+        }}
         onSelectItem={(item) => {
-          Vibration.vibrate(50);
+          vibrate();
           if (item && item.value) {
             const itemValue = item.value.toString();
             const category = categories.find((c) => String(c.id) === itemValue);
@@ -100,15 +107,12 @@ export default function CategorySelector({
           borderWidth: 3,
           borderRadius: 12,
           maxHeight: modalMaxHeight,
-          // width: "90%",
+          width: "95%",
           alignSelf: "center",
-          // paddingTop: insets.top + 12,
-          // paddingBottom: insets.bottom + 12,
-          marginTop: insets.top,
+          marginTop: insets.top + 20,
           backgroundColor: colors.background,
           borderColor: colors.secondary,
         }}
-        // Vous pouvez aussi utiliser modalProps pour plus de contrôle
         modalProps={{
           presentationStyle: "overFullScreen",
           transparent: true,

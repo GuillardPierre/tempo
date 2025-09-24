@@ -1,10 +1,10 @@
 import { useThemeColors } from "../../hooks/useThemeColors";
+import { useVibration } from "../../hooks/useVibration";
 import {
   Pressable,
   StyleProp,
   StyleSheet,
   TextStyle,
-  Vibration,
   View,
 } from "react-native";
 import ThemedText from "./ThemedText";
@@ -19,11 +19,12 @@ type Props = {
 
 export default function TextButton({ onPress, text, style, isPending }: Props) {
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
 
   return (
     <Pressable
       onPress={() => {
-        Vibration.vibrate(50);
+        vibrate();
         onPress();
       }}
       style={[styles.pressable, style]}

@@ -152,13 +152,13 @@ export default function Homepage() {
                 width: "31.7%",
                 height: "99%",
                 maxHeight: chronoOpen
-                  ? "52%"
+                  ? "51%"
                   : timerIsOpen
                   ? formIsOpen
                     ? "47%"
                     : "83%"
                   : calendarIsOpen
-                  ? "46.3%"
+                  ? "46.5%"
                   : "100%",
                 backgroundColor: colors.background,
                 marginInline: 0,
@@ -213,7 +213,7 @@ export default function Homepage() {
                 width: "33.33%",
                 height: "99%",
                 maxHeight: chronoOpen
-                  ? "52%"
+                  ? "51%"
                   : timerIsOpen
                   ? formIsOpen
                     ? "47%"
@@ -267,7 +267,7 @@ export default function Homepage() {
                 width: "31.8%",
                 height: "99%",
                 maxHeight: chronoOpen
-                  ? "52%"
+                  ? "51%"
                   : timerIsOpen
                   ? formIsOpen
                     ? "47%"

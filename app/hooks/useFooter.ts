@@ -1,6 +1,7 @@
 import { router } from 'expo-router';
 import { useRef, useState, useEffect } from 'react';
-import { Animated, Vibration } from 'react-native';
+import { Animated } from 'react-native';
+import { useVibration } from './useVibration';
 
 type Props = {
 	setTimerIsOpen: () => void;
@@ -15,6 +16,7 @@ export const useFooter = ({
 	calendarIsOpen,
 	setCalendarIsOpen,
 }: Props) => {
+	const { vibrate } = useVibration();
 	const rotateAnim = useRef(new Animated.Value(0)).current;
 	const calendarRotateAnim = useRef(new Animated.Value(0)).current;
 	const [buttonType, setButtonType] = useState<'add' | 'minus'>('add');
@@ -25,7 +27,7 @@ export const useFooter = ({
 	}, [timerIsOpen]);
 
 	const handleAddPress = () => {
-		Vibration.vibrate(50);
+		vibrate();
 		setTimerIsOpen();
 
 		Animated.timing(rotateAnim, {
@@ -39,7 +41,7 @@ export const useFooter = ({
 	};
 
 	const handleCalendarPress = () => {
-		Vibration.vibrate(50);
+		vibrate();
 		setCalendarIsOpen();
 
 		Animated.timing(calendarRotateAnim, {
@@ -62,7 +64,7 @@ export const useFooter = ({
 	});
 
 	const handleStatsPress = () => {
-		Vibration.vibrate(50);
+		vibrate();
 		router.push('/screens/charts');
 	};
 

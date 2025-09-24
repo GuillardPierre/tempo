@@ -1,6 +1,7 @@
 import React from "react";
-import { View, Pressable, Vibration } from "react-native";
+import { View, Pressable } from "react-native";
 import { useThemeColors } from "../hooks/useThemeColors";
+import { useVibration } from "../hooks/useVibration";
 import BlockWrapper from "./BlockWrapper";
 import ThemedText from "./utils/ThemedText";
 import BurgerMenuSvg from "./svg/burgerMenu";
@@ -18,6 +19,7 @@ const ExceptionsList = ({
   onExceptionPress,
 }: ExceptionsListProps) => {
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
 
   const filteredExceptions = exceptions.filter((exception) => {
     const exceptionStart = new Date(exception.pauseStart);
@@ -58,7 +60,7 @@ const ExceptionsList = ({
                 marginLeft: 17,
               }}
               onPress={() => {
-                Vibration.vibrate(50);
+                vibrate();
                 onExceptionPress(exception);
               }}
             >

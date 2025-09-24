@@ -1,7 +1,8 @@
 import React from "react";
-import { View, Text, Pressable, ScrollView, Vibration } from "react-native";
+import { View, Text, Pressable, ScrollView } from "react-native";
 import { Switch } from "react-native-paper";
 import { useThemeColors } from "../../hooks/useThemeColors";
+import { useVibration } from "../../hooks/useVibration";
 import TimePickerInput from "../utils/TimePickerInput";
 import BlockWrapper from "../../components/BlockWrapper";
 import ThemedText from "../../components/utils/ThemedText";
@@ -32,6 +33,7 @@ export default function RecurrenceSettings({
   isEditing = false,
 }: RecurrenceSettingsProps) {
   const colors = useThemeColors();
+  const { vibrate } = useVibration();
 
   return (
     <>
@@ -106,7 +108,7 @@ export default function RecurrenceSettings({
                   },
                 ]}
                 onPress={() => {
-                  Vibration.vibrate(50);
+                  vibrate();
                   setSelectedDays((prev) =>
                     prev.includes(day.value)
                       ? prev.filter((d) => d !== day.value)
@@ -135,7 +137,7 @@ export default function RecurrenceSettings({
             label="Date de fin (non obligatoire):"
             value={endDate}
             onChange={(date) => {
-              Vibration.vibrate(50);
+              Vibration.vibrate(1);
               onEndDateChange(date);
             }}
             style={{ width: "100%" }}
@@ -157,7 +159,7 @@ export default function RecurrenceSettings({
             <Switch
               value={ignoreExceptions}
               onValueChange={(value) => {
-                Vibration.vibrate(50);
+                Vibration.vibrate(1);
                 onIgnoreExceptionsChange(value);
               }}
             />

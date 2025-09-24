@@ -1,6 +1,6 @@
 import React from "react";
-import { Vibration } from "react-native";
 import ButtonMenu from "../../components/ButtonMenu";
+import { useVibration } from "../../hooks/useVibration";
 
 type TimerFormMode = "chrono" | "activity";
 
@@ -21,6 +21,8 @@ export default function FormActions({
   onSubmit,
   setSnackBar,
 }: FormActionsProps) {
+  const { vibrate } = useVibration();
+
   if (mode !== "activity") {
     return null;
   }
@@ -33,7 +35,7 @@ export default function FormActions({
       type="round"
       text={isEditing ? "Mettre à jour" : "Enregistrer l'activité"}
       action={() => {
-        Vibration.vibrate(50);
+        vibrate();
 
         if (startHour && endHour) {
           const startTime = startHour.getTime();
