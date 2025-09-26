@@ -116,33 +116,29 @@ export const useIndex = () => {
 
 	const getWorktimes = async () => {
 		try {
-			const rep = await httpGet(`${ENDPOINTS.schedule.day}${date}`);
-			if (rep.ok) {
-				const data = await rep.json();
-				setWorktimesByDay(
-					data || {
-						yesterday: [],
-						today: [],
-						tomorrow: [],
-					}
-				);
-			} else {
-				console.error('Erreur getWorktimes: réponse non ok');
-				setWorktimesByDay({
-					yesterday: [],
-					today: [],
-					tomorrow: [],
-				});
+		  const rep = await httpGet(`${ENDPOINTS.schedule.day}${date}`);
+		  if (!rep.ok) {
+			throw new Error(`Erreur getWorktimes: réponse non ok (${rep.status})`);
+		  }
+	  
+		  const data = await rep.json();
+		  setWorktimesByDay(
+			data || {
+			  yesterday: [],
+			  today: [],
+			  tomorrow: [],
 			}
+		  );
 		} catch (error) {
-			console.error('Erreur getWorktimes:', error);
-			setWorktimesByDay({
-				yesterday: [],
-				today: [],
-				tomorrow: [],
-			});
+		  console.error("Erreur getWorktimes:", error);
+		  setWorktimesByDay({
+			yesterday: [],
+			today: [],
+			tomorrow: [],
+		  });
 		}
-	};
+	  };
+	  
 
 	const getCategrories = async () => {
 		try {

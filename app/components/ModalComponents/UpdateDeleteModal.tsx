@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { View, StyleSheet } from "react-native";
+import React from "react";
+import { View, StyleSheet, Text } from "react-native";
 import ThemedText from "../utils/ThemedText";
 import { SelectedWorktime, WorktimeSeries } from "../../types/worktime";
 import TimerForm from "../../forms/timerForm";
@@ -7,6 +7,7 @@ import ButtonMenu from "../ButtonMenu";
 import DeleteBlock from "./DeleteBlock";
 import { useThemeColors } from "../../hooks/useThemeColors";
 import { useVibration } from "../../hooks/useVibration";
+import { useUpdateDeleteModal } from "../../hooks/useUpdateDeleteModal";
 import { formatDateRange } from "../../utils/dateFormatters";
 import { formatActiveDaysInFrench } from "../../utils/recurrence";
 
@@ -33,28 +34,21 @@ export default function UpdateDeleteModal({
 }: Props) {
   const colors = useThemeColors();
   const { vibrate } = useVibration();
-  const [mode, setMode] = useState<"view" | "edit" | "delete">("view");
-  const [snackBarMessage, setSnackBarMessage] = useState<{
-    type: "error" | "info";
-    message: string;
-  } | null>(null);
 
-  const handleUpdateSuccess = () => {
-    setSnackBarMessage({
-      type: "info",
-      message: "Modification réussie",
-    });
-    setMode("view");
-    setModalVisible(false);
-  };
-
-  const handleDeleteSuccess = () => {
-    setSnackBarMessage({
-      type: "info",
-      message: "Suppression réussie",
-    });
-    setModalVisible(false);
-  };
+  const {
+    mode,
+    setMode,
+    snackBarMessage,
+    handleUpdateSuccess,
+    handleDeleteSuccess,
+    toggleSuspendOccurrence,
+  } = useUpdateDeleteModal({
+    selectedWorktime,
+    setWorktimes,
+    setSnackBar,
+    setModalVisible,
+    date,
+  });
 
   return (
     <View style={styles.container}>
@@ -105,6 +99,21 @@ export default function UpdateDeleteModal({
               text="Supprimer"
             />
           </View>
+          {selectedWorktime?.isRecurring && (
+            <ButtonMenu
+              type="round"
+              action={() => {
+                vibrate();
+                toggleSuspendOccurrence();
+              }}
+              text={
+                selectedWorktime?.isCancelled
+                  ? "Compter cette entrée"
+                  : "Ne pas compter cette entrée"
+              }
+              style={[{ backgroundColor: colors.primary }]}
+            />
+          )}
         </View>
       )}
 
@@ -175,8 +184,6 @@ export default function UpdateDeleteModal({
     </View>
   );
 }
-
-import { Text } from "react-native";
 
 const styles = StyleSheet.create({
   container: {

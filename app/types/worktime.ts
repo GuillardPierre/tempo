@@ -41,6 +41,7 @@ export interface Worktime {
 	};
 	recurrence?: string;
 	ignoreExceptions?: boolean; // Uniquement pour les wortimeSeries
+	isCancelled?: boolean;
 }
 
 /**
@@ -77,6 +78,7 @@ export interface SelectedWorktime extends Worktime {
 	originalStartTime?: string;
 	formattedDuration?: string; // Durée formatée pour affichage
 	ignoreExceptions?: boolean;
+	isCancelled?: boolean;
 }
 
 /**

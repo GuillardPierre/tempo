@@ -160,7 +160,11 @@ export default function Block({
   };
 
   return (
-    <BlockWrapper backgroundColor={categoryColor} hasException={hasException}>
+    <BlockWrapper
+      backgroundColor={categoryColor}
+      hasException={hasException}
+      disabled={worktime.isCancelled}
+    >
       <View style={styles.timeContainer}>
         <ThemedText>{convertTime(worktime.startHour)}</ThemedText>
         <View style={styles.separator} />

@@ -32,6 +32,7 @@ const ENDPOINTS = {
 	recurrenceException: {
 		root: 'recurrenceexception/',
 		create: 'recurrenceexception/create',
+		toggleRecurrenceException: 'recurrenceexception/series/toggle'
 	},
 };
 

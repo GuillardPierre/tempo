@@ -1,58 +1,64 @@
-import React from 'react';
-import { StyleProp, StyleSheet, View, ViewStyle } from 'react-native';
+import React from "react";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
+import { useThemeColors } from "../hooks/useThemeColors";
 
 // Ce composant englobe Block dans une View avec le même style d'encapsulation
 // On peut passer des children ou le composant Block directement via props
 
 type BlockWrapperProps = {
-	children: React.ReactNode;
-	backgroundColor?: string;
-	style?: StyleProp<ViewStyle>;
-	direction?: 'row' | 'column';
-	fullHeight?: boolean;
-	hasException?: boolean;
+  children: React.ReactNode;
+  backgroundColor?: string;
+  style?: StyleProp<ViewStyle>;
+  direction?: "row" | "column";
+  fullHeight?: boolean;
+  hasException?: boolean;
+  disabled?: boolean;
 };
 
 export default function BlockWrapper({
-	children,
-	backgroundColor,
-	style,
-	direction = 'row',
-	fullHeight = false,
-	hasException = false,
+  children,
+  backgroundColor,
+  style,
+  direction = "row",
+  fullHeight = false,
+  hasException = false,
+  disabled = false,
 }: BlockWrapperProps) {
-	return (
-		<View
-			style={[
-				styles.container,
-				backgroundColor ? { backgroundColor } : {},
-				{ flexDirection: direction },
-				fullHeight ? { flex: 1 } : { height: 80, maxHeight: 80 },
-				hasException ? styles.exceptionFilter : {},
-				style,
-			]}
-		>
-			{children}
-		</View>
-	);
+  const colors = useThemeColors();
+  return (
+    <View
+      style={[
+        styles.container,
+        backgroundColor && { backgroundColor },
+
+        disabled && { backgroundColor: colors.disabled },
+        { flexDirection: direction },
+        fullHeight ? { flex: 1 } : { height: 80, maxHeight: 80 },
+        hasException ? styles.exceptionFilter : {},
+        style,
+      ]}
+    >
+      {children}
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'space-between',
-		alignItems: 'center',
-		width: '100%',
-		borderRadius: 8,
-		borderStyle: 'solid',
-		borderWidth: 3,
-		borderColor: '#3D348B',
-		paddingBlock: 5,
-		paddingHorizontal: 10,
-		marginBlock: 5,
-	},
-	exceptionFilter: {
-		opacity: 0.5,
-		backgroundColor: '#3D348B',
-	},
+  container: {
+    flex: 1,
+    justifyContent: "space-between",
+    alignItems: "center",
+    width: "100%",
+    borderRadius: 8,
+    borderStyle: "solid",
+    borderWidth: 3,
+    borderColor: "#3D348B",
+    paddingBlock: 5,
+    paddingHorizontal: 10,
+    marginBlock: 5,
+  },
+  exceptionFilter: {
+    opacity: 0.5,
+    backgroundColor: "#3D348B",
+  },
 });

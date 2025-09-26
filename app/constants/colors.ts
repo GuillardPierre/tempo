@@ -8,6 +8,7 @@ export const Colors = {
 		secondaryLight: '#F7B801',
 		background: '#FFFFFF',
 		error: '#d05d5d',
+		disabled: '#BDBDBD',
 	},
 	dark: {
 		primary: '#7B32F5',
@@ -18,5 +19,6 @@ export const Colors = {
 		secondaryLight: '#F7B801',
 		background: '#FFFFFF',
 		error: '#d05d5d',
+		disabled: '#BDBDBD',
 	},
 };
