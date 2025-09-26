@@ -137,7 +137,7 @@ export default function RecurrenceSettings({
             label="Date de fin (non obligatoire):"
             value={endDate}
             onChange={(date) => {
-              Vibration.vibrate(1);
+              vibrate();
               onEndDateChange(date);
             }}
             style={{ width: "100%" }}
@@ -159,7 +159,7 @@ export default function RecurrenceSettings({
             <Switch
               value={ignoreExceptions}
               onValueChange={(value) => {
-                Vibration.vibrate(1);
+                vibrate();
                 onIgnoreExceptionsChange(value);
               }}
             />

@@ -44,8 +44,8 @@ export default function CategorySelector({
   const insets = useSafeAreaInsets();
 
   const modalMaxHeight = Math.min(
-    maxHeight || screenHeight * 0.8,
-    screenHeight - insets.top - insets.bottom
+    maxHeight || screenHeight * 0.9,
+    screenHeight
   );
   return (
     <>
@@ -109,7 +109,7 @@ export default function CategorySelector({
           maxHeight: modalMaxHeight,
           width: "95%",
           alignSelf: "center",
-          marginTop: insets.top + 20,
+          marginTop: insets.top + 15,
           backgroundColor: colors.background,
           borderColor: colors.secondary,
         }}
@@ -147,11 +147,11 @@ export default function CategorySelector({
             />
           ) : (
             <BlockWrapper
-              style={{ maxHeight: 100 }}
+              style={{ width: "90%", alignSelf: "center", marginBlock: 10 }}
               backgroundColor={colors.primaryLight}
             >
               <ThemedText>
-                Créez une catégorie en tapant dans la barre de recherche
+                Créez une catégorie en tapant dans la barre de recherches
               </ThemedText>
             </BlockWrapper>
           )
