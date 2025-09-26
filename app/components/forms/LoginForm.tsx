@@ -87,7 +87,7 @@ export default function LoginForm({ setSnackBar }: Props) {
         touched,
       }) => (
         <>
-          <View style={{ width: "90%" }}>
+          <View style={{ width: "100%" }}>
             <CustomTextInput
               name="email"
               label="Adresse email"
@@ -134,7 +134,7 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
   button: {
-    width: "72%",
+    width: "60%",
     backgroundColor: "#007BFF",
     padding: 10,
     borderRadius: 5,

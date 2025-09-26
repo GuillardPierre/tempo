@@ -4,8 +4,9 @@ import {
   Pressable,
   StyleProp,
   StyleSheet,
-  TextStyle,
+  ViewStyle,
   View,
+  TextStyle,
 } from "react-native";
 import ThemedText from "./ThemedText";
 import { ActivityIndicator } from "react-native-paper";
@@ -13,11 +14,18 @@ import { ActivityIndicator } from "react-native-paper";
 type Props = {
   onPress: () => void;
   text: string;
-  style?: any;
+  style?: StyleProp<ViewStyle>;
   isPending?: boolean;
+  textStyle?: StyleProp<TextStyle>;
 };
 
-export default function TextButton({ onPress, text, style, isPending }: Props) {
+export default function TextButton({
+  onPress,
+  text,
+  style,
+  isPending,
+  textStyle,
+}: Props) {
   const colors = useThemeColors();
   const { vibrate } = useVibration();
 
@@ -37,7 +45,7 @@ export default function TextButton({ onPress, text, style, isPending }: Props) {
             style={styles.loader}
           />
         )}
-        <ThemedText style={styles.text}>{text}</ThemedText>
+        <ThemedText style={[styles.text, textStyle]}>{text}</ThemedText>
       </View>
     </Pressable>
   );

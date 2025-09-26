@@ -2,19 +2,15 @@ import React, { useState, useEffect } from "react";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Dimensions, StatusBar, StyleSheet, View } from "react-native";
 import { useThemeColors } from "../hooks/useThemeColors";
+import { usePeriodSelection } from "../hooks/usePeriodSelection";
 import Header from "../components/Header";
 import MainWrapper from "../components/MainWrapper";
 import ThemedText from "../components/utils/ThemedText";
 import { LineChart, PieChart } from "react-native-chart-kit";
 import BlockWrapper from "../components/BlockWrapper";
-import { SegmentedButtons } from "react-native-paper";
+import PeriodSelector from "../components/PeriodSelector";
 import { httpGet } from "../components/utils/querySetup";
 import ENDPOINTS from "../components/utils/ENDPOINT";
-import {
-  getCurrentWeekRange,
-  getCurrentMonthRange,
-  getCurrentSchoolYearRange,
-} from "../utils/dateRanges";
 import { formatDuration } from "../utils/dateFormatters";
 import type { ModalType } from "../types/modal";
 import ModalMenu from "../components/Modal";
@@ -72,19 +68,29 @@ function filterEdgeZeros(lineChartData: any, shouldFilter: boolean = true) {
 export default function Charts() {
   const colors = useThemeColors();
   const screenWidth = Dimensions.get("window").width;
-  const [value, setValue] = useState<string>("week");
   const [categoryTimeSpent, setCategoryTimeSpent] = useState<any>(null);
   const [lineChartData, setLineChartData] = useState<any>(null);
   const [modalVisible, setModalVisible] = useState<boolean>(false);
   const [modalType, setModalType] = useState<ModalType>("menu");
 
+  const {
+    currentType,
+    setCurrentType,
+    navigatePeriod,
+    getCurrentRange,
+    getPeriodDisplayText,
+    resetToCurrentPeriod,
+  } = usePeriodSelection();
+
   const getCategoryTimeSpent = async (range: { from: string; to: string }) => {
     const url = `${
       ENDPOINTS.charts.root
-    }?type=${value}&from=${encodeURIComponent(
+    }?type=${currentType}&from=${encodeURIComponent(
       range.from
     )}&to=${encodeURIComponent(range.to)}`;
+
     const rep = await httpGet(url);
+
     if (rep.ok) {
       let data = await rep.json();
       if (data.error) {
@@ -97,7 +103,6 @@ export default function Charts() {
               strokeWidth: 3,
             },
           ],
-          // legend: ['Temps de travail total'],
         });
       } else {
         if (Array.isArray(data.categories)) {
@@ -145,9 +150,8 @@ export default function Charts() {
                     strokeWidth: 3,
                   },
                 ],
-                // legend: ['Temps de travail total (heures)'],
               },
-              value === "month"
+              currentType === "month"
             ) // Ne filtrer les zéros qu'en mode mois
           );
         }
@@ -156,18 +160,11 @@ export default function Charts() {
   };
 
   useEffect(() => {
-    let range;
-    if (value === "week") {
-      range = getCurrentWeekRange();
-    } else if (value === "month") {
-      range = getCurrentMonthRange();
-    } else if (value === "year") {
-      range = getCurrentSchoolYearRange();
-    }
+    const range = getCurrentRange();
     if (range) {
       getCategoryTimeSpent(range);
     }
-  }, [value]);
+  }, [currentType, getCurrentRange]);
 
   // Sécurisation des données pour le LineChart
   const safeLineChartData =
@@ -208,6 +205,17 @@ export default function Charts() {
       }))
     : [];
 
+  // Vérifier s'il y a des données à afficher
+  const hasData =
+    safePieChartData.length > 0 &&
+    safePieChartData.some((item) => item.population > 0);
+  const hasLineData =
+    safeLineChartData &&
+    Array.isArray(safeLineChartData.datasets) &&
+    safeLineChartData.datasets[0] &&
+    Array.isArray(safeLineChartData.datasets[0].data) &&
+    safeLineChartData.datasets[0].data.some((value: number) => value > 0);
+
   return (
     <ProtectedRoute>
       <>
@@ -237,126 +245,121 @@ export default function Charts() {
               >
                 Statistiques
               </ThemedText>
-              <SegmentedButtons
-                value={value}
-                onValueChange={setValue}
-                density="regular"
-                theme={{
-                  colors: {
-                    secondaryContainer: colors.primaryLight,
-                  },
-                }}
-                style={{
-                  borderWidth: 3,
-                  borderColor: "#3D348B",
-                  borderRadius: 30,
-                  backgroundColor: colors.background,
-                }}
-                buttons={[
-                  {
-                    label: "Semaine",
-                    value: "week",
-                    checkedColor: colors.primaryText,
-                    uncheckedColor: colors.secondaryText,
-                  },
-                  {
-                    label: "Mois",
-                    value: "month",
-                    checkedColor: colors.primaryText,
-                    uncheckedColor: colors.secondaryText,
-                  },
-                  {
-                    label: "Année",
-                    value: "year",
-                    checkedColor: colors.primaryText,
-                    uncheckedColor: colors.secondaryText,
-                  },
-                ]}
+
+              <PeriodSelector
+                currentType={currentType}
+                setCurrentType={setCurrentType}
+                periodDisplayText={getPeriodDisplayText()}
+                onNavigate={navigatePeriod}
+                onResetToCurrent={resetToCurrentPeriod}
               />
               <BlockWrapper direction="column" fullHeight={true}>
                 <ThemedText variant="header2" color="secondaryText">
                   Répartition globale
                 </ThemedText>
-                <ThemedText
-                  variant="body"
-                  color="secondaryText"
-                  style={{ fontWeight: "bold" }}
-                >
-                  {` ${formatDuration(
-                    safePieChartData.reduce(
-                      (acc: number, item: any) => acc + item.population,
-                      0
-                    )
-                  )} de travail`}
-                </ThemedText>
-                <PieChart
-                  data={safePieChartData}
-                  width={screenWidth}
-                  height={245}
-                  chartConfig={chartConfig}
-                  accessor={"population"}
-                  backgroundColor={"transparent"}
-                  paddingLeft={"100"}
-                  center={[0, 0]}
-                  hasLegend={false}
-                />
-                <View
-                  style={{
-                    flexDirection: "row",
-                    flexWrap: "wrap",
-                    justifyContent: "space-between",
-                    width: "95%",
-                  }}
-                >
-                  {safePieChartData.map((item: any, index: number) => {
-                    const hours = Math.floor(item.population / 60);
-                    const minutes = item.population % 60;
-                    const timeDisplay =
-                      hours > 0
-                        ? `${hours}h${minutes > 0 ? ` ${minutes}min` : ""}`
-                        : `${minutes}min`;
-                    return (
-                      <View
-                        key={index}
-                        style={{
-                          flexDirection: "row",
-                          width: "50%",
-                          marginBottom: 4,
-                        }}
-                      >
-                        <View
-                          style={{
-                            width: 14,
-                            height: 14,
-                            borderRadius: 6,
-                            backgroundColor: item.color,
-                            marginRight: 8,
-                          }}
-                        />
-                        <ThemedText
-                          variant="body"
-                          color="secondaryText"
-                          style={{
-                            flex: 1,
-                            fontSize: 13,
-                          }}
-                        >
-                          {item.name}:{" "}
-                          <ThemedText
-                            variant="body"
-                            color="secondaryText"
+
+                {hasData ? (
+                  <>
+                    <ThemedText
+                      variant="body"
+                      color="secondaryText"
+                      style={{ fontWeight: "bold" }}
+                    >
+                      {` ${formatDuration(
+                        safePieChartData.reduce(
+                          (acc: number, item: any) => acc + item.population,
+                          0
+                        )
+                      )} de travail`}
+                    </ThemedText>
+                    <PieChart
+                      data={safePieChartData}
+                      width={screenWidth}
+                      height={245}
+                      chartConfig={chartConfig}
+                      accessor={"population"}
+                      backgroundColor={"transparent"}
+                      paddingLeft={"100"}
+                      center={[0, 0]}
+                      hasLegend={false}
+                    />
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        flexWrap: "wrap",
+                        justifyContent: "space-between",
+                        width: "95%",
+                      }}
+                    >
+                      {safePieChartData.map((item: any, index: number) => {
+                        const hours = Math.floor(item.population / 60);
+                        const minutes = item.population % 60;
+                        const timeDisplay =
+                          hours > 0
+                            ? `${hours}h${minutes > 0 ? ` ${minutes}min` : ""}`
+                            : `${minutes}min`;
+                        return (
+                          <View
+                            key={index}
                             style={{
-                              fontWeight: "bold",
-                              fontSize: 13,
+                              flexDirection: "row",
+                              width: "50%",
+                              marginBottom: 4,
                             }}
                           >
-                            {timeDisplay}
-                          </ThemedText>
-                        </ThemedText>
-                      </View>
-                    );
-                  })}
-                </View>
+                            <View
+                              style={{
+                                width: 14,
+                                height: 14,
+                                borderRadius: 6,
+                                backgroundColor: item.color,
+                                marginRight: 8,
+                              }}
+                            />
+                            <ThemedText
+                              variant="body"
+                              color="secondaryText"
+                              style={{
+                                flex: 1,
+                                fontSize: 13,
+                              }}
+                            >
+                              {item.name}:{" "}
+                              <ThemedText
+                                variant="body"
+                                color="secondaryText"
+                                style={{
+                                  fontWeight: "bold",
+                                  fontSize: 13,
+                                }}
+                              >
+                                {timeDisplay}
+                              </ThemedText>
+                            </ThemedText>
+                          </View>
+                        );
+                      })}
+                    </View>
+                  </>
+                ) : (
+                  <View style={styles.noDataContainer}>
+                    <ThemedText
+                      variant="body"
+                      color="secondaryText"
+                      style={styles.noDataText}
+                    >
+                      Aucune donnée disponible pour cette période
+                    </ThemedText>
+                    <ThemedText
+                      variant="body"
+                      color="secondaryText"
+                      style={styles.noDataSubtext}
+                    >
+                      Essayez de naviguer vers une autre période ou ajoutez des
+                      temps de travail
+                    </ThemedText>
+                  </View>
+                )}
               </BlockWrapper>
               <BlockWrapper direction="column" fullHeight={true}>
                 <View
@@ -369,27 +372,50 @@ export default function Charts() {
                     Temps de travail{" "}
                   </ThemedText>
                 </View>
-                <LineChart
-                  data={safeLineChartData}
-                  width={screenWidth - 50}
-                  height={255}
-                  verticalLabelRotation={35}
-                  chartConfig={chartConfig}
-                  style={{ paddingBottom: 10 }}
-                  bezier
-                  formatYLabel={(value) =>
-                    Math.round(Number(value)).toString() + "h"
-                  }
-                />
-                {value === "month" && (
-                  <View
-                    style={{
-                      alignItems: "center",
-                      marginTop: 5,
-                    }}
-                  >
-                    <ThemedText variant="body" color="secondaryText">
-                      Semaine par semaine
+
+                {hasLineData ? (
+                  <>
+                    <LineChart
+                      data={safeLineChartData}
+                      width={screenWidth - 50}
+                      height={255}
+                      verticalLabelRotation={35}
+                      chartConfig={chartConfig}
+                      style={{ paddingBottom: 10 }}
+                      bezier
+                      formatYLabel={(value) =>
+                        Math.round(Number(value)).toString() + "h"
+                      }
+                    />
+                    {currentType === "month" && (
+                      <View
+                        style={{
+                          alignItems: "center",
+                          marginTop: 5,
+                        }}
+                      >
+                        <ThemedText variant="body" color="secondaryText">
+                          Semaine par semaine
+                        </ThemedText>
+                      </View>
+                    )}
+                  </>
+                ) : (
+                  <View style={styles.noDataContainer}>
+                    <ThemedText
+                      variant="body"
+                      color="secondaryText"
+                      style={styles.noDataText}
+                    >
+                      Aucune donnée de temps de travail pour cette période
+                    </ThemedText>
+                    <ThemedText
+                      variant="body"
+                      color="secondaryText"
+                      style={styles.noDataSubtext}
+                    >
+                      Les graphiques apparaîtront quand vous ajouterez des temps
+                      de travail
                     </ThemedText>
                   </View>
                 )}
@@ -411,5 +437,22 @@ export default function Charts() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  noDataContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  noDataText: {
+    fontSize: 16,
+    fontWeight: "bold",
+    textAlign: "center",
+    marginBottom: 8,
+  },
+  noDataSubtext: {
+    fontSize: 14,
+    textAlign: "center",
+    opacity: 0.7,
   },
 });
