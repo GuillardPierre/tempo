@@ -5,7 +5,7 @@ import RoundButton from "./utils/RoundButton";
 import ThemedText from "./utils/ThemedText";
 import { useDateDisplay } from "../hooks/useDateDisplay";
 import { useDateFormatter } from "../hooks/useDateFormatter";
-import { WorktimeSeries } from "../types/worktime";
+import { WorktimeSeries, RecurrenceException } from "../types/worktime";
 import DailyTimer from "./DailyTimer";
 
 type Props = {
@@ -13,6 +13,7 @@ type Props = {
   setDate: (date: string) => void;
   setCalendarIsOpen: () => void;
   worktimes: WorktimeSeries[];
+  recurrenceExceptions?: RecurrenceException[];
 };
 
 export default function DateDisplay({
@@ -20,6 +21,7 @@ export default function DateDisplay({
   setDate,
   setCalendarIsOpen,
   worktimes,
+  recurrenceExceptions = [],
 }: Props) {
   const colors = useThemeColors();
   const { handlePrevious, handleNext } = useDateDisplay(date, setDate);
@@ -46,7 +48,11 @@ export default function DateDisplay({
             >
               {getDayName(date)}
             </ThemedText>
-            <DailyTimer worktimes={worktimes} />
+            <DailyTimer
+              worktimes={worktimes}
+              recurrenceExceptions={recurrenceExceptions}
+              date={date}
+            />
           </View>
         </View>
       </Pressable>

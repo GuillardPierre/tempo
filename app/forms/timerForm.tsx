@@ -32,6 +32,8 @@ interface Props {
   setUnfinishedWorktimes?: (
     worktimes: any[] | ((prevWorktimes: any[]) => any[])
   ) => void;
+  unfinishedWorktimes?: any[];
+  onWorktimeStopped?: () => void;
 }
 
 export default function TimerForm({
@@ -46,6 +48,8 @@ export default function TimerForm({
   mode,
   onChronoClose,
   setUnfinishedWorktimes,
+  unfinishedWorktimes = [],
+  onWorktimeStopped,
 }: Props) {
   const colors = useThemeColors();
   const { vibrate } = useVibration();
@@ -186,6 +190,10 @@ export default function TimerForm({
                 }}
                 onSubmit={handleSubmit}
                 setSnackBar={setSnackBar}
+                category={values.category}
+                unfinishedWorktimes={unfinishedWorktimes}
+                setUnfinishedWorktimes={setUnfinishedWorktimes}
+                onWorktimeStopped={onWorktimeStopped}
               />
 
               {mode === "activity" && daysAreDisplayed() && (

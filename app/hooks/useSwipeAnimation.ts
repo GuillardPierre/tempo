@@ -60,18 +60,15 @@ export const useSwipeAnimation = ({
 			currentDate.setDate(currentDate.getDate() + 1);
 			const newDate = currentDate.toISOString().split('T')[0];
 
-			// Mise à jour immédiate des worktimes pour fluidifier la transition
-			// On garde les données de tomorrow temporairement pour éviter un flash vide
-			setWorktimesByDay((prev) => ({
-				yesterday: prev.today,
-				today: prev.tomorrow,
-				tomorrow: prev.tomorrow, // Garde temporairement les mêmes données
-			}));
+		// Réorganiser immédiatement les données : tomorrow devient today
+		setWorktimesByDay((prev) => ({
+			yesterday: prev.today,
+			today: prev.tomorrow,
+			tomorrow: [], // Sera rechargé par l'API via useEffect
+		}));
 
-			// Petit délai pour laisser l'animation se terminer avant de changer la date
-			setTimeout(() => {
-				setDate(newDate);
-			}, 150);
+		// Changer la date immédiatement (le useEffect va recharger les données complètes)
+		setDate(newDate);
 		} catch (error) {
 			console.error('Erreur dans handleSwipeNext:', error);
 		}
@@ -88,18 +85,15 @@ export const useSwipeAnimation = ({
 			currentDate.setDate(currentDate.getDate() - 1);
 			const newDate = currentDate.toISOString().split('T')[0];
 
-			// Mise à jour immédiate des worktimes pour fluidifier la transition
-			// On garde les données de yesterday temporairement pour éviter un flash vide
-			setWorktimesByDay((prev) => ({
-				yesterday: prev.yesterday, // Garde temporairement les mêmes données
-				today: prev.yesterday,
-				tomorrow: prev.today,
-			}));
+		// Réorganiser immédiatement les données : yesterday devient today
+		setWorktimesByDay((prev) => ({
+			yesterday: [], // Sera rechargé par l'API via useEffect
+			today: prev.yesterday,
+			tomorrow: prev.today,
+		}));
 
-			// Petit délai pour laisser l'animation se terminer avant de changer la date
-			setTimeout(() => {
-				setDate(newDate);
-			}, 150);
+		// Changer la date immédiatement (le useEffect va recharger les données complètes)
+		setDate(newDate);
 		} catch (error) {
 			console.error('Erreur dans handleSwipePrevious:', error);
 		}

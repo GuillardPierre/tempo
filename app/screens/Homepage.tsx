@@ -4,14 +4,17 @@ import {
   View,
   Animated,
   Dimensions,
+  AppState,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useCallback } from "react";
+import { useFocusEffect } from "expo-router";
 import { useIndex } from "@/app/hooks/useIndex";
 import { useModal } from "@/app/hooks/useModal";
 import { useToggleViews } from "@/app/hooks/useToggleViews";
 import { useThemeColors } from "@/app/hooks/useThemeColors";
 import { useSwipeAnimation } from "@/app/hooks/useSwipeAnimation";
+import { useNotifications } from "@/app/hooks/useNotifications";
 import { RecurrenceException, SelectedWorktime } from "@/app/types/worktime";
 import Header from "@/app/components/Header";
 import MainWrapper from "@/app/components/MainWrapper";
@@ -65,6 +68,56 @@ export default function Homepage() {
   useEffect(() => {
     currentDateRef.current = date;
   }, [date]);
+
+  // Setup des notifications avec le foreground handler global
+  useNotifications({
+    unfinishedWorktimes,
+    onWorktimeStopped: getWorktimes,
+  });
+
+  // Ref pour le debounce du refresh
+  const lastRefreshTimeRef = useRef<number>(0);
+  const REFRESH_DEBOUNCE_MS = 1000; // 1 seconde minimum entre les refresh
+
+  // Fonction de refresh avec debounce
+  const refreshWorktimes = useCallback(() => {
+    const now = Date.now();
+    const timeSinceLastRefresh = now - lastRefreshTimeRef.current;
+
+    if (timeSinceLastRefresh < REFRESH_DEBOUNCE_MS) {
+      return;
+    }
+
+    lastRefreshTimeRef.current = now;
+    getWorktimes();
+  }, [getWorktimes]);
+
+  // useFocusEffect : se déclenche lors du retour sur l'écran
+  useFocusEffect(
+    useCallback(() => {
+      refreshWorktimes();
+    }, [refreshWorktimes])
+  );
+
+  // AppState listener (backup) pour détecter le retour en foreground
+  useEffect(() => {
+    let previousAppState = AppState.currentState;
+
+    const subscription = AppState.addEventListener("change", (nextAppState) => {
+      if (
+        previousAppState.match(/inactive|background/) &&
+        nextAppState === "active"
+      ) {
+        refreshWorktimes();
+      }
+
+      previousAppState = nextAppState;
+    });
+
+    return () => {
+      subscription.remove();
+    };
+  }, [refreshWorktimes]);
 
   const { modalVisible, modalType, openModal, setModalType, setModalVisible } =
     useModal();
@@ -129,6 +182,7 @@ export default function Homepage() {
           setDate={setDate}
           setCalendarIsOpen={toggleCalendar}
           todayWorktimes={worktimesByDay.today}
+          recurrenceExceptions={recurrenceExceptions}
         />
         <View style={[{ position: "relative", flex: 1 }]}>
           {/* Zone de swipe gauche */}
@@ -202,6 +256,13 @@ export default function Homepage() {
                   setModalType={setModalType}
                   setModalVisible={setModalVisible}
                   setSelectedWorktime={setSelectedWorktime}
+                  setWorktimes={setWorktimes}
+                  setUnfinishedWorktimes={setUnfinishedWorktimes}
+                  setWorktimesByDay={setWorktimesByDay}
+                  setSnackBar={setSnackBar}
+                  onWorktimeStopped={() => {
+                    getWorktimes();
+                  }}
                   onAddPress={toggleTimer}
                 />
               </View>
@@ -256,6 +317,12 @@ export default function Homepage() {
                   setModalVisible={setModalVisible}
                   setSelectedWorktime={setSelectedWorktime}
                   setWorktimes={setWorktimes}
+                  setUnfinishedWorktimes={setUnfinishedWorktimes}
+                  setWorktimesByDay={setWorktimesByDay}
+                  setSnackBar={setSnackBar}
+                  onWorktimeStopped={() => {
+                    getWorktimes();
+                  }}
                   onAddPress={toggleTimer}
                 />
               </MainWrapper>
@@ -321,6 +388,13 @@ export default function Homepage() {
                   setModalType={setModalType}
                   setModalVisible={setModalVisible}
                   setSelectedWorktime={setSelectedWorktime}
+                  setWorktimes={setWorktimes}
+                  setUnfinishedWorktimes={setUnfinishedWorktimes}
+                  setWorktimesByDay={setWorktimesByDay}
+                  setSnackBar={setSnackBar}
+                  onWorktimeStopped={() => {
+                    getWorktimes();
+                  }}
                   onAddPress={toggleTimer}
                 />
               </View>
@@ -354,6 +428,10 @@ export default function Homepage() {
               onChronoClose={handleChronoClose}
               timerIsOpen={timerIsOpen}
               setUnfinishedWorktimes={setUnfinishedWorktimes}
+              unfinishedWorktimes={unfinishedWorktimes}
+              onWorktimeStopped={() => {
+                getWorktimes();
+              }}
             />
           </MainWrapper>
           <MainWrapper

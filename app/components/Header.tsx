@@ -6,7 +6,7 @@ import { router, usePathname } from "expo-router";
 import ArrowBackSvg from "./svg/arrowback";
 import type { ModalType } from "../types/modal";
 import DateDisplay from "./DateDisplay";
-import { WorktimeSeries } from "../types/worktime";
+import { WorktimeSeries, RecurrenceException } from "../types/worktime";
 
 type Props = {
   modalVisible: boolean;
@@ -16,6 +16,7 @@ type Props = {
   setDate?: (date: string) => void;
   setCalendarIsOpen?: () => void;
   todayWorktimes?: WorktimeSeries[];
+  recurrenceExceptions?: RecurrenceException[];
 };
 
 export default function Header({
@@ -26,6 +27,7 @@ export default function Header({
   setDate,
   setCalendarIsOpen,
   todayWorktimes = [],
+  recurrenceExceptions = [],
 }: Props) {
   const colors = useThemeColors();
   const { vibrate } = useVibration();
@@ -67,6 +69,7 @@ export default function Header({
                 setDate={setDate}
                 setCalendarIsOpen={setCalendarIsOpen}
                 worktimes={todayWorktimes}
+                recurrenceExceptions={recurrenceExceptions}
               />
             </>
           )}
