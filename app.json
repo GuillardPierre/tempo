@@ -4,7 +4,7 @@
     "slug": "Temp-o-s",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon_1.png",
+    "icon": "./assets/new_icon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
@@ -14,29 +14,45 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/logo.png",
+        "foregroundImage": "./assets/new_icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.Pierrofeu.tempo"
+      "package": "com.Pierrofeu.tempo",
+      "icon": "./assets/new_icon.png",
+      "notification": {
+        "icon": "./assets/ic_launcher_foreground.png",
+        "color": "#7C3AED"
+      }
     },
     "web": {
       "bundler": "metro",
       "output": "static",
-      "favicon": "./assets/logo.png"
+      "favicon": "./assets/new_icon.png"
     },
     "plugins": [
       "expo-router",
       [
         "expo-splash-screen",
         {
-          "image": "./assets/logo.png",
+          "image": "./assets/new_icon.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"
         }
       ],
       "expo-font",
-      "expo-web-browser"
+      "expo-web-browser",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "extraMavenRepos": [
+              "../../node_modules/@notifee/react-native/android/libs"
+              ]
+          },
+          "ios": {  }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

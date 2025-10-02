@@ -9,6 +9,7 @@ import {
 	WorktimeSeries,
 } from '../types/worktime';
 import { parseRecurrenceRule } from '../utils/recurrence';
+import { NotificationService } from '../services/NotificationService';
 
 export function useTimerForm({
 	setSnackBar,
@@ -85,7 +86,7 @@ export function useTimerForm({
 				throw new Error(await response.text());
 			if (response) return await response.json();
 		},
-		onSuccess: (data) => {
+		onSuccess: async (data) => {
 			setSnackBar(
 				'info',
 				!data.endHour
@@ -106,6 +107,13 @@ export function useTimerForm({
 			if (mode === 'chrono' && !data.endHour && setUnfinishedWorktimes) {
 				data.type = 'CHRONO';
 				setUnfinishedWorktimes((prev) => [...prev, data]);
+				
+				// Afficher la notification pour le nouveau chronomètre
+				await NotificationService.getInstance().displayChronoNotification(
+					data,
+					data.category?.name || 'Chronomètre',
+					new Date(data.startHour)
+				);
 			}
 
 			const shouldAddToFeed = (() => {

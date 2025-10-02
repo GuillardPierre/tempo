@@ -17,6 +17,7 @@ import ENDPOINTS from "./utils/ENDPOINT";
 import Chronometre from "./utils/Chronometre";
 import BlockWrapper from "./BlockWrapper";
 import { formatLocalDateTime } from "./utils/utils";
+import { NotificationService } from "../services/NotificationService";
 
 type Props = {
   worktime: WorktimeSeries;
@@ -129,6 +130,13 @@ export default function Block({
 
     if (rep.ok) {
       const data = await rep.json();
+
+      // Supprimer la notification associée
+      if (worktime.id) {
+        await NotificationService.getInstance().cancelChronoNotification(
+          worktime.id.toString()
+        );
+      }
 
       if (setUnfinishedWorktimes) {
         setUnfinishedWorktimes((prev) =>

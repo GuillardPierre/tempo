@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { httpGet, checkAndRefreshToken } from '../components/utils/querySetup';
 import ENDPOINTS from '../components/utils/ENDPOINT';
 import {
@@ -56,6 +56,7 @@ export const useIndex = () => {
 		getMonthWorktimes();
 		getRecurrenceExceptions();
 		getWorktimes();
+		// setUnfinishedWorktimes([]);
 	}, []);
 
 	useEffect(() => {
@@ -77,7 +78,7 @@ export const useIndex = () => {
 	}, [worktimesByDay, month]);
 
 	useEffect(() => {
-		getWorktimes();
+			getWorktimes();
 	}, [date]);
 
 	useEffect(() => {

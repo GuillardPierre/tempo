@@ -35,6 +35,8 @@ interface WorktimeSelectActionProps {
   setUnfinishedWorktimes?: (
     worktimes: any[] | ((prevWorktimes: any[]) => any[])
   ) => void;
+  unfinishedWorktimes?: any[];
+  onWorktimeStopped?: () => void;
 }
 
 export default function WorktimeSelectAction({
@@ -51,6 +53,8 @@ export default function WorktimeSelectAction({
   onChronoClose,
   timerIsOpen,
   setUnfinishedWorktimes,
+  unfinishedWorktimes = [],
+  onWorktimeStopped,
 }: WorktimeSelectActionProps) {
   const colors = useThemeColors();
   const { vibrate } = useVibration();
@@ -163,6 +167,8 @@ export default function WorktimeSelectAction({
           date={date}
           onChronoClose={onChronoClose}
           setUnfinishedWorktimes={setUnfinishedWorktimes}
+          unfinishedWorktimes={unfinishedWorktimes}
+          onWorktimeStopped={onWorktimeStopped}
         />
       )}
       {value === "addPause" && (
