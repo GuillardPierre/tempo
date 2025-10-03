@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import dayjs from 'dayjs';
+import 'dayjs/locale/fr';
 
 interface PeriodSelection {
   week: { year: number; week: number };
@@ -117,7 +118,7 @@ export const usePeriodSelection = () => {
     }
 
     if (currentType === 'month') {
-      return `${dayjs(new Date(selectedPeriod.month.year, selectedPeriod.month.month - 1)).format('MMMM YYYY')}`;
+      return `${dayjs(new Date(selectedPeriod.month.year, selectedPeriod.month.month - 1)).locale('fr').format('MMMM YYYY')}`;
     }
 
     return `Année scolaire ${selectedPeriod.year.year}-${selectedPeriod.year.year + 1}`;

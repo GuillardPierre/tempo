@@ -50,7 +50,6 @@ export const useUpdateDeleteModal = ({
               : worktime
           )
         );
-        console.log("worktime");
         setSnackBar("info", selectedWorktime?.isCancelled
           ? "Entrée prise en compte"
           : "Entrée suspendue");

@@ -60,8 +60,6 @@ export default function LoginForm({ setSnackBar }: Props) {
     },
     onError: (error) => {
       console.error("Erreur de connexion:", error);
-      console.log(error.message);
-      console.log(error.message.includes("invalid email or password"));
       if (error.message.includes("Invalid email or password.")) {
         setSnackBar("error", "Email ou mot de passe incorrect");
         return;

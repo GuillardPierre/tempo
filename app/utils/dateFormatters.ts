@@ -43,25 +43,31 @@ export const formatDateRange = (
 	// Gestion selon le type
 	if (type === 'RECURRING') {
 		
-		// Pour RECURRING : utiliser les dates pour les jours et les heures pour les heures
+		// Pour RECURRING : séparer la période de la série et les horaires
 		const startDateFormatted = formatDateOnly(startDate);
-		const endDateFormatted = formatDateOnly(endDate);
 		const startHourFormatted = formatHourOnly(startHour);
 		const endHourFormatted = formatHourOnly(endHour);
 		
-		return `Du: ${startDateFormatted} ${startHourFormatted} au: ${endDateFormatted} ${endHourFormatted}`;
+		// Si pas de date de fin : série infinie
+		if (!endDate || endDate === 'null' || endDate === '') {
+			return `À partir du ${startDateFormatted}, de ${startHourFormatted} à ${endHourFormatted}`;
+		}
+		
+		// Si date de fin : série avec période définie
+		const endDateFormatted = formatDateOnly(endDate);
+		return `Du ${startDateFormatted} au ${endDateFormatted}, de ${startHourFormatted} à ${endHourFormatted}`;
 	} else if (type === 'SINGLE') {
 		// Pour SINGLE : utiliser seulement les heures
 		const startHourFormatted = formatHourOnly(startHour);
-		const endHourFormatted = endHour ? formatHourOnly(endHour) : 'pas de fin';
+		const endHourFormatted = endHour ? formatHourOnly(endHour) : 'en cours';
 		
-		return `De: ${startHourFormatted} à ${endHourFormatted}`;
+		return `De ${startHourFormatted} à ${endHourFormatted}`;
 	} else {
 		// Comportement par défaut (fallback)
 		const startFormatted = startDate ? formatDateTime(startDate) : formatHourOnly(startHour);
 		const endFormatted = endDate ? formatDateTime(endDate) : (endHour ? formatHourOnly(endHour) : 'pas de fin');
 		
-		return `Du: ${startFormatted} au: ${endFormatted}`;
+		return `Du ${startFormatted} au ${endFormatted}`;
 	}
 };
 

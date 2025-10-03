@@ -17,9 +17,19 @@ export default function Menu({ setModalVisible }: Props) {
 
   return (
     <View style={styles.container}>
+      {!isHomepage && (
+        <ButtonMenu
+          type="square"
+          text="Accueil"
+          action={() => {
+            router.push("/screens/Homepage");
+            setModalVisible(false);
+          }}
+        />
+      )}
       <ButtonMenu
         type="square"
-        text="Tutoriel"
+        text="FAQ"
         action={() => {
           router.push("/screens/tutorial");
           setModalVisible(false);
@@ -27,13 +37,9 @@ export default function Menu({ setModalVisible }: Props) {
       />
       <ButtonMenu
         type="square"
-        text={isHomepage ? "Mes catégories" : "Accueil"}
+        text={"Mes catégories"}
         action={() => {
-          if (isHomepage) {
-            router.push("/screens/categories");
-          } else {
-            router.push("/screens/Homepage");
-          }
+          router.push("/screens/categories");
           setModalVisible(false);
         }}
       />
@@ -45,7 +51,6 @@ export default function Menu({ setModalVisible }: Props) {
           setModalVisible(false);
         }}
       />
-      {/* <ButtonMenu type='square' text='Paramètres' action={() => {}} /> */}
       <ButtonMenu
         type="square"
         text="Se déconnecter"

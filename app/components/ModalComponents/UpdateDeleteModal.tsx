@@ -35,20 +35,14 @@ export default function UpdateDeleteModal({
   const colors = useThemeColors();
   const { vibrate } = useVibration();
 
-  const {
-    mode,
-    setMode,
-    snackBarMessage,
-    handleUpdateSuccess,
-    handleDeleteSuccess,
-    toggleSuspendOccurrence,
-  } = useUpdateDeleteModal({
-    selectedWorktime,
-    setWorktimes,
-    setSnackBar,
-    setModalVisible,
-    date,
-  });
+  const { mode, setMode, handleDeleteSuccess, toggleSuspendOccurrence } =
+    useUpdateDeleteModal({
+      selectedWorktime,
+      setWorktimes,
+      setSnackBar,
+      setModalVisible,
+      date,
+    });
 
   return (
     <View style={styles.container}>
@@ -166,7 +160,7 @@ export default function UpdateDeleteModal({
       )}
 
       {/* Affichage du snackbar si nécessaire */}
-      {snackBarMessage && (
+      {/* {snackBarMessage && (
         <View
           style={[
             styles.snackbar,
@@ -180,7 +174,7 @@ export default function UpdateDeleteModal({
         >
           <ThemedText>{snackBarMessage.message}</ThemedText>
         </View>
-      )}
+      )} */}
     </View>
   );
 }

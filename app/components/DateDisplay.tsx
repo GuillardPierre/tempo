@@ -75,6 +75,7 @@ const styles = StyleSheet.create({
   },
   dateContainer: {
     alignItems: "center",
+    width: 140,
   },
   dayName: {
     fontSize: 14,
@@ -83,6 +84,7 @@ const styles = StyleSheet.create({
   dayNameContainer: {
     flexDirection: "row",
     alignItems: "center",
+    justifyContent: "center",
     gap: 4,
   },
 });
