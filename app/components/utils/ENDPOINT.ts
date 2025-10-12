@@ -12,7 +12,7 @@ const ENDPOINTS = {
 		root: 'worktime/',
 		create: 'worktime/create',
 	},
-	woktimeSeries: {
+	worktimeSeries: {
 		root: 'worktimeseries/',
 		create: 'worktimeseries/create',
 	},

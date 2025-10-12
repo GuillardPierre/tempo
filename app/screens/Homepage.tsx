@@ -73,6 +73,7 @@ export default function Homepage() {
   useNotifications({
     unfinishedWorktimes,
     onWorktimeStopped: getWorktimes,
+    refreshWorktimes: getWorktimes,
   });
 
   // Ref pour le debounce du refresh

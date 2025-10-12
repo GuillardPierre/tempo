@@ -74,10 +74,10 @@ export function useTimerForm({
 			const endpoint =
 				isEditing && selectedWorktime?.id
 					? selectedWorktime.type === 'RECURRING'
-						? `${ENDPOINTS.woktimeSeries.root}${selectedWorktime.id}`
+						? `${ENDPOINTS.worktimeSeries.root}${selectedWorktime.id}`
 						: `${ENDPOINTS.worktime.root}${selectedWorktime.id}`
 					: formData.recurrence
-					? ENDPOINTS.woktimeSeries.create
+					? ENDPOINTS.worktimeSeries.create
 					: ENDPOINTS.worktime.create;
 
 			const method = isEditing ? httpPut : httpPost;
@@ -106,14 +106,32 @@ export function useTimerForm({
 			// Pour les chronos, toujours les ajouter à unfinishedWorktimes même si la date ne correspond pas
 			if (mode === 'chrono' && !data.endHour && setUnfinishedWorktimes) {
 				data.type = 'CHRONO';
-				setUnfinishedWorktimes((prev) => [...prev, data]);
-				
-				// Afficher la notification pour le nouveau chronomètre
-				await NotificationService.getInstance().displayChronoNotification(
-					data,
-					data.category?.name || 'Chronomètre',
-					new Date(data.startHour)
-				);
+
+				// Mettre à jour le state local IMMÉDIATEMENT
+				setUnfinishedWorktimes((prev) => {
+					// Vérifier que le worktime n'existe pas déjà (éviter les doublons)
+					const exists = prev.some((wt) => wt.id === data.id);
+					if (exists) {
+						return prev;
+					}
+
+					const newWorktimes = [...prev, data];
+					// Mettre à jour immédiatement le service avec la nouvelle liste
+					NotificationService.getInstance().updateUnfinishedWorktimes(newWorktimes);
+
+					// Créer la notification IMMÉDIATEMENT pour éviter les problèmes de timing
+					try {
+						NotificationService.getInstance().displayChronoNotification(
+							data,
+							data.categoryName || data.category?.name || "Chronomètre",
+							new Date(data.startHour)
+						);
+					} catch (error) {
+						console.error(`❌ Erreur création notification immédiate:`, error);
+					}
+
+					return newWorktimes;
+				});
 			}
 
 			const shouldAddToFeed = (() => {

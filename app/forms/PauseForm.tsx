@@ -134,11 +134,11 @@ export default function PauseForm({
   return (
     <View style={{ maxWidth: "100%" }}>
       {!isEditing && (
-        <BlockWrapper style={{ height: 120, maxHeight: 120 }}>
+        <BlockWrapper style={{ height: "auto", maxHeight: 120 }}>
           <ThemedText variant="body" color="secondaryText">
-            Les périodes de pause (ou vacances) permettent de ne pas compter les
-            temps de travail récurrent durant celle-ci (sauf si vous avez coché
-            "ignorer les périodes de pause").
+            Elles permettent de ne pas compter les temps de travail récurrent
+            durant celle-ci (sauf si vous avez coché "ignorer les périodes de
+            pause").
           </ThemedText>
         </BlockWrapper>
       )}

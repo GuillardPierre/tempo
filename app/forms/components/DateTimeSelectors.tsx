@@ -29,7 +29,6 @@ interface DateTimeSelectorsProps {
     worktimes: WorktimeSeries[] | ((prev: WorktimeSeries[]) => WorktimeSeries[])
   ) => void;
   onWorktimeStopped?: () => void;
-  onWorktimeCreated?: (worktime: WorktimeSeries) => void;
 }
 
 export default function DateTimeSelectors({
@@ -48,7 +47,6 @@ export default function DateTimeSelectors({
   unfinishedWorktimes = [],
   setUnfinishedWorktimes,
   onWorktimeStopped,
-  onWorktimeCreated,
 }: DateTimeSelectorsProps) {
   const { vibrate } = useVibration();
 
@@ -101,15 +99,6 @@ export default function DateTimeSelectors({
       console.error("Erreur lors de l'arrêt du worktime:", error);
       setSnackBar("error", "Erreur lors de l'arrêt du chronomètre");
     }
-  };
-
-  // Cette fonction sera appelée après la création réussie du chronomètre
-  const displayNotificationForWorktime = async (worktime: WorktimeSeries) => {
-    await NotificationService.getInstance().displayChronoNotification(
-      worktime,
-      worktime.category?.name || category.title,
-      new Date(startHour)
-    );
   };
 
   return (

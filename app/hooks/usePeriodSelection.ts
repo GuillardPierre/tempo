@@ -1,6 +1,9 @@
 import { useState, useCallback } from 'react';
 import dayjs from 'dayjs';
+import isoWeek from 'dayjs/plugin/isoWeek';
 import 'dayjs/locale/fr';
+
+dayjs.extend(isoWeek);
 
 interface PeriodSelection {
   week: { year: number; week: number };
@@ -10,17 +13,12 @@ interface PeriodSelection {
 
 type PeriodType = 'week' | 'month' | 'year';
 
-// 🔹 Fonctions utilitaires
 const getWeekNumber = (date: Date): number => {
-  const firstDayOfYear = new Date(date.getFullYear(), 0, 1);
-  const pastDays = (date.getTime() - firstDayOfYear.getTime()) / 86400000;
-  return Math.ceil((pastDays + firstDayOfYear.getDay() + 1) / 7);
+  return dayjs(date).isoWeek();
 };
 
 const getWeekStartDate = (year: number, week: number): Date => {
-  const firstDayOfYear = new Date(year, 0, 1);
-  const daysToAdd = (week - 1) * 7 - firstDayOfYear.getDay() + 1;
-  return new Date(firstDayOfYear.getTime() + daysToAdd * 86400000);
+  return dayjs().year(year).isoWeek(week).startOf('isoWeek').toDate();
 };
 
 const getCurrentSchoolYear = (): number => {

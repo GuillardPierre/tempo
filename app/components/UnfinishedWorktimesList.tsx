@@ -41,11 +41,29 @@ export default function UnfinishedWorktimesList({
   setSnackBar,
   onWorktimeStopped,
 }: UnfinishedWorktimesListProps) {
+  const prevWorktimesRef = React.useRef<WorktimeSeries[]>([]);
+
   // Mettre à jour les unfinishedWorktimes dans le service de notifications
+  // (Les notifications sont maintenant créées directement dans useTimerForm pour éviter les problèmes de timing)
   useEffect(() => {
-    NotificationService.getInstance().updateUnfinishedWorktimes(
-      unfinishedWorktimes
-    );
+    const syncNotifications = async () => {
+      try {
+        // Mettre à jour les unfinishedWorktimes dans le service (pour le background handler)
+        NotificationService.getInstance().updateUnfinishedWorktimes(
+          unfinishedWorktimes
+        );
+
+        // Mettre à jour la référence pour le prochain render
+        prevWorktimesRef.current = unfinishedWorktimes;
+      } catch (error) {
+        console.error(
+          "❌ Erreur lors de la synchronisation des notifications:",
+          error
+        );
+      }
+    };
+
+    syncNotifications();
   }, [unfinishedWorktimes]);
 
   if (unfinishedWorktimes.length === 0) {

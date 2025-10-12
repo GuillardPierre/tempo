@@ -46,8 +46,18 @@ const ExceptionsList = ({
               alignItems: "center",
             }}
           >
-            <View>
-              <ThemedText variant="header2" color="primaryText">
+            <View
+              style={{
+                maxWidth: "85%",
+                paddingHorizontal: 10,
+                paddingVertical: 8,
+              }}
+            >
+              <ThemedText
+                variant="header2"
+                style={{ fontSize: 20 }}
+                color="primaryText"
+              >
                 Vacances / pause en cours
               </ThemedText>
               <ThemedText variant="body" color="primaryText">

@@ -44,7 +44,7 @@ export default function DeleteBlock({
     const endpoint =
       selectedWorktime.type === "SINGLE"
         ? ENDPOINTS.worktime.root
-        : ENDPOINTS.woktimeSeries.root;
+        : ENDPOINTS.worktimeSeries.root;
 
     try {
       const response = await httpDelete(`${endpoint}${selectedWorktime.id}`);
@@ -106,7 +106,7 @@ export default function DeleteBlock({
 const styles = StyleSheet.create({
   container: {
     padding: 10,
-    width: "90%",
+    width: "100%",
   },
   workTimeInfoContainer: {
     marginVertical: 15,

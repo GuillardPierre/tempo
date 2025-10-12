@@ -78,6 +78,7 @@ export async function checkAndRefreshToken() {
 				return false;
 			}
 		}
+		TOKEN = token;
 		return true;
 	} catch (e) {
 		await AsyncStorage.removeItem('token');

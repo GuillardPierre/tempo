@@ -116,10 +116,10 @@ export const useTimerForm = ({
 			const endpoint =
 				isEditing && selectedWorktime?.id
 					? selectedWorktime.type === 'RECURRING'
-						? `${ENDPOINTS.woktimeSeries.root}${selectedWorktime.id}`
+						? `${ENDPOINTS.worktimeSeries.root}${selectedWorktime.id}`
 						: `${ENDPOINTS.worktime.root}${selectedWorktime.id}`
 					: formData.recurrence
-					? ENDPOINTS.woktimeSeries.create
+					? ENDPOINTS.worktimeSeries.create
 					: ENDPOINTS.worktime.create;
 
 			const method = isEditing ? httpPut : httpPost;

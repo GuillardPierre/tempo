@@ -48,7 +48,18 @@
           "android": {
             "extraMavenRepos": [
               "../../node_modules/@notifee/react-native/android/libs"
-              ]
+            ],
+            "permissions": [
+              "POST_NOTIFICATIONS",
+              "USE_FULL_SCREEN_INTENT",
+              "WAKE_LOCK",
+              "FOREGROUND_SERVICE",
+              "com.google.android.c2dm.permission.RECEIVE",
+              "RECEIVE_BOOT_COMPLETED",
+              "REQUEST_IGNORE_BATTERY_OPTIMIZATIONS",
+              "SCHEDULE_EXACT_ALARM",
+              "USE_EXACT_ALARM"
+            ]
           },
           "ios": {  }
         }

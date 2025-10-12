@@ -22,7 +22,7 @@ export interface CreateRecurrenceRule {
 /**
  * Type des types de worktime (ponctuel ou récurrent)
  */
-export type WorktimeType = 'SINGLE' | 'RECURRING';
+export type WorktimeType = 'SINGLE' | 'RECURRING' | 'CHRONO';
 
 /**
  * Interface pour les worktimes reçus de l'API

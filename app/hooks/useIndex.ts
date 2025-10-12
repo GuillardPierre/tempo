@@ -63,16 +63,11 @@ export const useIndex = () => {
 		getMonthWorktimes();
 		// Mise à jour des worktimes non terminés basée sur tous les worktimes
 		if (worktimesByDay) {
-			const allWorktimes = [
-				...(worktimesByDay.yesterday || []),
-				...(worktimesByDay.today || []),
-				...(worktimesByDay.tomorrow || []),
-			];
-			
 			const unfinished = worktimesByDay.today.filter(
 				(worktime) => worktime.endHour === null
 			);
-			
+
+			// Les unfinishedWorktimes sont maintenant simplement les nouvelles données filtrées
 			setUnfinishedWorktimes(unfinished);
 		}
 	}, [worktimesByDay, month]);
@@ -121,7 +116,7 @@ export const useIndex = () => {
 		  if (!rep.ok) {
 			throw new Error(`Erreur getWorktimes: réponse non ok (${rep.status})`);
 		  }
-	  
+
 		  const data = await rep.json();
 		  setWorktimesByDay(
 			data || {
