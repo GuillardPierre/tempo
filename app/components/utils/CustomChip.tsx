@@ -10,7 +10,7 @@ export default function CustomChip({ children }: Props) {
   const colors = useThemeColors();
   return (
     <View style={[styles.container, { backgroundColor: colors.primary }]}>
-      <ThemedText>{children}</ThemedText>
+      <ThemedText color='white'>{children}</ThemedText>
     </View>
   );
 }

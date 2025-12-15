@@ -12,6 +12,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { toFormikValidationSchema } from "zod-formik-adapter";
 import { loginSchema, LoginFormData } from "../../schema/login";
 import { useAuth } from "../../context/authContext";
+import ButtonMenu from "../ButtonMenu";
 
 type Props = {
   setSnackBar: (type: "error" | "info", message: string) => void;
@@ -110,11 +111,13 @@ export default function LoginForm({ setSnackBar }: Props) {
               }
             />
           </View>
-          <TextButton
-            style={[styles.button, { backgroundColor: colors.secondary }]}
-            onPress={handleSubmit}
+          <ButtonMenu
+          style={{ backgroundColor: colors.secondary }}
+            action={handleSubmit} 
             text="Se connecter"
-            isPending={isPending}
+            type="round"
+            fullWidth={false}
+            pending={isPending }
           />
         </>
       )}

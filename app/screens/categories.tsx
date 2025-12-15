@@ -68,10 +68,10 @@ export default function Categories() {
 	};
 	return (
 		<>
-			<SafeAreaView style={{ backgroundColor: colors.primary, flex: 1 }}>
+			<SafeAreaView style={{ backgroundColor: colors.background, flex: 1 }}>
 				<StatusBar
-					backgroundColor={colors.primary}
-					barStyle='light-content'
+					backgroundColor={colors.background}
+					barStyle="dark-content"
 				/>
 				<Header
 					modalVisible={modalVisible}

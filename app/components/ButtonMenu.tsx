@@ -1,4 +1,4 @@
-import { Pressable, StyleProp, StyleSheet, ViewStyle } from 'react-native';
+import { Pressable, StyleProp, StyleSheet, ViewStyle, ActivityIndicator } from 'react-native';
 import ThemedText from './utils/ThemedText';
 import { useThemeColors } from '../hooks/useThemeColors';
 type Props = {
@@ -7,6 +7,7 @@ type Props = {
 	type: 'square' | 'round';
 	style?: StyleProp<ViewStyle>;
 	fullWidth?: boolean;
+	pending?: boolean;
 };
 
 export default function ButtonMenu({
@@ -15,6 +16,7 @@ export default function ButtonMenu({
 	type,
 	style,
 	fullWidth = true,
+	pending = false,
 }: Props) {
 	const colors = useThemeColors();
 	return (
@@ -26,8 +28,11 @@ export default function ButtonMenu({
 				!fullWidth && { width: 'auto', minWidth: 50, paddingHorizontal: 12 },
 				style,
 			]}
-			onPress={action}
+			onPress={pending ? undefined : action}
 		>
+			{pending && (
+				<ActivityIndicator style={{ marginRight: 10 }} color={colors.primaryText} />
+			) }
 			<ThemedText variant='body' style={styles.textButton} color={type === 'round' ? 'primaryText' : 'secondaryText'}>
 				{text}
 			</ThemedText>
@@ -43,7 +48,7 @@ const styles = StyleSheet.create({
 		alignItems: 'center',
 		width: '100%',
 		borderStyle: 'solid',
-		borderWidth: 3,
+		borderWidth: 1,
 		marginVertical: 5,
 		paddingVertical: 8,
 		paddingHorizontal: 15,

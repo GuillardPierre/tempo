@@ -137,7 +137,7 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   segmentedButtons: {
-    borderWidth: 3,
+    borderWidth: 1,
     borderRadius: 30,
     marginBottom: 15,
   },

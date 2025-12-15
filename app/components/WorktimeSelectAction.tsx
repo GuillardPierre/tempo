@@ -108,7 +108,7 @@ export default function WorktimeSelectAction({
           },
         }}
         style={{
-          borderWidth: 3,
+          borderWidth: 1,
           borderColor: colors.primary,
           borderRadius: 25,
           backgroundColor: colors.background,

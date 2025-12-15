@@ -106,8 +106,9 @@ export default function CustomTextInput({
 
 const styles = StyleSheet.create({
   container: {
-    width: "100%",
-    marginBottom: 15, // Espace entre les champs
+    width: "90%",
+    marginBottom: 15, 
+    alignSelf: "center",
   },
   label: {
     fontSize: 16,
@@ -121,12 +122,11 @@ const styles = StyleSheet.create({
   },
   input: {
     width: "100%",
-    borderWidth: 3,
+    borderWidth: 1,
     borderStyle: "solid",
     borderRadius: 12,
     padding: 10,
     fontSize: 18,
-    fontWeight: "bold",
   },
   passwordToggle: {
     position: "absolute",

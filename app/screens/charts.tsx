@@ -223,13 +223,13 @@ export default function Charts() {
           style={[
             styles.container,
             {
-              backgroundColor: colors.primary,
+              backgroundColor: colors.background,
             },
           ]}
         >
           <StatusBar
-            backgroundColor={colors.primary}
-            barStyle="light-content"
+            backgroundColor={colors.background}
+            barStyle="dark-content"
           />
           <Header
             modalVisible={modalVisible}
@@ -237,9 +237,9 @@ export default function Charts() {
             setModalType={setModalType}
           />
           <View style={{ flex: 1, overflow: "hidden" }}>
-            <MainWrapper style={styles.container}>
+            <MainWrapper style={[styles.container, { backgroundColor: colors.background }]}>
               <ThemedText
-                variant="header1"
+                variant="header2"
                 color="secondaryText"
                 style={{ marginBottom: 10 }}
               >
@@ -253,7 +253,7 @@ export default function Charts() {
                 onNavigate={navigatePeriod}
                 onResetToCurrent={resetToCurrentPeriod}
               />
-              <BlockWrapper direction="column" fullHeight={true}>
+              <MainWrapper fullHeight={true} style={{ borderWidth: 1, borderColor: colors.primaryLight }}>
                 <ThemedText variant="header2" color="secondaryText">
                   Répartition globale
                 </ThemedText>
@@ -360,8 +360,8 @@ export default function Charts() {
                     </ThemedText>
                   </View>
                 )}
-              </BlockWrapper>
-              <BlockWrapper direction="column" fullHeight={true}>
+              </MainWrapper >
+              <MainWrapper fullHeight={true} style={{ borderWidth: 1, borderColor: colors.primaryLight }}>
                 <View
                   style={{
                     flexDirection: "row",
@@ -377,9 +377,9 @@ export default function Charts() {
                   <>
                     <LineChart
                       data={safeLineChartData}
-                      width={screenWidth - 50}
-                      height={255}
-                      verticalLabelRotation={35}
+                      width={screenWidth - 90}
+                      height={265}
+                      verticalLabelRotation={40}
                       chartConfig={chartConfig}
                       style={{ paddingBottom: 10 }}
                       bezier
@@ -419,7 +419,7 @@ export default function Charts() {
                     </ThemedText>
                   </View>
                 )}
-              </BlockWrapper>
+              </MainWrapper>
             </MainWrapper>
           </View>
         </SafeAreaView>

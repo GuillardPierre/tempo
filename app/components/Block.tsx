@@ -218,21 +218,6 @@ export default function Block({
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    minHeight: 80,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    borderRadius: 8,
-    borderStyle: "solid",
-    borderWidth: 4,
-    borderColor: "#3D348B",
-    paddingBlock: 5,
-    paddingHorizontal: 10,
-    marginBlock: 5,
-  },
   timeContainer: {
     display: "flex",
     flexDirection: "column",

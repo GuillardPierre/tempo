@@ -57,18 +57,20 @@ const WorktimesList = ({
     return (
       <BlockWrapper>
         <View style={{ flex: 1, justifyContent: "center" }}>
-          <ThemedText variant="body" color="secondaryText">
-            Rien de prévu pour ce jour-ci !{" "}
-          </ThemedText>
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               flexWrap: "wrap",
+              justifyContent: "center",
             }}
           >
-            <ThemedText variant="body" color="secondaryText">
-              Reposez-vous ou appuyez sur
+            <ThemedText
+              variant="body"
+              color="secondaryText"
+              style={{ textAlign: "center" }}
+            >
+              Rien de prévu pour ce jour-ci ! Reposez-vous ou appuyez sur
             </ThemedText>
             <View style={{ marginHorizontal: 4 }}>
               <RoundButton
@@ -79,7 +81,11 @@ const WorktimesList = ({
                 btnSize={25}
               />
             </View>
-            <ThemedText variant="body" color="secondaryText">
+            <ThemedText
+              variant="body"
+              color="secondaryText"
+              style={{ textAlign: "center" }}
+            >
               pour enregistrer une activité
             </ThemedText>
           </View>

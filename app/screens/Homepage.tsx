@@ -170,11 +170,11 @@ export default function Homepage() {
         style={[
           styles.container,
           {
-            backgroundColor: colors.primary,
+            backgroundColor: colors.background,
           },
         ]}
       >
-        <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
+        <StatusBar backgroundColor={colors.background} barStyle="dark-content" />
         <Header
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}

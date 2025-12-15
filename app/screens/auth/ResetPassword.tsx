@@ -88,9 +88,9 @@ export default function ResetPassword() {
   return (
     <SafeAreaView
       edges={["top", "bottom"]}
-      style={[styles.container, { backgroundColor: colors.primary }]}
+      style={[styles.container, { backgroundColor: colors.background }]}
     >
-      <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
+      <StatusBar backgroundColor={colors.background} barStyle="dark-content" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}

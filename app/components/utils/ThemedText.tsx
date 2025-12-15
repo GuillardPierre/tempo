@@ -4,15 +4,15 @@ import { StyleSheet, Text, TextProps } from 'react-native';
 
 const styles = StyleSheet.create({
 	header1: {
-		fontSize: 28,
+		fontSize: 22,
 		fontWeight: 700,
 	},
 	header2: {
-		fontSize: 24,
+		fontSize: 20,
 		fontWeight: 700,
 	},
 	body: {
-		fontSize: 16,
+		fontSize: 14,
 		fontWeight: 400,
 	},
 });

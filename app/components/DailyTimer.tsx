@@ -1,6 +1,7 @@
 import React from "react";
 import { Chip } from "react-native-paper";
 import { WorktimeSeries, RecurrenceException } from "../types/worktime";
+import { useThemeColors } from "../hooks/useThemeColors";
 // @ts-ignore
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -15,6 +16,7 @@ export default function DailyTimer({
   recurrenceExceptions = [],
   date,
 }: Props) {
+  const colors = useThemeColors();
   /**
    * Vérifie si une date est dans une période d'exception (vacances/pause)
    */
@@ -63,17 +65,17 @@ export default function DailyTimer({
   return (
     <Chip
       icon={({ size, color }) => (
-        <Icon name="clock-outline" size={size} color="white" />
+        <Icon name="clock-outline" size={size} color={colors.primary} />
       )}
       mode="outlined"
       compact
       style={{
         marginLeft: 8,
-        backgroundColor: "rgba(255, 255, 255, 0.1)",
-        borderColor: "rgba(255, 255, 255, 0.3)",
+        backgroundColor: colors.primaryLight,
+        borderWidth: 0,
       }}
       textStyle={{
-        color: "white",
+        color: colors.primaryText,
         fontSize: 12,
         fontWeight: "bold",
       }}

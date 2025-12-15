@@ -13,7 +13,7 @@ const MenuSvg = (props: SvgProps) => (
       y1={16.5}
       x2={40.5}
       y2={16.5}
-      stroke="white"
+      stroke={props.stroke || props.color || "white"}
       strokeWidth={3}
       strokeLinecap="round"
     />
@@ -22,7 +22,7 @@ const MenuSvg = (props: SvgProps) => (
       y1={26.5}
       x2={40.5}
       y2={26.5}
-      stroke="white"
+      stroke={props.stroke || props.color || "white"}
       strokeWidth={3}
       strokeLinecap="round"
     />
@@ -31,7 +31,7 @@ const MenuSvg = (props: SvgProps) => (
       y1={36.5}
       x2={40.5}
       y2={36.5}
-      stroke="white"
+      stroke={props.stroke || props.color || "white"}
       strokeWidth={3}
       strokeLinecap="round"
     />

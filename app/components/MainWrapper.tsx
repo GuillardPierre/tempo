@@ -162,10 +162,7 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 10,
 		paddingVertical: 10,
 		borderRadius: 16,
-		borderStyle: 'solid',
-		borderWidth: 2,
-		borderColor: '#7678ED',
-		overflow: 'hidden',
+		boxShadow: '3px 3px 10px 0 rgba(0, 0, 0, 0.1)',
 	},
 	flexContainer: {
 		flexGrow: 1,

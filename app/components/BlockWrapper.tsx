@@ -29,7 +29,7 @@ export default function BlockWrapper({
     <View
       style={[
         styles.container,
-        backgroundColor && { backgroundColor },
+        { backgroundColor: backgroundColor ?? colors.primaryLight },
 
         disabled && { backgroundColor: colors.disabled },
         { flexDirection: direction },
@@ -50,10 +50,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     width: "100%",
     borderRadius: 8,
-    borderStyle: "solid",
-    borderWidth: 3,
-    borderColor: "#3D348B",
     paddingBlock: 5,
+    boxShadow: "1px 1px 10px 0 rgba(0, 0, 0, 0.1)",
     paddingHorizontal: 10,
     marginBlock: 5,
   },

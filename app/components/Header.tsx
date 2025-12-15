@@ -33,13 +33,13 @@ export default function Header({
   const { vibrate } = useVibration();
   const pathname = usePathname();
   return (
-    <View style={[styles.header, { backgroundColor: colors.primary }]}>
+    <View style={[styles.header, { backgroundColor: colors.background }]}>
       <View style={{ flexDirection: "row", alignItems: "center" }}>
         <View style={{ width: "13%" }}>
           {router.canGoBack() && pathname !== "/screens/Homepage" && (
             <Pressable
               style={{
-                backgroundColor: colors.secondary,
+                backgroundColor: colors.background,
                 borderRadius: "50%",
                 padding: 5,
                 width: 40,

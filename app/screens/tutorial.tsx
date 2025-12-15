@@ -22,8 +22,8 @@ export default function Tutorial() {
 
   return (
     <>
-      <SafeAreaView style={{ backgroundColor: colors.primary, flex: 1 }}>
-        <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
+      <SafeAreaView style={{ backgroundColor: colors.background, flex: 1 }}>
+        <StatusBar backgroundColor={colors.background} barStyle="dark-content" />
         <Header
           modalVisible={modalVisible}
           setModalVisible={setModalVisible}
@@ -31,7 +31,7 @@ export default function Tutorial() {
         />
 
         <ScrollView>
-          <ThemedText
+            <ThemedText
             variant="header1"
             color="primaryText"
             style={{ textAlign: "center" }}
@@ -39,12 +39,12 @@ export default function Tutorial() {
             FAQ
           </ThemedText>
           <List.Accordion
-            style={{ backgroundColor: colors.primary }}
+            style={{ backgroundColor: colors.background }}
             titleStyle={{ color: colors.primaryText }}
             title="Quel est le but de l'application ?"
             id="0"
           >
-            <FAQResponse
+            <FAQResponse 
               text={`Le but de l'application est de vous aider à gérer votre temps de travail plus facilement.
 Vous pourrez enregistrer vos tâches récurrentes ou non très facilement.
 
@@ -53,7 +53,7 @@ Grâce à Tempo, vous pourrez observer facilement le temps que vous consacrez à
           </List.Accordion>
           <List.AccordionGroup>
             <List.Accordion
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: colors.background }}
               titleStyle={{ color: colors.primaryText }}
               title="Comment créer une catégorie ?"
               id="1"
@@ -65,7 +65,7 @@ Grâce à Tempo, vous pourrez observer facilement le temps que vous consacrez à
               />
             </List.Accordion>
             <List.Accordion
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: colors.background }}
               titleStyle={{ color: colors.primaryText }}
               title="Comment créer une activité ponctuelle ?"
               id="2"
@@ -81,7 +81,7 @@ Une activité ponctuelle permet d'enregistrer une activité avec une durée dét
               />
             </List.Accordion>
             <List.Accordion
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: colors.background }}
               titleStyle={{ color: colors.primaryText }}
               title="Comment créer une activité récurrente ?"
               id="3"
@@ -97,7 +97,7 @@ Une activité récurrente permet d'enregistrer une activité avec une durée dé
               />
             </List.Accordion>
             <List.Accordion
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: colors.background }}
               titleStyle={{ color: colors.primaryText }}
               title="Comment créer un chrono ?"
               id="4"
@@ -114,7 +114,7 @@ Un chrono permet d'enregistrer un temps de travail avec un chronomètre en temps
               />
             </List.Accordion>
             <List.Accordion
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: colors.background }}
               titleStyle={{ color: colors.primaryText }}
               title="Comment modifier ou supprimer une catégorie ?"
               id="5"
@@ -126,7 +126,7 @@ Un chrono permet d'enregistrer un temps de travail avec un chronomètre en temps
               />
             </List.Accordion>
             <List.Accordion
-              style={{ backgroundColor: colors.primary }}
+              style={{ backgroundColor: colors.background }}
               titleStyle={{ color: colors.primaryText }}
               title="Comment créer une période de vacances / de pause / d'arrêt ?"
               id="6"

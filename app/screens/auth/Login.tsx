@@ -33,11 +33,11 @@ export default function Login() {
       style={[
         styles.container,
         {
-          backgroundColor: colors.primary,
+          backgroundColor: colors.background,
         },
       ]}
     >
-      <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
+      <StatusBar backgroundColor={colors.background} barStyle="dark-content" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}
@@ -52,13 +52,13 @@ export default function Login() {
         </ThemedText>
         <LoginForm setSnackBar={setSnackBar} />
 
-        <TextButton
-          style={styles.button}
-          onPress={() => {
-            router.push("/screens/auth/Signup");
-          }}
-          text="Pas encore de compte ?"
-        />
+        <ThemedText style={{ marginTop: 20 }} color="primaryText">
+        <Link style={styles.link} href="/screens/auth/Signup">
+          Pas encore de compte ?
+        </Link>
+          </ThemedText>
+
+
       </KeyboardAvoidingView>
       <ThemedText style={styles.linkContainer} color="primaryText">
         Mot de passe oublié ?{" "}

@@ -26,7 +26,7 @@ const types = {
 
 type Props = {
   type: keyof typeof types;
-  variant: "primary" | "secondary";
+  variant: "primary" | "secondary" | "background" | "primaryLight";
   btnSize?: number;
   svgSize?: number;
   onPress: () => void;
@@ -42,6 +42,12 @@ export default function RoundButton({
   const colors = useThemeColors();
   const { vibrate } = useVibration();
   const Icon = types[type];
+
+  const iconFill =
+    variant === "primaryLight" || variant === "background"
+      ? colors.primary
+      : colors.white;
+
   return (
     <Pressable
       onPress={() => {
@@ -59,7 +65,7 @@ export default function RoundButton({
           },
         ]}
       >
-        <Icon width={svgSize} height={svgSize} />
+        <Icon width={svgSize} height={svgSize} fill={iconFill} />
       </View>
     </Pressable>
   );

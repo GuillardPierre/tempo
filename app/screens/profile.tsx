@@ -50,11 +50,11 @@ export default function Profile() {
 	return (
 		<>
 			<SafeAreaView
-				style={[styles.container, { backgroundColor: colors.primary }]}
+				style={[styles.container, { backgroundColor: colors.background }]}
 			>
 				<StatusBar
-					backgroundColor={colors.primary}
-					barStyle='light-content'
+					backgroundColor={colors.background}
+					barStyle="dark-content"
 				/>
 				<Header
 					modalVisible={modalVisible}
@@ -76,7 +76,7 @@ export default function Profile() {
 							Pseudo: {username}
 						</ThemedText>
 						<BlockWrapper backgroundColor={'#056CF6'}>
-							<ThemedText variant='body' color='primaryText'>
+							<ThemedText variant='body' color='white'>
 								Cette application est un projet personnel, vos
 								données ne sont pas partagées / vendues.
 							</ThemedText>
@@ -109,7 +109,7 @@ export default function Profile() {
 							style={{ minHeight: 70 }}
 							backgroundColor={'#056CF6'}
 						>
-							<ThemedText variant='body' color='primaryText'>
+							<ThemedText variant='body' color='white'>
 								Si vous avez des retours, contactez moi sur
 								pguillard95@gmail.com
 							</ThemedText>

@@ -36,7 +36,7 @@ export default function Footer({
     <View
       style={[
         styles.container,
-        { backgroundColor: colors.primary, overflow: "hidden" },
+        { backgroundColor: "transparent", overflow: "hidden", marginTop: 5 },
       ]}
     >
       <RoundButton

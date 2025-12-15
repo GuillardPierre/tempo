@@ -28,10 +28,10 @@ export default function DateDisplay({
   const { formatDate, getDayName } = useDateFormatter();
 
   return (
-    <View style={[styles.dateDisplay, { backgroundColor: colors.primary }]}>
+    <View style={styles.dateDisplay}>
       <RoundButton
         type="previousDate"
-        variant="primary"
+        variant='background'
         svgSize={15}
         onPress={handlePrevious}
       />
@@ -49,16 +49,16 @@ export default function DateDisplay({
               {getDayName(date)}
             </ThemedText>
             <DailyTimer
-              worktimes={worktimes}
-              recurrenceExceptions={recurrenceExceptions}
-              date={date}
+                worktimes={worktimes}
+                recurrenceExceptions={recurrenceExceptions}
+                date={date}
             />
           </View>
         </View>
       </Pressable>
       <RoundButton
         type="nextDate"
-        variant="primary"
+        variant="background"
         svgSize={15}
         onPress={handleNext}
       />

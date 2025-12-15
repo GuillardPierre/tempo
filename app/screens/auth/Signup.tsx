@@ -26,11 +26,11 @@ export default function Signup() {
       style={[
         styles.container,
         {
-          backgroundColor: colors.primary,
+          backgroundColor: colors.background,
         },
       ]}
     >
-      <StatusBar backgroundColor={colors.primary} barStyle="light-content" />
+      <StatusBar backgroundColor={colors.background} barStyle="dark-content" />
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={styles.keyboardAvoidingView}

@@ -10,7 +10,7 @@ const CloseSvg   = (props: SvgProps) => (
   >
     <Path
       d="M26 2L2 26M2 2L26 26"
-      stroke="#F5F2FF"
+      stroke={props.stroke || props.color || "#F5F2FF"}
       strokeWidth={4}
       strokeLinecap="round"
       strokeLinejoin="round"
