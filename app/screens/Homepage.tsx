@@ -215,10 +215,18 @@ export default function Homepage() {
                   : calendarIsOpen
                   ? "46.5%"
                   : "100%",
-                backgroundColor: colors.background,
+                backgroundColor: colors.white,
                 marginInline: 0,
                 marginBlock: 0,
                 marginTop: 5.5,
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 4,
+                },
+                shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 8,
               }}
             >
               <View
@@ -288,6 +296,15 @@ export default function Homepage() {
               <MainWrapper
                 style={{
                   height: "100%",
+                  backgroundColor: colors.white,
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 8,
                 }}
               >
                 <UnfinishedWorktimesList
@@ -343,10 +360,18 @@ export default function Homepage() {
                   : calendarIsOpen
                   ? "46.5%"
                   : "100%",
-                backgroundColor: colors.background,
+                backgroundColor: colors.white,
                 marginInline: 0,
                 marginBlock: 0,
                 marginTop: 4,
+                shadowColor: "#000",
+                shadowOffset: {
+                  width: 0,
+                  height: 4,
+                },
+                shadowOpacity: 0.15,
+                shadowRadius: 10,
+                elevation: 8,
               }}
             >
               <View
@@ -413,6 +438,15 @@ export default function Homepage() {
               bottom: 0,
               left: 0,
               right: 0,
+              backgroundColor: colors.white,
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 4,
+              },
+              shadowOpacity: 0.15,
+              shadowRadius: 10,
+              elevation: 8,
             }}
           >
             <WorktimeSelectAction
@@ -444,6 +478,15 @@ export default function Homepage() {
               bottom: 0,
               left: 0,
               right: 0,
+              backgroundColor: colors.white,
+              shadowColor: "#000",
+              shadowOffset: {
+                width: 0,
+                height: 4,
+              },
+              shadowOpacity: 0.15,
+              shadowRadius: 10,
+              elevation: 8,
             }}
           >
             <Calendar

@@ -33,24 +33,21 @@ export default function Footer({
   });
 
   return (
-    <View
-      style={[
-        styles.container,
-        { backgroundColor: "transparent", overflow: "hidden", marginTop: 5 },
-      ]}
-    >
+    <View style={styles.container}>
       <RoundButton
         type="stats"
-        variant="secondary"
+        variant="ghost"
         btnSize={50}
         onPress={handleStatsPress}
+        iconColor={colors.secondary}
       />
       <Animated.View style={{ transform: [{ rotate: calendarSpin }] }}>
         <RoundButton
           type="calendar"
-          variant="secondary"
+          variant="ghost"
           btnSize={50}
           onPress={handleCalendarPress}
+          iconColor={colors.secondary}
         />
       </Animated.View>
       <Animated.View style={{ transform: [{ rotate: spin }] }}>
@@ -72,8 +69,19 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 50,
-    paddingVertical: 10,
-    overflow: "hidden",
+    paddingHorizontal: 30,
+    backgroundColor: "white",
+    borderRadius: 40,
+    marginHorizontal: 11,
+    marginBottom: 10,
+    marginTop: 10,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.15,
+    shadowRadius: 10,
+    elevation: 8,
   },
 });

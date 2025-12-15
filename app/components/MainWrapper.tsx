@@ -162,7 +162,6 @@ const styles = StyleSheet.create({
 		paddingHorizontal: 10,
 		paddingVertical: 10,
 		borderRadius: 16,
-		boxShadow: '3px 3px 10px 0 rgba(0, 0, 0, 0.1)',
 	},
 	flexContainer: {
 		flexGrow: 1,

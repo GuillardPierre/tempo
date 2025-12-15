@@ -253,7 +253,7 @@ export default function Charts() {
                 onNavigate={navigatePeriod}
                 onResetToCurrent={resetToCurrentPeriod}
               />
-              <MainWrapper fullHeight={true} style={{ borderWidth: 1, borderColor: colors.primaryLight }}>
+              <MainWrapper fullHeight={true} style={{ borderWidth: 1, borderColor: colors.primaryLight, backgroundColor: colors.white }}>
                 <ThemedText variant="header2" color="secondaryText">
                   Répartition globale
                 </ThemedText>
@@ -361,7 +361,7 @@ export default function Charts() {
                   </View>
                 )}
               </MainWrapper >
-              <MainWrapper fullHeight={true} style={{ borderWidth: 1, borderColor: colors.primaryLight }}>
+              <MainWrapper fullHeight={true} style={{ borderWidth: 1, borderColor: colors.primaryLight, backgroundColor: colors.white }}>
                 <View
                   style={{
                     flexDirection: "row",

@@ -234,7 +234,7 @@ export default function Calendar({
 		<RNCalendar
 			style={styles.calendar}
 			theme={{
-				calendarBackground: colors.background,
+				calendarBackground: colors.white,
 				monthTextColor: colors.secondaryText,
 				textSectionTitleColor: colors.secondaryText,
 				dayTextColor: colors.secondaryText,
@@ -260,13 +260,5 @@ const styles = StyleSheet.create({
 	calendar: {
 		marginBottom: 10,
 		borderRadius: 10,
-		elevation: 4,
-		shadowColor: '#000',
-		shadowOffset: {
-			width: 0,
-			height: 2,
-		},
-		shadowOpacity: 0.23,
-		shadowRadius: 2.62,
 	},
 });

@@ -26,10 +26,11 @@ const types = {
 
 type Props = {
   type: keyof typeof types;
-  variant: "primary" | "secondary" | "background" | "primaryLight";
+  variant: "primary" | "secondary" | "background" | "primaryLight" | "ghost";
   btnSize?: number;
   svgSize?: number;
   onPress: () => void;
+  iconColor?: string;
 };
 
 export default function RoundButton({
@@ -38,15 +39,17 @@ export default function RoundButton({
   btnSize = 40,
   svgSize = 24,
   onPress,
+  iconColor,
 }: Props) {
   const colors = useThemeColors();
   const { vibrate } = useVibration();
   const Icon = types[type];
 
   const iconFill =
-    variant === "primaryLight" || variant === "background"
+    iconColor ||
+    (variant === "primaryLight" || variant === "background" || variant === "ghost"
       ? colors.primary
-      : colors.white;
+      : colors.white);
 
   return (
     <Pressable
@@ -59,7 +62,7 @@ export default function RoundButton({
         style={[
           styles.button,
           {
-            backgroundColor: colors[variant],
+            backgroundColor: variant === "ghost" ? "transparent" : colors[variant],
             width: btnSize,
             height: btnSize,
           },

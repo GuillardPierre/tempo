@@ -11,7 +11,7 @@ const StatsSvg = (props: SvgProps) => (
   >
     <Path
       d="M12 28.6667V12M22 28.6667V2M2 28.6667V22"
-      stroke="#F5F2FF"
+      stroke={props.stroke || props.fill || "#F5F2FF"}
       strokeWidth={4}
       strokeLinecap="round"
       strokeLinejoin="round"
