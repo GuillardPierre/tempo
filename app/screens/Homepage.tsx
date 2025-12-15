@@ -5,6 +5,9 @@ import {
   Animated,
   Dimensions,
   AppState,
+  LayoutAnimation,
+  Platform,
+  UIManager,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import React, { useRef, useEffect, useCallback } from "react";
@@ -120,9 +123,10 @@ export default function Homepage() {
     };
   }, [refreshWorktimes]);
 
+  
   const { modalVisible, modalType, openModal, setModalType, setModalVisible } =
-    useModal();
-
+  useModal();
+  
   const {
     calendarIsOpen,
     timerIsOpen,
@@ -134,7 +138,19 @@ export default function Homepage() {
     handleChronoStart,
     handleChronoClose,
   } = useToggleViews();
+  
+  if (
+    Platform.OS === "android" &&
+    UIManager.setLayoutAnimationEnabledExperimental
+  ) {
+    UIManager.setLayoutAnimationEnabledExperimental(true);
+  }
 
+  useEffect(() => {
+    LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
+  }, [timerIsOpen, calendarIsOpen, formIsOpen, chronoOpen]);
+
+  
   const handleExceptionPress = (exception: RecurrenceException) => {
     setSelectedException(exception);
     openModal("exception");
@@ -193,108 +209,99 @@ export default function Homepage() {
               {
                 flexDirection: "row",
                 width: screenWidth * 3,
-                height: "100%",
-                position: "absolute",
-                left: -screenWidth + 20,
+                flex: 1,
+                left: -screenWidth,
               },
               swipeAnimatedStyle,
             ]}
             {...panResponder.panHandlers}
           >
             {/* Bloc gauche */}
-            <MainWrapper
-              style={{
-                width: "31.7%",
-                height: "99%",
-                maxHeight: chronoOpen
-                  ? "51%"
-                  : timerIsOpen
-                  ? formIsOpen
-                    ? "47%"
-                    : "83%"
-                  : calendarIsOpen
-                  ? "46.5%"
-                  : "100%",
-                backgroundColor: colors.white,
-                marginInline: 0,
-                marginBlock: 0,
-                marginTop: 5.5,
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
-                shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 8,
-              }}
-            >
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "flex-start",
-                  alignItems: "flex-start",
-                }}
-              >
-                <UnfinishedWorktimesList
-                  unfinishedWorktimes={unfinishedWorktimes}
-                  currentDate={date}
-                  recurrenceExceptions={recurrenceExceptions}
-                  setModalType={setModalType}
-                  setModalVisible={setModalVisible}
-                  setSelectedWorktime={setSelectedWorktime}
-                  setUnfinishedWorktimes={setUnfinishedWorktimes}
-                  setWorktimes={setWorktimes}
-                  setWorktimesByDay={setWorktimesByDay}
-                  setSnackBar={setSnackBar}
-                  onWorktimeStopped={() => {
-                    getWorktimes();
-                  }}
-                />
-                <ExceptionsList
-                  exceptions={recurrenceExceptions}
-                  date={new Date(new Date(date).getTime() - 24 * 60 * 60 * 1000)
-                    .toISOString()
-                    .slice(0, 10)}
-                  onExceptionPress={handleExceptionPress}
-                />
-                <WorktimesList
-                  worktimes={worktimesByDay.yesterday}
-                  currentDate={date}
-                  recurrenceExceptions={recurrenceExceptions}
-                  setModalType={setModalType}
-                  setModalVisible={setModalVisible}
-                  setSelectedWorktime={setSelectedWorktime}
-                  setWorktimes={setWorktimes}
-                  setUnfinishedWorktimes={setUnfinishedWorktimes}
-                  setWorktimesByDay={setWorktimesByDay}
-                  setSnackBar={setSnackBar}
-                  onWorktimeStopped={() => {
-                    getWorktimes();
-                  }}
-                  onAddPress={toggleTimer}
-                />
-              </View>
-            </MainWrapper>
-
-            {/* Bloc central - contenu principal */}
             <View
               style={{
-                width: "33.33%",
-                height: "99%",
-                maxHeight: chronoOpen
-                  ? "51%"
-                  : timerIsOpen
-                  ? formIsOpen
-                    ? "47%"
-                    : "83%"
-                  : calendarIsOpen
-                  ? "46.5%"
-                  : "100%",
+                width: screenWidth,
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
               <MainWrapper
                 style={{
+                  width: "95%",
+                  height: "100%",
+                  backgroundColor: colors.white,
+                  marginTop: 5.5,
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 10,
+                  elevation: 8,
+                }}
+              >
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "flex-start",
+                    alignItems: "flex-start",
+                  }}
+                >
+                  <UnfinishedWorktimesList
+                    unfinishedWorktimes={unfinishedWorktimes}
+                    currentDate={date}
+                    recurrenceExceptions={recurrenceExceptions}
+                    setModalType={setModalType}
+                    setModalVisible={setModalVisible}
+                    setSelectedWorktime={setSelectedWorktime}
+                    setUnfinishedWorktimes={setUnfinishedWorktimes}
+                    setWorktimes={setWorktimes}
+                    setWorktimesByDay={setWorktimesByDay}
+                    setSnackBar={setSnackBar}
+                    onWorktimeStopped={() => {
+                      getWorktimes();
+                    }}
+                  />
+                  <ExceptionsList
+                    exceptions={recurrenceExceptions}
+                    date={new Date(new Date(date).getTime() - 24 * 60 * 60 * 1000)
+                      .toISOString()
+                      .slice(0, 10)}
+                    onExceptionPress={handleExceptionPress}
+                  />
+                  <WorktimesList
+                    worktimes={worktimesByDay.yesterday}
+                    currentDate={date}
+                    recurrenceExceptions={recurrenceExceptions}
+                    setModalType={setModalType}
+                    setModalVisible={setModalVisible}
+                    setSelectedWorktime={setSelectedWorktime}
+                    setWorktimes={setWorktimes}
+                    setUnfinishedWorktimes={setUnfinishedWorktimes}
+                    setWorktimesByDay={setWorktimesByDay}
+                    setSnackBar={setSnackBar}
+                    onWorktimeStopped={() => {
+                      getWorktimes();
+                    }}
+                    onAddPress={toggleTimer}
+                  />
+                </View>
+              </MainWrapper>
+            </View>
+
+            {/* Bloc central - contenu principal */}
+            <View
+              style={{
+                width: screenWidth,
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+              }}
+            >
+              <MainWrapper
+                style={{
+                  width: "95%",
                   height: "100%",
                   backgroundColor: colors.white,
                   shadowColor: "#000",
@@ -303,8 +310,8 @@ export default function Homepage() {
                     height: 4,
                   },
                   shadowOpacity: 0.15,
-    shadowRadius: 10,
-    elevation: 8,
+                  shadowRadius: 10,
+                  elevation: 8,
                 }}
               >
                 <UnfinishedWorktimesList
@@ -347,97 +354,91 @@ export default function Homepage() {
             </View>
 
             {/* Bloc droit */}
-            <MainWrapper
+            <View
               style={{
-                width: "31.8%",
-                height: "99%",
-                maxHeight: chronoOpen
-                  ? "51%"
-                  : timerIsOpen
-                  ? formIsOpen
-                    ? "47%"
-                    : "83%"
-                  : calendarIsOpen
-                  ? "46.5%"
-                  : "100%",
-                backgroundColor: colors.white,
-                marginInline: 0,
-                marginBlock: 0,
-                marginTop: 4,
-                shadowColor: "#000",
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
-                shadowOpacity: 0.15,
-                shadowRadius: 10,
-                elevation: 8,
+                width: screenWidth,
+                height: "100%",
+                justifyContent: "center",
+                alignItems: "center",
               }}
             >
-              <View
+              <MainWrapper
                 style={{
-                  flex: 1,
-                  justifyContent: "flex-start",
-                  alignItems: "flex-start",
+                  width: "95%",
+                  height: "100%",
+                  backgroundColor: colors.white,
+                  marginTop: 4,
+                  shadowColor: "#000",
+                  shadowOffset: {
+                    width: 0,
+                    height: 4,
+                  },
+                  shadowOpacity: 0.15,
+                  shadowRadius: 10,
+                  elevation: 8,
                 }}
               >
-                <UnfinishedWorktimesList
-                  unfinishedWorktimes={unfinishedWorktimes}
-                  currentDate={date}
-                  recurrenceExceptions={recurrenceExceptions}
-                  setModalType={setModalType}
-                  setModalVisible={setModalVisible}
-                  setSelectedWorktime={setSelectedWorktime}
-                  setUnfinishedWorktimes={setUnfinishedWorktimes}
-                  setWorktimes={setWorktimes}
-                  setWorktimesByDay={setWorktimesByDay}
-                  setSnackBar={setSnackBar}
-                  onWorktimeStopped={() => {
-                    getWorktimes();
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "flex-start",
+                    alignItems: "flex-start",
                   }}
-                />
-                <ExceptionsList
-                  exceptions={recurrenceExceptions}
-                  date={new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000)
-                    .toISOString()
-                    .slice(0, 10)}
-                  onExceptionPress={handleExceptionPress}
-                />
-                <WorktimesList
-                  worktimes={worktimesByDay.tomorrow}
-                  currentDate={new Date(
-                    new Date(date).getTime() + 24 * 60 * 60 * 1000
-                  )
-                    .toISOString()
-                    .slice(0, 10)}
-                  recurrenceExceptions={recurrenceExceptions}
-                  setModalType={setModalType}
-                  setModalVisible={setModalVisible}
-                  setSelectedWorktime={setSelectedWorktime}
-                  setWorktimes={setWorktimes}
-                  setUnfinishedWorktimes={setUnfinishedWorktimes}
-                  setWorktimesByDay={setWorktimesByDay}
-                  setSnackBar={setSnackBar}
-                  onWorktimeStopped={() => {
-                    getWorktimes();
-                  }}
-                  onAddPress={toggleTimer}
-                />
-              </View>
-            </MainWrapper>
+                >
+                  <UnfinishedWorktimesList
+                    unfinishedWorktimes={unfinishedWorktimes}
+                    currentDate={date}
+                    recurrenceExceptions={recurrenceExceptions}
+                    setModalType={setModalType}
+                    setModalVisible={setModalVisible}
+                    setSelectedWorktime={setSelectedWorktime}
+                    setUnfinishedWorktimes={setUnfinishedWorktimes}
+                    setWorktimes={setWorktimes}
+                    setWorktimesByDay={setWorktimesByDay}
+                    setSnackBar={setSnackBar}
+                    onWorktimeStopped={() => {
+                      getWorktimes();
+                    }}
+                  />
+                  <ExceptionsList
+                    exceptions={recurrenceExceptions}
+                    date={new Date(new Date(date).getTime() + 24 * 60 * 60 * 1000)
+                      .toISOString()
+                      .slice(0, 10)}
+                    onExceptionPress={handleExceptionPress}
+                  />
+                  <WorktimesList
+                    worktimes={worktimesByDay.tomorrow}
+                    currentDate={new Date(
+                      new Date(date).getTime() + 24 * 60 * 60 * 1000
+                    )
+                      .toISOString()
+                      .slice(0, 10)}
+                    recurrenceExceptions={recurrenceExceptions}
+                    setModalType={setModalType}
+                    setModalVisible={setModalVisible}
+                    setSelectedWorktime={setSelectedWorktime}
+                    setWorktimes={setWorktimes}
+                    setUnfinishedWorktimes={setUnfinishedWorktimes}
+                    setWorktimesByDay={setWorktimesByDay}
+                    setSnackBar={setSnackBar}
+                    onWorktimeStopped={() => {
+                      getWorktimes();
+                    }}
+                    onAddPress={toggleTimer}
+                  />
+                </View>
+              </MainWrapper>
+            </View>
           </Animated.View>
 
           <MainWrapper
             isOpen={timerIsOpen}
             direction="bottom"
-            maxHeight="35%"
-            minHeight={formIsOpen ? "38%" : "auto"}
+            maxHeight="80%"
+            minHeight="auto"
             style={{
               paddingHorizontal: 30,
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
               backgroundColor: colors.white,
               shadowColor: "#000",
               shadowOffset: {
@@ -472,18 +473,8 @@ export default function Homepage() {
           <MainWrapper
             isOpen={calendarIsOpen}
             direction="bottom"
-            maxHeight="42%"
+            maxHeight="80%"
             style={{
-              position: "absolute",
-              bottom: 0,
-              left: 0,
-              right: 0,
-              backgroundColor: colors.white,
-              shadowColor: "#000",
-              shadowOffset: {
-                width: 0,
-                height: 4,
-              },
               shadowOpacity: 0.15,
               shadowRadius: 10,
               elevation: 8,
