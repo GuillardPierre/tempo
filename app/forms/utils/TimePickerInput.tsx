@@ -138,7 +138,7 @@ const styles = StyleSheet.create({
     marginTop: 3,
   },
   input: {
-    borderWidth: 3,
+    borderWidth: 1,
     borderStyle: "solid",
     borderRadius: 12,
     padding: 10,

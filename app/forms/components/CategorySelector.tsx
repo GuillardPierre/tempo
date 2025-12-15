@@ -87,14 +87,14 @@ export default function CategorySelector({
         }}
         placeholder="Sélectionnez une catégorie"
         style={{
-          borderWidth: 3,
+          borderWidth: 1,
           borderRadius: 12,
           marginBottom: 2,
           width: "100%",
           borderColor: colors.primary,
         }}
         dropDownContainerStyle={{
-          borderWidth: 3,
+          borderWidth: 1,
           borderRadius: 4,
           width: "100%",
           backgroundColor: colors.background,
@@ -104,13 +104,13 @@ export default function CategorySelector({
         modalAnimationType="slide"
         placeholderStyle={{ fontWeight: 500 }}
         modalContentContainerStyle={{
-          borderWidth: 3,
+          borderWidth: 1,
           borderRadius: 12,
           maxHeight: modalMaxHeight,
           width: "95%",
           alignSelf: "center",
           marginTop: insets.top + 15,
-          backgroundColor: colors.background,
+          backgroundColor: colors.white,
           borderColor: colors.secondary,
         }}
         modalProps={{
