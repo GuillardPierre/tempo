@@ -26,13 +26,13 @@ export const useSwipeAnimation = ({
 
 	// Calculer les zones du bloc central
 	// Le bloc central fait 33.33% de largeur et est au centre
-	const centralBlockStart = screenWidth * 0.317; // 31.7% pour le bloc gauche
-	const centralBlockEnd = screenWidth * 0.683; // 31.7% + 33.33%
+	// const centralBlockStart = screenWidth * 0.317; // 31.7% pour le bloc gauche
+	// const centralBlockEnd = screenWidth * 0.683; // 31.7% + 33.33%
 
 	// Fonction pour vérifier si le touch est dans le bloc central
-	const isTouchInCentralBlock = (pageX: number) => {
+	/* const isTouchInCentralBlock = (pageX: number) => {
 		return pageX >= centralBlockStart && pageX <= centralBlockEnd;
-	};
+	}; */
 
 	// Fonction pour détecter si l'utilisateur est en train de scroller verticalement
 	const checkVerticalScroll = (dx: number, dy: number) => {
@@ -60,15 +60,15 @@ export const useSwipeAnimation = ({
 			currentDate.setDate(currentDate.getDate() + 1);
 			const newDate = currentDate.toISOString().split('T')[0];
 
-		// Réorganiser immédiatement les données : tomorrow devient today
-		setWorktimesByDay((prev) => ({
-			yesterday: prev.today,
-			today: prev.tomorrow,
-			tomorrow: [], // Sera rechargé par l'API via useEffect
-		}));
+			// Réorganiser immédiatement les données : tomorrow devient today
+			setWorktimesByDay((prev) => ({
+				yesterday: prev.today,
+				today: prev.tomorrow,
+				tomorrow: [], // Sera rechargé par l'API via useEffect
+			}));
 
-		// Changer la date immédiatement (le useEffect va recharger les données complètes)
-		setDate(newDate);
+			// Changer la date immédiatement (le useEffect va recharger les données complètes)
+			setDate(newDate);
 		} catch (error) {
 			console.error('Erreur dans handleSwipeNext:', error);
 		}
@@ -85,15 +85,15 @@ export const useSwipeAnimation = ({
 			currentDate.setDate(currentDate.getDate() - 1);
 			const newDate = currentDate.toISOString().split('T')[0];
 
-		// Réorganiser immédiatement les données : yesterday devient today
-		setWorktimesByDay((prev) => ({
-			yesterday: [], // Sera rechargé par l'API via useEffect
-			today: prev.yesterday,
-			tomorrow: prev.today,
-		}));
+			// Réorganiser immédiatement les données : yesterday devient today
+			setWorktimesByDay((prev) => ({
+				yesterday: [], // Sera rechargé par l'API via useEffect
+				today: prev.yesterday,
+				tomorrow: prev.today,
+			}));
 
-		// Changer la date immédiatement (le useEffect va recharger les données complètes)
-		setDate(newDate);
+			// Changer la date immédiatement (le useEffect va recharger les données complètes)
+			setDate(newDate);
 		} catch (error) {
 			console.error('Erreur dans handleSwipePrevious:', error);
 		}
@@ -114,19 +114,19 @@ export const useSwipeAnimation = ({
 		PanResponder.create({
 			onStartShouldSetPanResponder: (evt) => {
 				// Si on est dans le bloc central, ne pas intercepter le touch
-				if (isTouchInCentralBlock(evt.nativeEvent.pageX)) {
+				/* if (isTouchInCentralBlock(evt.nativeEvent.pageX)) {
 					return false;
-				}
-				return !isAnimating.current;
+				} */
+				return false;
 			},
 			onMoveShouldSetPanResponder: (evt, gestureState) => {
 				const { dx, dy } = gestureState;
 				const { pageX } = evt.nativeEvent;
 
 				// Si on est dans le bloc central, privilégier le scroll vertical
-				if (isTouchInCentralBlock(pageX)) {
+				/* if (isTouchInCentralBlock(pageX)) {
 					return false;
-				}
+				} */
 
 				// Vérifier si l'utilisateur est en train de scroller verticalement
 				if (checkVerticalScroll(dx, dy)) {

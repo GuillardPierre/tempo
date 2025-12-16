@@ -46,16 +46,16 @@ export default function RecurrenceSettings({
           justifyContent: "center",
         }}
       >
-        <Text
+        <ThemedText
           style={{
             fontSize: 16,
-            fontWeight: "bold",
-            marginBottom: 5,
+            marginVertical: 5,
             width: "70%",
           }}
+          color="secondaryText"
         >
           Répétition sur plusieurs jours :
-        </Text>
+        </ThemedText>
         <Switch
           value={isRecurring}
           onValueChange={setIsRecurring}

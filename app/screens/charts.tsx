@@ -368,7 +368,7 @@ export default function Charts() {
                     alignItems: "center",
                   }}
                 >
-                  <ThemedText variant="header2" color="secondaryText">
+                  <ThemedText variant="header2" color="secondaryText" style={{marginBottom: 20}}>
                     Temps de travail{" "}
                   </ThemedText>
                 </View>

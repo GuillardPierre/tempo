@@ -139,18 +139,11 @@ export default function Homepage() {
     handleChronoClose,
   } = useToggleViews();
   
-  if (
-    Platform.OS === "android" &&
-    UIManager.setLayoutAnimationEnabledExperimental
-  ) {
-    UIManager.setLayoutAnimationEnabledExperimental(true);
-  }
-
   useEffect(() => {
     LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
   }, [timerIsOpen, calendarIsOpen, formIsOpen, chronoOpen]);
 
-  
+
   const handleExceptionPress = (exception: RecurrenceException) => {
     setSelectedException(exception);
     openModal("exception");
@@ -210,6 +203,7 @@ export default function Homepage() {
                 flexDirection: "row",
                 width: screenWidth * 3,
                 flex: 1,
+                minHeight: "15%",
                 left: -screenWidth,
               },
               swipeAnimatedStyle,
@@ -435,7 +429,7 @@ export default function Homepage() {
           <MainWrapper
             isOpen={timerIsOpen}
             direction="bottom"
-            maxHeight="80%"
+            maxHeight="auto"
             minHeight="auto"
             style={{
               paddingHorizontal: 30,
@@ -448,6 +442,7 @@ export default function Homepage() {
               shadowOpacity: 0.15,
               shadowRadius: 10,
               elevation: 8,
+              flexShrink: 1,
             }}
           >
             <WorktimeSelectAction
@@ -473,11 +468,13 @@ export default function Homepage() {
           <MainWrapper
             isOpen={calendarIsOpen}
             direction="bottom"
-            maxHeight="80%"
+            maxHeight="auto"
             style={{
               shadowOpacity: 0.15,
               shadowRadius: 10,
               elevation: 8,
+              flexShrink: 1,
+              backgroundColor: colors.white,
             }}
           >
             <Calendar

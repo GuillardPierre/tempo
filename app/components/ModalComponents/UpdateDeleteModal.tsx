@@ -106,6 +106,7 @@ export default function UpdateDeleteModal({
                   : "Ne pas compter cette entrée"
               }
               style={[{ backgroundColor: colors.primary }]}
+              color="white"
             />
           )}
         </View>
@@ -114,7 +115,7 @@ export default function UpdateDeleteModal({
       {mode === "edit" && (
         <View>
           <View style={styles.header}>
-            <ThemedText variant="body" color="secondaryText">
+            <ThemedText variant="header2" color="secondaryText">
               {`Modification de l'entrée`}
             </ThemedText>
           </View>

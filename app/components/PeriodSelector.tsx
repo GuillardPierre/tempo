@@ -134,7 +134,7 @@ export default function PeriodSelector({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 20,
+    marginBottom: 10,
   },
   segmentedButtons: {
     borderWidth: 1,

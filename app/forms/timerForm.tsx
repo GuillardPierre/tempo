@@ -234,6 +234,7 @@ export default function TimerForm({
 const styles = StyleSheet.create({
   container: {
     display: "flex",
+    gap: 5,
     flexDirection: "column",
     justifyContent: "center",
     alignItems: "flex-start",

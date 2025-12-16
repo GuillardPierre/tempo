@@ -33,7 +33,7 @@ export default function Footer({
   });
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, { marginTop: calendarIsOpen || timerIsOpen ? 0 : 5 }]}>
       <RoundButton
         type="stats"
         variant="ghost"
@@ -73,8 +73,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 16,
     marginHorizontal: 11,
-    marginBottom: 10,
-    marginTop: 10,
+    marginBottom: 5,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
